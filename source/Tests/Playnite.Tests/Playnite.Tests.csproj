@@ -196,6 +196,7 @@
     <Compile Include="SelectableDbItemListTests.cs" />
     <Compile Include="SettingsTests.cs" />
     <Compile Include="Settings\FilterSettingsTests.cs" />
+    <Compile Include="QueueOrderingTests.cs" />
     <Compile Include="StringExtensionsTests.cs" />
     <Compile Include="System\ComputerTests.cs" />
     <Compile Include="System\ProcessExtensionsTests.cs" />
