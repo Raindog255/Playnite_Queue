@@ -1372,6 +1372,20 @@ namespace Playnite.DesktopApp.ViewModels
             }
         }
 
+        private void AutoFillCompletedDateForTerminalStatus()
+        {
+            var terminalIds = appSettings?.QueueSettings?.TerminalStatusIds;
+            if (EditingGame?.CompletedDate != null
+                || terminalIds == null
+                || terminalIds.Count == 0
+                || !terminalIds.Contains(EditingGame.CompletionStatusId))
+            {
+                return;
+            }
+
+            EditingGame.CompletedDate = DateTime.Today;
+        }
+
         public TItem CreateNewItem<TItem>(string itemName = null) where TItem : DatabaseObject
         {
             if (itemName.IsNullOrEmpty())
