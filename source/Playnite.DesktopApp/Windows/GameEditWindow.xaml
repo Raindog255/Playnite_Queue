@@ -220,21 +220,8 @@
                         <TextBlock Grid.Column="3" Grid.Row="0" Text="{DynamicResource LOCGameReleaseDateTitle}"/>
                         <CheckBox Grid.Column="4" Grid.Row="0" Name="CheckReleaseDate" Style="{StaticResource SaveChangesCheck}"
                                     IsChecked="{Binding UseReleaseDateChanges}"/>
-                        <TextBox Grid.Column="5" Grid.Row="0" Style="{StaticResource TextBoxStyle}"
-                                 ToolTip="{DynamicResource LOCReleaseDateTooltip}"
-                                 ToolTipService.Placement="Top" ToolTipService.InitialShowDelay="0">
-                            <TextBox.Text>
-                                <Binding Path="EditingGame.ReleaseDate"
-                                         UpdateSourceTrigger="PropertyChanged" 
-                                         ValidatesOnDataErrors="True"
-                                         NotifyOnValidationError="True"
-                                         Converter="{pcon:EditingReleaseDateToStringConverter}">
-                                    <Binding.ValidationRules>
-                                        <pcon:ReleaseDateFieldValidation />
-                                    </Binding.ValidationRules>
-                                </Binding>
-                            </TextBox.Text>
-                        </TextBox>
+                        <DatePicker Grid.Column="5" Grid.Row="0"
+                                    SelectedDate="{Binding EditingGame.ReleaseDate, Converter={pcon:ReleaseDateToNullableDateTimeConverter}}"/>
 
                         <!-- Acquired Date -->
                         <TextBlock Grid.Column="3" Grid.Row="1" Text="{DynamicResource LOCAcquiredDateLabel}"/>
