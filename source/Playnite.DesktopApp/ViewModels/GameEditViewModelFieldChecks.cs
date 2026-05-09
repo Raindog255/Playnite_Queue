@@ -406,7 +406,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useVersionChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
             }
         }
 
@@ -438,7 +438,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useRegionChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
             }
         }
 
@@ -502,7 +502,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useCriticScoreChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
             }
         }
 
@@ -518,7 +518,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useCommunityScoreChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
             }
         }
 
@@ -839,8 +839,6 @@ namespace Playnite.DesktopApp.ViewModels
                     UseGenresChanges ||
                     UseTagChanges ||
                     UseSeriesChanges ||
-                    UseVersionChanges ||
-                    UseRegionChanges ||
                     UseCompletionStatusChanges ||
                     UseAddedChanges ||
                     UseOnHoldChanges ||
@@ -848,9 +846,7 @@ namespace Playnite.DesktopApp.ViewModels
                     UseMobileChanges ||
                     UseAcquiredDateChanges ||
                     UseCompletedDateChanges ||
-                    UseUserScoreChanges ||
-                    UseCriticScoreChanges ||
-                    UseCommunityScoreChanges);
+                    UseUserScoreChanges);
             }
         }
 
@@ -878,7 +874,11 @@ namespace Playnite.DesktopApp.ViewModels
                     UsePublisherChanges ||
                     UseFeatureChanges ||
                     UseAgeRatingChanges ||
+                    UseRegionChanges ||
                     UseSourceChanges ||
+                    UseCriticScoreChanges ||
+                    UseCommunityScoreChanges ||
+                    UseVersionChanges ||
                     UseLastActivityChanges ||
                     UsePlaytimeChanges ||
                     UsePlayCountChanges ||
