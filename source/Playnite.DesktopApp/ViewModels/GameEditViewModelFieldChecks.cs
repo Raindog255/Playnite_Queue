@@ -570,6 +570,86 @@ namespace Playnite.DesktopApp.ViewModels
             }
         }
 
+        private bool useOnHoldChanges;
+        public bool UseOnHoldChanges
+        {
+            get
+            {
+                return useOnHoldChanges;
+            }
+
+            set
+            {
+                useOnHoldChanges = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+            }
+        }
+
+        private bool useFreeChanges;
+        public bool UseFreeChanges
+        {
+            get
+            {
+                return useFreeChanges;
+            }
+
+            set
+            {
+                useFreeChanges = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+            }
+        }
+
+        private bool useMobileChanges;
+        public bool UseMobileChanges
+        {
+            get
+            {
+                return useMobileChanges;
+            }
+
+            set
+            {
+                useMobileChanges = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+            }
+        }
+
+        private bool useAcquiredDateChanges;
+        public bool UseAcquiredDateChanges
+        {
+            get
+            {
+                return useAcquiredDateChanges;
+            }
+
+            set
+            {
+                useAcquiredDateChanges = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+            }
+        }
+
+        private bool useCompletedDateChanges;
+        public bool UseCompletedDateChanges
+        {
+            get
+            {
+                return useCompletedDateChanges;
+            }
+
+            set
+            {
+                useCompletedDateChanges = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+            }
+        }
+
         private bool usePreScriptChanges;
         public bool UsePreScriptChanges
         {
@@ -793,9 +873,14 @@ namespace Playnite.DesktopApp.ViewModels
                     (UseHdrChanges ||
                     UseHiddenChanges ||
                     UseFavoriteChanges ||
+                    UseOnHoldChanges ||
+                    UseFreeChanges ||
+                    UseMobileChanges ||
                     UseLastActivityChanges ||
                     UsePlaytimeChanges ||
                     UseAddedChanges ||
+                    UseAcquiredDateChanges ||
+                    UseCompletedDateChanges ||
                     UsePlayCountChanges ||
                     UseNotesChanges ||
                     UseManualChanges);
@@ -1219,6 +1304,56 @@ namespace Playnite.DesktopApp.ViewModels
                     else
                     {
                         UseHiddenChanges = true;
+                    }
+                    break;
+                case nameof(Game.OnHold):
+                    if (IsSingleGameEdit)
+                    {
+                        UseOnHoldChanges = Game.OnHold != EditingGame.OnHold;
+                    }
+                    else
+                    {
+                        UseOnHoldChanges = true;
+                    }
+                    break;
+                case nameof(Game.Free):
+                    if (IsSingleGameEdit)
+                    {
+                        UseFreeChanges = Game.Free != EditingGame.Free;
+                    }
+                    else
+                    {
+                        UseFreeChanges = true;
+                    }
+                    break;
+                case nameof(Game.Mobile):
+                    if (IsSingleGameEdit)
+                    {
+                        UseMobileChanges = Game.Mobile != EditingGame.Mobile;
+                    }
+                    else
+                    {
+                        UseMobileChanges = true;
+                    }
+                    break;
+                case nameof(Game.AcquiredDate):
+                    if (IsSingleGameEdit)
+                    {
+                        UseAcquiredDateChanges = Game.AcquiredDate != EditingGame.AcquiredDate;
+                    }
+                    else
+                    {
+                        UseAcquiredDateChanges = true;
+                    }
+                    break;
+                case nameof(Game.CompletedDate):
+                    if (IsSingleGameEdit)
+                    {
+                        UseCompletedDateChanges = Game.CompletedDate != EditingGame.CompletedDate;
+                    }
+                    else
+                    {
+                        UseCompletedDateChanges = true;
                     }
                     break;
                 case nameof(Game.EnableSystemHdr):

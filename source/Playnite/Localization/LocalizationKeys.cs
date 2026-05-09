@@ -4489,5 +4489,25 @@ namespace Playnite
         /// No controllers detected
         /// </summary>
         public const string NoControllersDetected = "LOCNoControllersDetected";
+        /// <summary>
+        /// On Hold
+        /// </summary>
+        public const string GameOnHoldTitle = "LOCGameOnHoldTitle";
+        /// <summary>
+        /// Free
+        /// </summary>
+        public const string GameFreeTitle = "LOCGameFreeTitle";
+        /// <summary>
+        /// Mobile
+        /// </summary>
+        public const string GameMobileTitle = "LOCGameMobileTitle";
+        /// <summary>
+        /// Acquired
+        /// </summary>
+        public const string AcquiredDateLabel = "LOCAcquiredDateLabel";
+        /// <summary>
+        /// Completed
+        /// </summary>
+        public const string CompletedDateLabel = "LOCCompletedDateLabel";
     }
 }
