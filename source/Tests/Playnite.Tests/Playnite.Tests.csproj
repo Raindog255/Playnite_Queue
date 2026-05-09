@@ -197,6 +197,7 @@
     <Compile Include="SettingsTests.cs" />
     <Compile Include="Settings\FilterSettingsTests.cs" />
     <Compile Include="QueueOrderingTests.cs" />
+    <Compile Include="QueueCompletedDateAutoFillerTests.cs" />
     <Compile Include="StringExtensionsTests.cs" />
     <Compile Include="System\ComputerTests.cs" />
     <Compile Include="System\ProcessExtensionsTests.cs" />

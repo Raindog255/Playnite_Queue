@@ -46,6 +46,7 @@ namespace Playnite.DesktopApp.ViewModels
         private Controls.LibraryStatistics statsView;
         private Controls.Views.Library libraryView;
         private Controls.Views.Queue queueView;
+        private QueueCompletedDateAutoFiller queueCompletedDateAutoFiller;
         private SearchViewModel currentGlobalSearch;
 
         public DesktopGamesEditor GamesEditor { get; }
@@ -416,6 +417,7 @@ namespace Playnite.DesktopApp.ViewModels
 
             GamesView = new DesktopCollectionView(Database, AppSettings, Extensions);
             BindingOperations.EnableCollectionSynchronization(GamesView.Items, gamesLock);
+            queueCompletedDateAutoFiller = new QueueCompletedDateAutoFiller(Database, AppSettings.QueueSettings);
 
             if (AppSettings.LastSelectedGame != Guid.Empty)
             {
@@ -1092,6 +1094,7 @@ namespace Playnite.DesktopApp.ViewModels
         public void Dispose()
         {
             IsDisposing = true;
+            queueCompletedDateAutoFiller?.Dispose();
             GamesView?.Dispose();
             GamesStats?.Dispose();
             AppSettings.FilterSettings.PropertyChanged -= FilterSettings_PropertyChanged;
