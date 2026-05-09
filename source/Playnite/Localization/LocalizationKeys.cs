@@ -4493,5 +4493,105 @@ namespace Playnite
         /// Queue
         /// </summary>
         public const string Queue = "LOCQueue";
+        /// <summary>
+        /// Queue view coming soon.
+        /// </summary>
+        public const string QueueViewComingSoon = "LOCQueueViewComingSoon";
+        /// <summary>
+        /// Queue settings
+        /// </summary>
+        public const string QueueSettingsTitle = "LOCQueueSettingsTitle";
+        /// <summary>
+        /// Basics
+        /// </summary>
+        public const string QueueBasicsTitle = "LOCQueueBasicsTitle";
+        /// <summary>
+        /// Visible titles
+        /// </summary>
+        public const string QueueVisibleCount = "LOCQueueVisibleCount";
+        /// <summary>
+        /// Date source
+        /// </summary>
+        public const string QueueDateSource = "LOCQueueDateSource";
+        /// <summary>
+        /// Completion statuses
+        /// </summary>
+        public const string QueueCompletionStatusesTitle = "LOCQueueCompletionStatusesTitle";
+        /// <summary>
+        /// Playing status
+        /// </summary>
+        public const string QueuePlayingStatus = "LOCQueuePlayingStatus";
+        /// <summary>
+        /// Terminal statuses
+        /// </summary>
+        public const string QueueTerminalStatuses = "LOCQueueTerminalStatuses";
+        /// <summary>
+        /// Priority rules
+        /// </summary>
+        public const string QueuePriorityRules = "LOCQueuePriorityRules";
+        /// <summary>
+        /// ID value
+        /// </summary>
+        public const string QueuePriorityValue = "LOCQueuePriorityValue";
+        /// <summary>
+        /// Boolean value
+        /// </summary>
+        public const string QueuePriorityBoolValue = "LOCQueuePriorityBoolValue";
+        /// <summary>
+        /// Add priority rule
+        /// </summary>
+        public const string QueueAddPriorityRule = "LOCQueueAddPriorityRule";
+        /// <summary>
+        /// Buffers
+        /// </summary>
+        public const string QueueBuffersTitle = "LOCQueueBuffersTitle";
+        /// <summary>
+        /// Style buffer
+        /// </summary>
+        public const string QueueBufferStyle = "LOCQueueBufferStyle";
+        /// <summary>
+        /// Series buffer
+        /// </summary>
+        public const string QueueBufferSeries = "LOCQueueBufferSeries";
+        /// <summary>
+        /// Developer buffer
+        /// </summary>
+        public const string QueueBufferDeveloper = "LOCQueueBufferDeveloper";
+        /// <summary>
+        /// Genre buffer
+        /// </summary>
+        public const string QueueBufferGenre = "LOCQueueBufferGenre";
+        /// <summary>
+        /// Push back if matching a Playing game
+        /// </summary>
+        public const string QueuePushIfPlaying = "LOCQueuePushIfPlaying";
+        /// <summary>
+        /// Numbers above are the count of recently completed games to buffer against. Set 0 to disable the recent-completed part.
+        /// </summary>
+        public const string QueueRecentCompletedCountHint = "LOCQueueRecentCompletedCountHint";
+        /// <summary>
+        /// Grouping
+        /// </summary>
+        public const string QueueGroupingTitle = "LOCQueueGroupingTitle";
+        /// <summary>
+        /// Group by developer
+        /// </summary>
+        public const string QueueGroupByDeveloper = "LOCQueueGroupByDeveloper";
+        /// <summary>
+        /// Group by series
+        /// </summary>
+        public const string QueueGroupBySeries = "LOCQueueGroupBySeries";
+        /// <summary>
+        /// Add
+        /// </summary>
+        public const string AddLabel = "LOCAddLabel";
+        /// <summary>
+        /// Up
+        /// </summary>
+        public const string MoveUpLabel = "LOCMoveUpLabel";
+        /// <summary>
+        /// Down
+        /// </summary>
+        public const string MoveDownLabel = "LOCMoveDownLabel";
     }
 }
