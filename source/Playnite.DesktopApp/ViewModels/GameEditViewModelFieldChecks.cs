@@ -1247,6 +1247,7 @@ namespace Playnite.DesktopApp.ViewModels
                     }
                     break;
                 case nameof(Game.CompletionStatusId):
+                    AutoFillCompletedDateForTerminalStatus();
                     if (IsSingleGameEdit)
                     {
                         UseCompletionStatusChanges = Game.CompletionStatusId != EditingGame.CompletionStatusId;

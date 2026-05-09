@@ -100,6 +100,7 @@ namespace Playnite
     public enum ApplicationView
     {
         Library,
+        Queue,
         Statistics
     }
 
@@ -1548,6 +1549,17 @@ namespace Playnite
             set
             {
                 clientAutoShutdown = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private QueueSettings queueSettings = new QueueSettings();
+        public QueueSettings QueueSettings
+        {
+            get => queueSettings;
+            set
+            {
+                queueSettings = value ?? new QueueSettings();
                 OnPropertyChanged();
             }
         }
