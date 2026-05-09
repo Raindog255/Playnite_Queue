@@ -4489,5 +4489,9 @@ namespace Playnite
         /// No controllers detected
         /// </summary>
         public const string NoControllersDetected = "LOCNoControllersDetected";
+        /// <summary>
+        /// Queue
+        /// </summary>
+        public const string Queue = "LOCQueue";
     }
 }

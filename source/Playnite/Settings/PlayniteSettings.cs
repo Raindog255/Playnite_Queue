@@ -100,6 +100,7 @@ namespace Playnite
     public enum ApplicationView
     {
         Library,
+        Queue,
         Statistics
     }
 

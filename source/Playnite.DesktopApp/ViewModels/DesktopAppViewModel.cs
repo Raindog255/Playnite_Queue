@@ -45,6 +45,7 @@ namespace Playnite.DesktopApp.ViewModels
         private readonly SynchronizationContext context;
         private Controls.LibraryStatistics statsView;
         private Controls.Views.Library libraryView;
+        private Controls.Views.Queue queueView;
         private SearchViewModel currentGlobalSearch;
 
         public DesktopGamesEditor GamesEditor { get; }
