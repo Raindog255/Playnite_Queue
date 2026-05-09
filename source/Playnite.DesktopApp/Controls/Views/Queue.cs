@@ -1,21 +1,29 @@
+using Playnite.Common;
+using Playnite.Controls;
 using Playnite.DesktopApp.ViewModels;
+using Playnite.SDK;
 using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Playnite.DesktopApp.Controls.Views
 {
     /// <summary>
     /// Queue sidebar view. Hosts a <see cref="QueueViewModel"/> that recomputes the
     /// visible queue collection whenever the database or queue settings change. The
-    /// XAML template binds an ItemsControl to <c>QueueViewModel.QueueGames</c> and
+    /// XAML template binds an ExtendedListBox to <c>QueueViewModel.QueueGames</c> and
     /// renders each entry as a <c>GameListItem</c> (same styling as the library grid).
     /// </summary>
+    [TemplatePart(Name = "PART_ListGames", Type = typeof(ExtendedListBox))]
     public class Queue : Control
     {
         private readonly DesktopAppViewModel mainModel;
         private QueueViewModel viewModel;
+        private ExtendedListBox listGames;
 
         static Queue()
         {
@@ -44,6 +52,60 @@ namespace Playnite.DesktopApp.Controls.Views
             Unloaded += Queue_Unloaded;
         }
 
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            listGames = Template.FindName("PART_ListGames", this) as ExtendedListBox;
+            if (listGames != null && !DesignerProperties.GetIsInDesignMode(this) && mainModel != null)
+            {
+                // Same selection plumbing the Library uses: a left-click in the queue
+                // selects the tile, which sets mainModel.SelectedGames so the
+                // GameListItem context menu (bound to SelectedGames) edits the right game.
+                BindingTools.SetBinding(listGames,
+                    ExtendedListBox.SelectedItemsListProperty,
+                    mainModel,
+                    nameof(DesktopAppViewModel.SelectedGamesBinder),
+                    BindingMode.TwoWay);
+
+                // Standard ListBox does not select on right-click, so without this the
+                // context menu would still operate on whatever was last selected
+                // elsewhere (typically the Library's selection) instead of the tile
+                // under the cursor.
+                listGames.PreviewMouseRightButtonDown += ListGames_PreviewMouseRightButtonDown;
+            }
+        }
+
+        private void ListGames_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var item = FindAncestor<ListBoxItem>(e.OriginalSource as DependencyObject);
+            if (item == null || item.IsSelected)
+            {
+                return;
+            }
+
+            // Only steal selection when the click is on a tile that isn't already
+            // part of the current selection; otherwise multi-select right-clicks
+            // would collapse to a single item.
+            listGames.SelectedItems.Clear();
+            item.IsSelected = true;
+        }
+
+        private static T FindAncestor<T>(DependencyObject from) where T : DependencyObject
+        {
+            while (from != null)
+            {
+                if (from is T match)
+                {
+                    return match;
+                }
+
+                from = VisualTreeHelper.GetParent(from);
+            }
+
+            return null;
+        }
+
         private void Queue_Loaded(object sender, RoutedEventArgs e)
         {
             if (DesignerProperties.GetIsInDesignMode(this) || mainModel == null)
@@ -55,6 +117,10 @@ namespace Playnite.DesktopApp.Controls.Views
             {
                 viewModel = new QueueViewModel(mainModel);
                 DataContext = viewModel;
+            }
+            else
+            {
+                viewModel.Refresh();
             }
         }
 

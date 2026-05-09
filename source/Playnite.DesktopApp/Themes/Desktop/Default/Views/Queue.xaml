@@ -17,23 +17,28 @@
                         <QueueSettingsPanel DockPanel.Dock="Right" />
 
                         <Grid>
-                            <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                                          VerticalScrollBarVisibility="Auto"
-                                          Padding="20"
-                                          Visibility="{Binding IsEmpty, Converter={conv:InvertedBooleanToVisibilityConverter}}">
-                                <ItemsControl ItemsSource="{Binding QueueGames}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <WrapPanel Orientation="Horizontal" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <GameListItem Style="{StaticResource GridViewItemTemplate}" />
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </ScrollViewer>
+                            <ExtendedListBox x:Name="PART_ListGames"
+                                             ItemsSource="{Binding QueueGames}"
+                                             ItemContainerStyle="{DynamicResource GridViewItemStyle}"
+                                             SelectionMode="Extended"
+                                             BorderThickness="0"
+                                             Background="Transparent"
+                                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                             ScrollViewer.PanningMode="VerticalOnly"
+                                             Padding="20"
+                                             Visibility="{Binding IsEmpty, Converter={conv:InvertedBooleanToVisibilityConverter}}">
+                                <ExtendedListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ExtendedListBox.ItemsPanel>
+                                <ExtendedListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <GameListItem Style="{StaticResource GridViewItemTemplate}" />
+                                    </DataTemplate>
+                                </ExtendedListBox.ItemTemplate>
+                            </ExtendedListBox>
 
                             <StackPanel HorizontalAlignment="Center"
                                         VerticalAlignment="Center"

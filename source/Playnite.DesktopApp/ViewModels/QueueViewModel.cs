@@ -68,7 +68,7 @@ namespace Playnite.DesktopApp.ViewModels
             SubscribeAppSettings();
             SubscribeDatabase();
             BindSettings(appSettings?.QueueSettings);
-            Rebuild();
+            Refresh();
         }
 
         public void Dispose()
@@ -314,6 +314,11 @@ namespace Playnite.DesktopApp.ViewModels
 
         private void Db_GenericUpdated<T>(object sender, ItemUpdatedEventArgs<T> e) where T : DatabaseObject =>
             ScheduleRebuild();
+
+        public void Refresh()
+        {
+            Rebuild();
+        }
 
         private void ScheduleRebuild()
         {
