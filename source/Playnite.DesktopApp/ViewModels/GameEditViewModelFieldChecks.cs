@@ -38,7 +38,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useSortingNameChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
             }
         }
 
@@ -54,7 +54,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 usePlatformChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
             }
         }
 
@@ -118,7 +118,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 usePublisherChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
             }
         }
 
@@ -166,7 +166,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useFeatureChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
             }
         }
 
@@ -342,7 +342,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useAddedChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
             }
         }
 
@@ -422,7 +422,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useAgeRatingChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
             }
         }
 
@@ -454,7 +454,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useSourceChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
+                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
             }
         }
 
@@ -582,7 +582,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useOnHoldChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
             }
         }
 
@@ -598,7 +598,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useFreeChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
             }
         }
 
@@ -614,7 +614,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useMobileChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
             }
         }
 
@@ -630,7 +630,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useAcquiredDateChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
             }
         }
 
@@ -646,7 +646,7 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 useCompletedDateChanges = value;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowAdvancedChangeNotif));
+                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
             }
         }
 
@@ -837,17 +837,17 @@ namespace Playnite.DesktopApp.ViewModels
                     UseDescriptionChanges ||
                     UseDeveloperChanges ||
                     UseGenresChanges ||
-                    UsePlatformChanges ||
-                    UsePublisherChanges ||
-                    UseSortingNameChanges ||
                     UseTagChanges ||
-                    UseFeatureChanges ||
                     UseSeriesChanges ||
                     UseVersionChanges ||
-                    UseAgeRatingChanges ||
                     UseRegionChanges ||
-                    UseSourceChanges ||
                     UseCompletionStatusChanges ||
+                    UseAddedChanges ||
+                    UseOnHoldChanges ||
+                    UseFreeChanges ||
+                    UseMobileChanges ||
+                    UseAcquiredDateChanges ||
+                    UseCompletedDateChanges ||
                     UseUserScoreChanges ||
                     UseCriticScoreChanges ||
                     UseCommunityScoreChanges);
@@ -873,14 +873,14 @@ namespace Playnite.DesktopApp.ViewModels
                     (UseHdrChanges ||
                     UseHiddenChanges ||
                     UseFavoriteChanges ||
-                    UseOnHoldChanges ||
-                    UseFreeChanges ||
-                    UseMobileChanges ||
+                    UseSortingNameChanges ||
+                    UsePlatformChanges ||
+                    UsePublisherChanges ||
+                    UseFeatureChanges ||
+                    UseAgeRatingChanges ||
+                    UseSourceChanges ||
                     UseLastActivityChanges ||
                     UsePlaytimeChanges ||
-                    UseAddedChanges ||
-                    UseAcquiredDateChanges ||
-                    UseCompletedDateChanges ||
                     UsePlayCountChanges ||
                     UseNotesChanges ||
                     UseManualChanges);
