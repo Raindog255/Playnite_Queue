@@ -72,6 +72,39 @@ $sw = [System.Diagnostics.Stopwatch]::StartNew()
 Copy-Item -Recurse -Force $Source $Dest
 $sw.Stop()
 
+# Rewrite config.json so the dev build points at the dev library instead of the
+# real one. Playnite's --userdatadir flag only redirects where config.json is read
+# from -- the DatabasePath value inside config.json still wins. Without this fix
+# the dev build silently writes to the production library.
+$cfgPath = Join-Path $Dest 'config.json'
+if (Test-Path $cfgPath) {
+    try {
+        $cfg = Get-Content $cfgPath -Raw | ConvertFrom-Json
+        $oldDb = $cfg.DatabasePath
+        $newDb = Join-Path $Dest 'library'
+        if ($oldDb -ne $newDb) {
+            $cfg.DatabasePath = $newDb
+            $cfg | ConvertTo-Json -Depth 100 | Set-Content $cfgPath -Encoding UTF8
+            Write-Host "Rewrote DatabasePath in dev config.json:" -ForegroundColor Cyan
+            Write-Host "  was: $oldDb"
+            Write-Host "  now: $newDb"
+        }
+
+        # AutoBackupDir, if set, would also point back at the real Backup folder.
+        # Null it out so dev backups (if enabled) land in the dev tree.
+        if ($cfg.PSObject.Properties.Name -contains 'AutoBackupDir' -and $cfg.AutoBackupDir) {
+            $cfg.AutoBackupDir = $null
+            $cfg | ConvertTo-Json -Depth 100 | Set-Content $cfgPath -Encoding UTF8
+            Write-Host "Cleared AutoBackupDir in dev config.json." -ForegroundColor Cyan
+        }
+    } catch {
+        Write-Warning "Could not rewrite DatabasePath in dev config.json: $_"
+        Write-Warning "Open $cfgPath and set DatabasePath manually to: $(Join-Path $Dest 'library')"
+    }
+} else {
+    Write-Warning "No config.json found in dev dir; dev build will hit the first-time wizard."
+}
+
 $size = (Get-ChildItem -Recurse -File $Dest | Measure-Object -Property Length -Sum).Sum
 $sizeMb = [Math]::Round($size / 1MB, 1)
 Write-Host ("Done in {0:N1}s. Snapshot size: {1} MB" -f $sw.Elapsed.TotalSeconds, $sizeMb) -ForegroundColor Green

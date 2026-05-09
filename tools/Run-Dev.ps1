@@ -19,7 +19,8 @@
     csproj both put it).
 
 .PARAMETER Build
-    Build the Debug|x86 configuration of Playnite.DesktopApp before launching.
+    Build the Debug|Any CPU configuration of the Playnite solution before launching.
+    Builds via the .sln (not the .csproj) so per-project platform mappings work.
     Useful for one-shot rebuild-and-launch from the terminal.
 
 .EXAMPLE
@@ -52,7 +53,7 @@ if (-not (Test-Path $DataDir)) {
 }
 
 if ($Build) {
-    Write-Host "Building Playnite.DesktopApp (Debug|x86)..."
+    Write-Host "Building Playnite solution (Debug|Any CPU)..."
     $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
     if (-not (Test-Path $vswhere)) {
         throw "vswhere.exe not found. Install Visual Studio 2022 (or set -ExePath to a pre-built binary and skip -Build)."
@@ -65,8 +66,12 @@ if ($Build) {
     if (-not (Test-Path $msbuild)) {
         throw "MSBuild.exe not found at $msbuild"
     }
-    $csproj = Join-Path $repoRoot 'source\Playnite.DesktopApp\Playnite.DesktopApp.csproj'
-    & $msbuild $csproj /p:Configuration=Debug /p:Platform=x86 /v:minimal /nologo /m
+    $sln = Join-Path $repoRoot 'source\Playnite.sln'
+    # Build only Playnite.DesktopApp and its transitive dependencies (Playnite, Playnite.SDK).
+    # MSBuild's solution-target syntax replaces '.' with '_' in project names.
+    # This skips broken upstream test projects (e.g. Playnite.Toolbox.Tests) that aren't
+    # needed to launch the app.
+    & $msbuild $sln /t:Playnite_DesktopApp /p:Configuration=Debug /p:Platform="Any CPU" /v:minimal /nologo /m
     if ($LASTEXITCODE -ne 0) {
         throw "Build failed (msbuild exit code $LASTEXITCODE)."
     }
@@ -82,6 +87,37 @@ if (-not (Test-Path $ExePath)) {
 $running = Get-Process -Name 'Playnite.DesktopApp' -ErrorAction SilentlyContinue
 if ($running) {
     throw "Playnite.DesktopApp is already running. Close it before relaunching."
+}
+
+# Safety check: refuse to launch if the dev config.json points DatabasePath at
+# anything outside DataDir. Playnite's --userdatadir only redirects where
+# config.json is read from; the DatabasePath value inside it still wins. A stale
+# DatabasePath would silently send writes to the real production library.
+$cfgPath = Join-Path $DataDir 'config.json'
+if (Test-Path $cfgPath) {
+    try {
+        $cfg = Get-Content $cfgPath -Raw | ConvertFrom-Json
+        $rawDb = [string]$cfg.DatabasePath
+        if (-not [string]::IsNullOrWhiteSpace($rawDb)) {
+            $expanded = [Environment]::ExpandEnvironmentVariables($rawDb)
+            $resolvedDb = try { [IO.Path]::GetFullPath($expanded) } catch { $expanded }
+            $resolvedData = [IO.Path]::GetFullPath($DataDir)
+            if (-not $resolvedDb.StartsWith($resolvedData, [StringComparison]::OrdinalIgnoreCase)) {
+                Write-Host ""
+                Write-Host "REFUSING TO LAUNCH: dev config.json DatabasePath escapes the dev dir." -ForegroundColor Red
+                Write-Host "  config.json: $cfgPath"
+                Write-Host "  DatabasePath: $rawDb"
+                Write-Host "  resolves to: $resolvedDb"
+                Write-Host "  expected under: $resolvedData"
+                Write-Host ""
+                Write-Host "Re-run .\tools\Snapshot-DevLibrary.ps1 to refresh the snapshot" -ForegroundColor Yellow
+                Write-Host "(it now rewrites DatabasePath to the dev library), or fix the path manually." -ForegroundColor Yellow
+                return
+            }
+        }
+    } catch {
+        Write-Warning "Could not validate dev config.json DatabasePath: $_"
+    }
 }
 
 Write-Host "Launching $ExePath" -ForegroundColor Green
