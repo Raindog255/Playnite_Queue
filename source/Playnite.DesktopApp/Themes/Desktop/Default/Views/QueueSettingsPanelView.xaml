@@ -12,7 +12,10 @@
                             Background="{DynamicResource WindowBackgourndBrush}"
                             BorderBrush="{DynamicResource NormalBorderBrush}"
                             BorderThickness="1,0,0,0"
-                            Padding="16">
+                            Padding="16"
+                            TextElement.Foreground="{DynamicResource TextBrush}"
+                            TextElement.FontFamily="{DynamicResource FontFamily}"
+                            TextElement.FontSize="{DynamicResource FontSize}">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel>
                                 <TextBlock Text="{DynamicResource LOCQueueSettingsTitle}"
