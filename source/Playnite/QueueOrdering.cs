@@ -360,11 +360,21 @@ namespace Playnite
         }
 
         /// <summary>
-        /// Walks the ordered list top-to-bottom. The first game with a given Developer
-        /// (when <paramref name="byDeveloper"/>) or Series (when <paramref name="bySeries"/>)
-        /// is kept; subsequent games sharing any of those attributes are dropped. A game
-        /// with no developer/series is never suppressed by the corresponding rule.
+        /// Walks the ordered list top-to-bottom and applies grouping as a *replacement*:
+        /// each kept slot's game is swapped for the earliest-by-release-date game from
+        /// the same Developer (when <paramref name="byDeveloper"/>) or Series (when
+        /// <paramref name="bySeries"/>) group. Subsequent games that share any of those
+        /// attributes are then suppressed. A game with no developer/series is never
+        /// suppressed or replaced by the corresponding rule.
         /// </summary>
+        /// <remarks>
+        /// "Replacement" (not pure dedupe) is the user's spec: enabling Group by
+        /// Developer should surface the earliest game by that developer (e.g. Elder
+        /// Scrolls Arena for Bethesda) regardless of which Bethesda game happened to
+        /// land in the slot via the date sort. Replacement candidates are drawn from
+        /// the eligible <paramref name="ordered"/> set so OnHold / hidden / terminal
+        /// games never become the replacement.
+        /// </remarks>
         internal static IList<Game> ApplyGrouping(IList<Game> ordered, bool byDeveloper, bool bySeries)
         {
             if (!byDeveloper && !bySeries)
@@ -372,34 +382,141 @@ namespace Playnite
                 return ordered;
             }
 
+            var earliestByDev = byDeveloper
+                ? BuildEarliestByAttribute(ordered, g => g.DeveloperIds)
+                : null;
+            var earliestBySeries = bySeries
+                ? BuildEarliestByAttribute(ordered, g => g.SeriesIds)
+                : null;
+
             var seenDevelopers = new HashSet<Guid>();
             var seenSeries = new HashSet<Guid>();
+            var keptIds = new HashSet<Guid>();
             var kept = new List<Game>(ordered.Count);
 
             foreach (var game in ordered)
             {
-                if (byDeveloper && IntersectsAny(game.DeveloperIds, seenDevelopers))
+                var suppressedByDev = byDeveloper && IntersectsAny(game.DeveloperIds, seenDevelopers);
+                var suppressedBySeries = bySeries && IntersectsAny(game.SeriesIds, seenSeries);
+                if (suppressedByDev || suppressedBySeries)
                 {
                     continue;
                 }
 
-                if (bySeries && IntersectsAny(game.SeriesIds, seenSeries))
+                // Pick the displayed game: across the slot game's developer and/or
+                // series ids, take the candidate with the oldest release date (null
+                // releases sort last, so a real release always wins). Falls back to
+                // the slot game if no enabled rule matches.
+                var displayed = game;
+                var displayedKey = ReleaseDateKey(game);
+
+                if (earliestByDev != null)
                 {
-                    continue;
+                    PickEarlier(earliestByDev, game.DeveloperIds, ref displayed, ref displayedKey);
                 }
 
-                kept.Add(game);
+                if (earliestBySeries != null)
+                {
+                    PickEarlier(earliestBySeries, game.SeriesIds, ref displayed, ref displayedKey);
+                }
+
+                // The replacement may have already been displayed at a previous slot
+                // (e.g. when two distinct slot games share a developer whose earliest
+                // release we already showed). Fall back to the original slot game so
+                // the slot isn't filled with a duplicate tile.
+                if (keptIds.Contains(displayed.Id))
+                {
+                    if (keptIds.Contains(game.Id))
+                    {
+                        continue;
+                    }
+
+                    displayed = game;
+                }
+
+                kept.Add(displayed);
+                keptIds.Add(displayed.Id);
+
+                // Suppress subsequent slot games sharing attributes with EITHER the
+                // original slot game or the actually displayed replacement, so the
+                // dedupe pass behaves consistently regardless of which one we ended
+                // up showing.
                 if (byDeveloper)
                 {
                     AddAll(seenDevelopers, game.DeveloperIds);
+                    AddAll(seenDevelopers, displayed.DeveloperIds);
                 }
                 if (bySeries)
                 {
                     AddAll(seenSeries, game.SeriesIds);
+                    AddAll(seenSeries, displayed.SeriesIds);
                 }
             }
 
             return kept;
+        }
+
+        private static Dictionary<Guid, Game> BuildEarliestByAttribute(
+            IList<Game> games,
+            Func<Game, IList<Guid>> attributeSelector)
+        {
+            var map = new Dictionary<Guid, Game>();
+            foreach (var game in games)
+            {
+                var ids = attributeSelector(game);
+                if (ids == null || ids.Count == 0)
+                {
+                    continue;
+                }
+
+                var key = ReleaseDateKey(game);
+                for (var i = 0; i < ids.Count; i++)
+                {
+                    var id = ids[i];
+                    if (!map.TryGetValue(id, out var current) || ReleaseDateKey(current) > key)
+                    {
+                        map[id] = game;
+                    }
+                }
+            }
+
+            return map;
+        }
+
+        private static void PickEarlier(
+            Dictionary<Guid, Game> earliestMap,
+            IList<Guid> ids,
+            ref Game best,
+            ref DateTime bestKey)
+        {
+            if (ids == null || ids.Count == 0)
+            {
+                return;
+            }
+
+            for (var i = 0; i < ids.Count; i++)
+            {
+                if (earliestMap.TryGetValue(ids[i], out var candidate))
+                {
+                    var k = ReleaseDateKey(candidate);
+                    if (k < bestKey)
+                    {
+                        best = candidate;
+                        bestKey = k;
+                    }
+                }
+            }
+        }
+
+        private static DateTime ReleaseDateKey(Game game)
+        {
+            var rd = game.ReleaseDate;
+            if (rd.HasValue && rd.Value.Year != 0)
+            {
+                return rd.Value.Date;
+            }
+
+            return DateTime.MaxValue;
         }
 
         private class RankedGame

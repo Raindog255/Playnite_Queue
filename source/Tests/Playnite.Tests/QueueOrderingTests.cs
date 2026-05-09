@@ -297,7 +297,7 @@ namespace Playnite.Tests
         // ---- 5. Grouping replacement ---------------------------------------
 
         [Test]
-        public void Grouping_ByDeveloper_KeepsFirstSkipsSubsequent()
+        public void Grouping_ByDeveloper_SuppressesSubsequentSameDeveloperSlots()
         {
             var devA = Guid.NewGuid();
             var devB = Guid.NewGuid();
@@ -310,6 +310,8 @@ namespace Playnite.Tests
 
             var queue = QueueOrdering.BuildQueue(new[] { a1, a2, b1 }, settings);
 
+            // Both A games have null release dates so the replacement is whichever is
+            // first; A2 is suppressed by the Developer A "seen" rule. B1 is unaffected.
             CollectionAssert.AreEqual(new[] { "A1", "B1" }, queue.Select(q => q.Name).ToArray());
         }
 
@@ -327,6 +329,144 @@ namespace Playnite.Tests
             var queue = QueueOrdering.BuildQueue(new[] { inSeries1, inSeries2, standalone }, settings);
 
             CollectionAssert.AreEqual(new[] { "InSeries1", "Standalone" }, queue.Select(q => q.Name).ToArray());
+        }
+
+        [Test]
+        public void Grouping_ByDeveloper_ReplacesSlotWithEarliestReleaseInGroup()
+        {
+            // Spec: enabling Group by Developer should surface the earliest-by-release
+            // game from each developer group, even when the slot's date-sorted game is
+            // a later release. Mirrors the user's Bethesda/Arena test scenario:
+            // three Bethesda games tied at the oldest acquired date with later release
+            // years, plus Arena (the earliest Bethesda release at 1994) acquired a few
+            // days later. With GroupByDeveloper on, slot 0 should display Arena.
+            var bethesda = Guid.NewGuid();
+            var settings = DefaultSettings(n: 1);
+            settings.GroupByDeveloper = true;
+
+            var morrowind = NewGame("Morrowind",
+                acquired: new DateTime(2020, 1, 1),
+                released: new DateTime(2002, 5, 1),
+                developers: new[] { bethesda });
+            var oblivion = NewGame("Oblivion",
+                acquired: new DateTime(2020, 1, 1),
+                released: new DateTime(2006, 3, 1),
+                developers: new[] { bethesda });
+            var skyrim = NewGame("Skyrim",
+                acquired: new DateTime(2020, 1, 1),
+                released: new DateTime(2011, 11, 11),
+                developers: new[] { bethesda });
+            var arena = NewGame("Arena",
+                acquired: new DateTime(2020, 1, 5),
+                released: new DateTime(1994, 3, 1),
+                developers: new[] { bethesda });
+
+            var queue = QueueOrdering.BuildQueue(new[] { morrowind, oblivion, skyrim, arena }, settings);
+
+            Assert.AreEqual(1, queue.Count);
+            Assert.AreEqual("Arena", queue[0].Name);
+        }
+
+        [Test]
+        public void Grouping_Off_ShowsSlotGameNotReplacement()
+        {
+            // Same Bethesda/Arena scenario but with grouping off — slot 0 should be
+            // the date-sort winner (the earliest-release Bethesda among the games tied
+            // at the oldest acquired date), NOT Arena (which has a later acquired date).
+            var bethesda = Guid.NewGuid();
+            var settings = DefaultSettings(n: 1);
+
+            var morrowind = NewGame("Morrowind",
+                acquired: new DateTime(2020, 1, 1),
+                released: new DateTime(2002, 5, 1),
+                developers: new[] { bethesda });
+            var oblivion = NewGame("Oblivion",
+                acquired: new DateTime(2020, 1, 1),
+                released: new DateTime(2006, 3, 1),
+                developers: new[] { bethesda });
+            var skyrim = NewGame("Skyrim",
+                acquired: new DateTime(2020, 1, 1),
+                released: new DateTime(2011, 11, 11),
+                developers: new[] { bethesda });
+            var arena = NewGame("Arena",
+                acquired: new DateTime(2020, 1, 5),
+                released: new DateTime(1994, 3, 1),
+                developers: new[] { bethesda });
+
+            var queue = QueueOrdering.BuildQueue(new[] { morrowind, oblivion, skyrim, arena }, settings);
+
+            Assert.AreEqual(1, queue.Count);
+            Assert.AreEqual("Morrowind", queue[0].Name);
+        }
+
+        [Test]
+        public void Grouping_BySeries_ReplacesSlotWithEarliestReleaseInSeries()
+        {
+            var series = Guid.NewGuid();
+            var settings = DefaultSettings(n: 1);
+            settings.GroupBySeries = true;
+
+            var sequel = NewGame("Sequel",
+                acquired: new DateTime(2020, 1, 1),
+                released: new DateTime(2010, 1, 1),
+                series: new[] { series });
+            var original = NewGame("Original",
+                acquired: new DateTime(2020, 6, 1),
+                released: new DateTime(1995, 1, 1),
+                series: new[] { series });
+
+            var queue = QueueOrdering.BuildQueue(new[] { sequel, original }, settings);
+
+            Assert.AreEqual(1, queue.Count);
+            Assert.AreEqual("Original", queue[0].Name);
+        }
+
+        [Test]
+        public void Grouping_ReplacementNeverDuplicatedAcrossSlots()
+        {
+            // Two slot games share a developer whose earliest release we already
+            // showed. The second slot should fall back to the original slot game so
+            // we don't render the same tile twice.
+            var devShared = Guid.NewGuid();
+            var devOther = Guid.NewGuid();
+            var settings = DefaultSettings(n: 3);
+            settings.GroupByDeveloper = true;
+
+            // Earliest by devShared (1990) — gets pulled up to slot 0 as the replacement.
+            var earlySharedDev = NewGame("EarlySharedDev",
+                acquired: new DateTime(2020, 1, 5),
+                released: new DateTime(1990, 1, 1),
+                developers: new[] { devShared });
+
+            // Slot 0 by acquired-date sort: a game co-credited to devShared and devOther.
+            // GroupByDeveloper should replace it with EarlySharedDev (earliest devShared
+            // release). devOther is then marked seen via the original slot game.
+            var slot0 = NewGame("Slot0",
+                acquired: new DateTime(2020, 1, 1),
+                released: new DateTime(2015, 1, 1),
+                developers: new[] { devShared, devOther });
+
+            // Another devOther game later in the queue. Suppressed because devOther was
+            // seen via slot0 above.
+            var slot1OtherDev = NewGame("Slot1OtherDev",
+                acquired: new DateTime(2020, 2, 1),
+                released: new DateTime(2018, 1, 1),
+                developers: new[] { devOther });
+
+            // An unrelated developer's game.
+            var unrelated = NewGame("Unrelated",
+                acquired: new DateTime(2020, 3, 1),
+                released: new DateTime(2019, 1, 1),
+                developers: new[] { Guid.NewGuid() });
+
+            var queue = QueueOrdering.BuildQueue(
+                new[] { slot0, slot1OtherDev, earlySharedDev, unrelated }, settings);
+
+            // Slot 0 = EarlySharedDev (replacement). Slot1OtherDev suppressed because
+            // devOther was seen via slot0's secondary developer. Unrelated fills slot 1.
+            CollectionAssert.AreEqual(
+                new[] { "EarlySharedDev", "Unrelated" },
+                queue.Select(q => q.Name).ToArray());
         }
 
         // ---- 6. Take top N --------------------------------------------------
