@@ -1262,4 +1262,9 @@ Open new issue on Playnite's GitHub page with a request to fix corruption in you
     <sys:String x:Key="LOCUnsavedChangesAskMessage">Do you want to save changes you made?</sys:String>
     <sys:String x:Key="LOCPortableInstallation">Portable installation</sys:String>
     <sys:String x:Key="LOCNoControllersDetected">No controllers detected</sys:String>
+    <sys:String x:Key="LOCGameOnHoldTitle">On Hold</sys:String>
+    <sys:String x:Key="LOCGameFreeTitle">Free</sys:String>
+    <sys:String x:Key="LOCGameMobileTitle">Mobile</sys:String>
+    <sys:String x:Key="LOCAcquiredDateLabel">Acquired</sys:String>
+    <sys:String x:Key="LOCCompletedDateLabel">Completed</sys:String>
 </ResourceDictionary>
