@@ -1263,7 +1263,6 @@ Open new issue on Playnite's GitHub page with a request to fix corruption in you
     <sys:String x:Key="LOCPortableInstallation">Portable installation</sys:String>
     <sys:String x:Key="LOCNoControllersDetected">No controllers detected</sys:String>
     <sys:String x:Key="LOCQueue">Queue</sys:String>
-    <sys:String x:Key="LOCQueueViewComingSoon">Queue view coming soon.</sys:String>
     <sys:String x:Key="LOCQueueSettingsTitle">Queue settings</sys:String>
     <sys:String x:Key="LOCQueueBasicsTitle">Basics</sys:String>
     <sys:String x:Key="LOCQueueVisibleCount">Visible titles</sys:String>
@@ -1288,4 +1287,6 @@ Open new issue on Playnite's GitHub page with a request to fix corruption in you
     <sys:String x:Key="LOCAddLabel">Add</sys:String>
     <sys:String x:Key="LOCMoveUpLabel">Up</sys:String>
     <sys:String x:Key="LOCMoveDownLabel">Down</sys:String>
+    <sys:String x:Key="LOCQueueEmptyTitle">Queue is empty</sys:String>
+    <sys:String x:Key="LOCQueueEmptyHint">Add games to your library, then check the queue settings panel to control what shows up here.</sys:String>
 </ResourceDictionary>

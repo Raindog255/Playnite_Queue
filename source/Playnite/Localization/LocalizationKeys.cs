@@ -4494,10 +4494,6 @@ namespace Playnite
         /// </summary>
         public const string Queue = "LOCQueue";
         /// <summary>
-        /// Queue view coming soon.
-        /// </summary>
-        public const string QueueViewComingSoon = "LOCQueueViewComingSoon";
-        /// <summary>
         /// Queue settings
         /// </summary>
         public const string QueueSettingsTitle = "LOCQueueSettingsTitle";
@@ -4593,5 +4589,13 @@ namespace Playnite
         /// Down
         /// </summary>
         public const string MoveDownLabel = "LOCMoveDownLabel";
+        /// <summary>
+        /// Queue is empty
+        /// </summary>
+        public const string QueueEmptyTitle = "LOCQueueEmptyTitle";
+        /// <summary>
+        /// Add games to your library, then check the queue settings panel to control what shows up here.
+        /// </summary>
+        public const string QueueEmptyHint = "LOCQueueEmptyHint";
     }
 }

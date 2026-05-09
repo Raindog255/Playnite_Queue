@@ -337,6 +337,7 @@
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\MetadataComparisonViewModel.cs" />
     <Compile Include="PluginSettingsHelper.cs" />
+    <Compile Include="ViewModels\QueueViewModel.cs" />
     <Compile Include="ViewModels\StatisticsViewModel.cs" />
     <Compile Include="ViewModels\ToolsConfigViewModel.cs" />
     <Compile Include="Windows\SingleItemSelectionWindow.xaml.cs">
