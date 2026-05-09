@@ -157,6 +157,39 @@ namespace Playnite
             }
         }
 
+        private Guid? playingStatusId;
+        /// <summary>
+        /// Id of the CompletionStatus that represents a currently-playing game.
+        /// Games with this status are always shown at the top of the queue. Null
+        /// disables the always-visible behavior.
+        /// </summary>
+        public Guid? PlayingStatusId
+        {
+            get => playingStatusId;
+            set
+            {
+                playingStatusId = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<Guid> terminalStatusIds = new ObservableCollection<Guid>();
+        /// <summary>
+        /// Ids of CompletionStatuses that mark a game as no longer eligible for the
+        /// queue (e.g. Beaten, Completed, Played, Abandoned). Games with one of these
+        /// statuses are filtered out before sorting. The Playing status is handled
+        /// separately and should not appear in this list.
+        /// </summary>
+        public ObservableCollection<Guid> TerminalStatusIds
+        {
+            get => terminalStatusIds;
+            set
+            {
+                terminalStatusIds = value ?? new ObservableCollection<Guid>();
+                OnPropertyChanged();
+            }
+        }
+
         private ObservableCollection<QueuePriorityRule> priorityRules = new ObservableCollection<QueuePriorityRule>();
         public ObservableCollection<QueuePriorityRule> PriorityRules
         {

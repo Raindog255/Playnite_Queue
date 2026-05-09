@@ -494,6 +494,7 @@
     <Compile Include="Metadata\MetadataDownloader.cs" />
     <Compile Include="Settings\AutoClientShutdownSettings.cs" />
     <Compile Include="Settings\QueueSettings.cs" />
+    <Compile Include="QueueOrdering.cs" />
     <Compile Include="Settings\DetailsVisibilitySettings.cs" />
     <Compile Include="Settings\FullscreenSettings.cs" />
     <Compile Include="Settings\OldSettings\Plugins.cs" />
