@@ -145,6 +145,39 @@ namespace Playnite.Converters
         }
     }
 
+    public class ReleaseDateToNullableDateTimeConverter : MarkupExtension, IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is ReleaseDate date)
+            {
+                if (date.Year == 0)
+                {
+                    return null;
+                }
+
+                return new DateTime?(date.Date);
+            }
+
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value is DateTime dt)
+            {
+                return new ReleaseDate(dt.Year, dt.Month, dt.Day);
+            }
+
+            return ReleaseDate.Empty;
+        }
+
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return this;
+        }
+    }
+
     public class ReleaseDateFieldValidation : ValidationRule
     {
         private const string InvalidInput = "Release date must be in year-month-day format!";

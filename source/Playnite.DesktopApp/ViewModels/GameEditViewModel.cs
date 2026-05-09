@@ -753,6 +753,16 @@ namespace Playnite.DesktopApp.ViewModels
                     game.Added = EditingGame.Added;
                 }
 
+                if (UseAcquiredDateChanges)
+                {
+                    game.AcquiredDate = EditingGame.AcquiredDate;
+                }
+
+                if (UseCompletedDateChanges)
+                {
+                    game.CompletedDate = EditingGame.CompletedDate;
+                }
+
                 if (UsePlayCountChanges)
                 {
                     game.PlayCount = EditingGame.PlayCount;
@@ -826,6 +836,21 @@ namespace Playnite.DesktopApp.ViewModels
                 if (UseHiddenChanges)
                 {
                     game.Hidden = EditingGame.Hidden;
+                }
+
+                if (UseOnHoldChanges)
+                {
+                    game.OnHold = EditingGame.OnHold;
+                }
+
+                if (UseFreeChanges)
+                {
+                    game.Free = EditingGame.Free;
+                }
+
+                if (UseMobileChanges)
+                {
+                    game.Mobile = EditingGame.Mobile;
                 }
 
                 if (UsePreScriptChanges)
