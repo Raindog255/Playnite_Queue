@@ -179,7 +179,17 @@ namespace Playnite.SDK.Models
         ///
         RecentActivity = 91,
         ///
-        EnableSystemHdr = 92
+        EnableSystemHdr = 92,
+        ///
+        OnHold = 93,
+        ///
+        Free = 94,
+        ///
+        Mobile = 95,
+        ///
+        CompletedDate = 96,
+        ///
+        AcquiredDate = 97
     }
 
     /// <summary>
@@ -1649,6 +1659,96 @@ namespace Playnite.SDK.Models
             return ScoreGroup.None;
         }
 
+        private bool onHold;
+        /// <summary>
+        /// Gets or sets value indicating if the game is on hold and should be excluded from the queue.
+        /// </summary>
+        public bool OnHold
+        {
+            get
+            {
+                return onHold;
+            }
+
+            set
+            {
+                onHold = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool free;
+        /// <summary>
+        /// Gets or sets value indicating if the game was acquired at no cost.
+        /// </summary>
+        public bool Free
+        {
+            get
+            {
+                return free;
+            }
+
+            set
+            {
+                free = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool mobile;
+        /// <summary>
+        /// Gets or sets value indicating if the game is playable on a mobile device available to the user.
+        /// </summary>
+        public bool Mobile
+        {
+            get
+            {
+                return mobile;
+            }
+
+            set
+            {
+                mobile = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime? completedDate;
+        /// <summary>
+        /// Gets or sets the date the game was completed.
+        /// </summary>
+        public DateTime? CompletedDate
+        {
+            get
+            {
+                return completedDate;
+            }
+
+            set
+            {
+                completedDate = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime? acquiredDate;
+        /// <summary>
+        /// Gets or sets the date the game was acquired by the user.
+        /// </summary>
+        public DateTime? AcquiredDate
+        {
+            get
+            {
+                return acquiredDate;
+            }
+
+            set
+            {
+                acquiredDate = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Gets or sets game database reference.
         /// </summary>
@@ -1743,6 +1843,11 @@ namespace Playnite.SDK.Models
                 GameActions = GameActions?.Select(a => a.GetCopy()).ToObservable(),
                 Links = Links?.Select(a => a.GetCopy()).ToObservable(),
                 Roms = Roms?.Select(a => a.GetCopy()).ToObservable(),
+                OnHold = OnHold,
+                Free = Free,
+                Mobile = Mobile,
+                CompletedDate = CompletedDate,
+                AcquiredDate = AcquiredDate,
             };
         }
 
@@ -2016,6 +2121,31 @@ namespace Playnite.SDK.Models
                 if (OverrideInstallState != tro.OverrideInstallState)
                 {
                     tro.OverrideInstallState = OverrideInstallState;
+                }
+
+                if (OnHold != tro.OnHold)
+                {
+                    tro.OnHold = OnHold;
+                }
+
+                if (Free != tro.Free)
+                {
+                    tro.Free = Free;
+                }
+
+                if (Mobile != tro.Mobile)
+                {
+                    tro.Mobile = Mobile;
+                }
+
+                if (CompletedDate != tro.CompletedDate)
+                {
+                    tro.CompletedDate = CompletedDate;
+                }
+
+                if (AcquiredDate != tro.AcquiredDate)
+                {
+                    tro.AcquiredDate = AcquiredDate;
                 }
             }
             else
@@ -2355,6 +2485,31 @@ namespace Playnite.SDK.Models
             if (OverrideInstallState != otherGame.OverrideInstallState)
             {
                 changes.Add(GameField.OverrideInstallState);
+            }
+
+            if (OnHold != otherGame.OnHold)
+            {
+                changes.Add(GameField.OnHold);
+            }
+
+            if (Free != otherGame.Free)
+            {
+                changes.Add(GameField.Free);
+            }
+
+            if (Mobile != otherGame.Mobile)
+            {
+                changes.Add(GameField.Mobile);
+            }
+
+            if (CompletedDate != otherGame.CompletedDate)
+            {
+                changes.Add(GameField.CompletedDate);
+            }
+
+            if (AcquiredDate != otherGame.AcquiredDate)
+            {
+                changes.Add(GameField.AcquiredDate);
             }
 
             return changes;

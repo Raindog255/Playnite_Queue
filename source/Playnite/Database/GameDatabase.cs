@@ -634,6 +634,13 @@ namespace Playnite.Database
                 filters.IsEventsEnabled = true;
             }
 
+            // Backfill AcquiredDate from Added for existing games that haven't been migrated yet.
+            // Safe to run on every startup: subsequent invocations are O(n) null-checks with no writes.
+            if (dbExists)
+            {
+                BackfillAcquiredDateFromAdded();
+            }
+
             IsOpen = true;
             if (PlayniteApplication.Current != null)
             {
@@ -642,6 +649,25 @@ namespace Playnite.Database
             else
             {
                 DatabaseOpened?.Invoke(this, null);
+            }
+        }
+
+        private void BackfillAcquiredDateFromAdded()
+        {
+            var toUpdate = Games.Where(g => g.AcquiredDate == null && g.Added != null).ToList();
+            if (toUpdate.Count == 0)
+            {
+                return;
+            }
+
+            logger.Info($"Backfilling AcquiredDate from Added on {toUpdate.Count} game(s).");
+            using (BufferedUpdate())
+            {
+                foreach (var game in toUpdate)
+                {
+                    game.AcquiredDate = game.Added;
+                    Games.Update(game);
+                }
             }
         }
 
