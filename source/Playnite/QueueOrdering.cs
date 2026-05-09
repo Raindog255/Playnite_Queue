@@ -41,12 +41,21 @@ namespace Playnite
 
             // 2. Primary date sort, ascending. Nulls (and ReleaseDate.Empty) sort last.
             // 3. Priority rules layered on top via a stable composite-key sort.
+            // The secondary date (the "other" date) is the tiebreaker within the
+            // same primary date — older first, nulls last — so import-time noise
+            // on AcquiredDate doesn't reshuffle games that legitimately share a day.
             // We capture the original index so any later rebucketing can preserve
             // order among ties without re-running the date sort.
             var ordered = eligible
-                .Select((g, i) => new RankedGame(g, RuleRank(g, rules), DateKey(g, settings.DateSource), i))
+                .Select((g, i) => new RankedGame(
+                    g,
+                    RuleRank(g, rules),
+                    DateKey(g, settings.DateSource),
+                    SecondaryDateKey(g, settings.DateSource),
+                    i))
                 .OrderBy(r => r.RuleRank)
                 .ThenBy(r => r.DateKey)
+                .ThenBy(r => r.SecondaryDateKey)
                 .ThenBy(r => r.OriginalIndex)
                 .ToList();
 
@@ -70,6 +79,7 @@ namespace Playnite
                     .OrderBy(r => r.RuleRank)
                     .ThenBy(r => r.PushBack ? 1 : 0)
                     .ThenBy(r => r.DateKey)
+                    .ThenBy(r => r.SecondaryDateKey)
                     .ThenBy(r => r.OriginalIndex)
                     .ToList();
             }
@@ -86,9 +96,15 @@ namespace Playnite
             // 7. Prepend Playing games (sorted by the same priority + date pipeline,
             // but never grouped or pushed back; they always show).
             var playingOrdered = playingGames
-                .Select((g, i) => new RankedGame(g, RuleRank(g, rules), DateKey(g, settings.DateSource), i))
+                .Select((g, i) => new RankedGame(
+                    g,
+                    RuleRank(g, rules),
+                    DateKey(g, settings.DateSource),
+                    SecondaryDateKey(g, settings.DateSource),
+                    i))
                 .OrderBy(r => r.RuleRank)
                 .ThenBy(r => r.DateKey)
+                .ThenBy(r => r.SecondaryDateKey)
                 .ThenBy(r => r.OriginalIndex)
                 .Select(r => r.Game)
                 .ToList();
@@ -135,7 +151,36 @@ namespace Playnite
                     return DateTime.MaxValue;
 
                 case QueueDateSource.AcquiredDate:
-                    return game.AcquiredDate ?? DateTime.MaxValue;
+                    // Strip the time component so games "acquired the same day" don't
+                    // sort by import-time noise from whichever library plugin ran first.
+                    return game.AcquiredDate?.Date ?? DateTime.MaxValue;
+
+                default:
+                    return DateTime.MaxValue;
+            }
+        }
+
+        /// <summary>
+        /// Tiebreaker date used when two games share the primary <see cref="DateKey"/>.
+        /// Returns the OTHER date — older first — so a queue ordered by acquisition
+        /// breaks ties by older release, and a queue ordered by release breaks ties
+        /// by older acquisition. Null / Empty values resolve to <see cref="DateTime.MaxValue"/>.
+        /// </summary>
+        internal static DateTime SecondaryDateKey(Game game, QueueDateSource primarySource)
+        {
+            switch (primarySource)
+            {
+                case QueueDateSource.AcquiredDate:
+                    var rd = game.ReleaseDate;
+                    if (rd.HasValue && rd.Value.Year != 0)
+                    {
+                        return rd.Value.Date;
+                    }
+
+                    return DateTime.MaxValue;
+
+                case QueueDateSource.ReleaseDate:
+                    return game.AcquiredDate?.Date ?? DateTime.MaxValue;
 
                 default:
                     return DateTime.MaxValue;
@@ -359,17 +404,19 @@ namespace Playnite
 
         private class RankedGame
         {
-            public RankedGame(Game game, int ruleRank, DateTime dateKey, int originalIndex)
+            public RankedGame(Game game, int ruleRank, DateTime dateKey, DateTime secondaryDateKey, int originalIndex)
             {
                 Game = game;
                 RuleRank = ruleRank;
                 DateKey = dateKey;
+                SecondaryDateKey = secondaryDateKey;
                 OriginalIndex = originalIndex;
             }
 
             public Game Game { get; }
             public int RuleRank { get; }
             public DateTime DateKey { get; }
+            public DateTime SecondaryDateKey { get; }
             public int OriginalIndex { get; }
             public bool PushBack { get; set; }
         }

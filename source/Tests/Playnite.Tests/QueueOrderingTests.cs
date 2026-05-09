@@ -103,6 +103,73 @@ namespace Playnite.Tests
         }
 
         [Test]
+        public void Sort_AcquiredDateIgnoresTimeComponent()
+        {
+            // Two games "acquired the same day" should not be reshuffled by import-time
+            // hh:mm:ss noise from whatever library plugin happened to import first.
+            var sameDayLate = NewGame("Late", acquired: new DateTime(2024, 1, 15, 23, 59, 59));
+            var sameDayEarly = NewGame("Early", acquired: new DateTime(2024, 1, 15, 0, 0, 1));
+            var nextDay = NewGame("NextDay", acquired: new DateTime(2024, 1, 16, 8, 0, 0));
+
+            // Tiebreaker is older release date, then enumeration order. Give Early
+            // an older release so we can assert the primary tie is broken predictably.
+            sameDayLate.ReleaseDate = new ReleaseDate(new DateTime(2020, 1, 1));
+            sameDayEarly.ReleaseDate = new ReleaseDate(new DateTime(2010, 1, 1));
+
+            var queue = QueueOrdering.BuildQueue(new[] { sameDayLate, sameDayEarly, nextDay }, DefaultSettings());
+
+            CollectionAssert.AreEqual(new[] { "Early", "Late", "NextDay" }, queue.Select(q => q.Name).ToArray());
+        }
+
+        [Test]
+        public void Sort_SecondaryDateBreaksTiesWithinSamePrimaryDate()
+        {
+            // Both acquired the same day; older release should bubble up.
+            var newerRelease = NewGame(
+                "NewerRelease",
+                acquired: new DateTime(2024, 1, 15),
+                released: new DateTime(2022, 6, 1));
+            var olderRelease = NewGame(
+                "OlderRelease",
+                acquired: new DateTime(2024, 1, 15),
+                released: new DateTime(2008, 3, 10));
+            var noRelease = NewGame("NoRelease", acquired: new DateTime(2024, 1, 15));
+
+            var queue = QueueOrdering.BuildQueue(new[] { newerRelease, noRelease, olderRelease }, DefaultSettings());
+
+            // OlderRelease wins the tiebreaker, NewerRelease next, NoRelease last
+            // (null secondary key sorts last).
+            CollectionAssert.AreEqual(
+                new[] { "OlderRelease", "NewerRelease", "NoRelease" },
+                queue.Select(q => q.Name).ToArray());
+        }
+
+        [Test]
+        public void Sort_SecondaryDateKey_UsesAcquiredDateWhenPrimaryIsRelease()
+        {
+            // Mirror of the above test with the primary/secondary swapped: when
+            // sorting primarily by ReleaseDate, two games released the same year
+            // break the tie by older AcquiredDate (the older purchase clears first).
+            var settings = DefaultSettings();
+            settings.DateSource = QueueDateSource.ReleaseDate;
+
+            var newerAcq = NewGame(
+                "NewerAcquired",
+                acquired: new DateTime(2024, 1, 15),
+                released: new DateTime(2010, 5, 1));
+            var olderAcq = NewGame(
+                "OlderAcquired",
+                acquired: new DateTime(2018, 6, 1),
+                released: new DateTime(2010, 5, 1));
+
+            var queue = QueueOrdering.BuildQueue(new[] { newerAcq, olderAcq }, settings);
+
+            CollectionAssert.AreEqual(
+                new[] { "OlderAcquired", "NewerAcquired" },
+                queue.Select(q => q.Name).ToArray());
+        }
+
+        [Test]
         public void Sort_AscendingByReleaseDate_EmptyReleaseDateSortsLast()
         {
             var settings = DefaultSettings();
