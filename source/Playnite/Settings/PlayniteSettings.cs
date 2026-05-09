@@ -1552,6 +1552,17 @@ namespace Playnite
             }
         }
 
+        private QueueSettings queueSettings = new QueueSettings();
+        public QueueSettings QueueSettings
+        {
+            get => queueSettings;
+            set
+            {
+                queueSettings = value ?? new QueueSettings();
+                OnPropertyChanged();
+            }
+        }
+
         private bool darkenUninstalledGamesGrid = false;
         public bool DarkenUninstalledGamesGrid
         {
