@@ -48,6 +48,7 @@ namespace Playnite.DesktopApp.ViewModels
         private Controls.Views.Library libraryView;
         private Controls.Views.Queue queueView;
         private Controls.Views.LibrarySanitizer librarySanitizerView;
+        private Controls.Views.QueueImportReview queueImportReviewView;
         private QueueCompletedDateAutoFiller queueCompletedDateAutoFiller;
         private SearchViewModel currentGlobalSearch;
 
@@ -755,33 +756,40 @@ namespace Playnite.DesktopApp.ViewModels
             try
             {
                 // Off the UI thread: a few hundred rows is fast, but the file
-                // could be big and we don't want to freeze the window. The
-                // BufferedUpdate inside the importer keeps notifications
-                // batched so the queue view refreshes once at the end.
-                var result = Task.Run(() => QueuePropertiesImporter.ImportFromCsv(path, Database)).GetAwaiter().GetResult();
+                // could be big and we don't want to freeze the window. CSV
+                // import now stages rows for review; live game mutations are
+                // delayed until the Import Review view commits the staging file.
+                var result = Task.Run(() => QueueImportStaging.StageFromCsv(
+                    path,
+                    Database,
+                    AppSettings.LibrarySanitizerSettings)).GetAwaiter().GetResult();
                 foreach (var msg in result.Messages)
                 {
                     Logger.Info($"[QueueImport] {msg}");
                 }
 
-                var reviewPath = WriteQueueImportReview(path, result);
-
                 var summary = string.Format(
-                    Resources.GetString(LOC.QueueImportSummary) ?? "Updated {0} game(s). Matched {1}, not found {2}, ambiguous {3}, errors {4}.",
-                    result.Updated,
-                    result.Matched,
-                    result.NotFound,
-                    result.Ambiguous,
+                    Resources.GetString(LOC.QueueImportStagedSummary) ?? "Staged {0} row(s): {1} clean, {2} needing review, {3} error(s).",
+                    result.RowsStaged,
+                    result.CleanRows,
+                    result.NeedsReview,
                     result.Errors);
 
-                if (reviewPath != null)
-                {
-                    summary += "\n\n" + string.Format(
-                        Resources.GetString(LOC.QueueImportSeeReviewFile) ?? "Review file: {0}",
-                        reviewPath);
-                }
-
                 Dialogs.ShowMessage(summary, title, MessageBoxButton.OK, MessageBoxImage.Information);
+                SidebarItems
+                    .FirstOrDefault(a => a.SideItem is MainSidebarViewItem item && item.AppView == ApplicationView.QueueImportReview)
+                    ?.Command.Execute(null);
+            }
+            catch (InvalidOperationException ex) when (ex.Message.IndexOf("already staged", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                Dialogs.ShowMessage(
+                    Resources.GetString(LOC.QueueImportStagingBlocked) ?? ex.Message,
+                    title,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                SidebarItems
+                    .FirstOrDefault(a => a.SideItem is MainSidebarViewItem item && item.AppView == ApplicationView.QueueImportReview)
+                    ?.Command.Execute(null);
             }
             catch (Exception ex)
             {

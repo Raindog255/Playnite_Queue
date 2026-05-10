@@ -149,7 +149,7 @@ namespace Playnite.Database
             return result;
         }
 
-        private static bool ApplyRow(
+        internal static bool ApplyRow(
             IGameDatabaseMain db,
             Game game,
             IReadOnlyList<string> fields,
@@ -246,7 +246,7 @@ namespace Playnite.Database
             return changed;
         }
 
-        private static List<Game> FindGames(IGameDatabaseMain db, string name)
+        internal static List<Game> FindGames(IGameDatabaseMain db, string name)
         {
             return db.Games
                 .Where(g => string.Equals(g.Name, name, StringComparison.OrdinalIgnoreCase))
@@ -392,7 +392,7 @@ namespace Playnite.Database
             return true;
         }
 
-        private static IReadOnlyDictionary<string, int> BuildHeaderMap(IReadOnlyList<string> headerRow)
+        internal static IReadOnlyDictionary<string, int> BuildHeaderMap(IReadOnlyList<string> headerRow)
         {
             var map = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             for (var i = 0; i < headerRow.Count; i++)
@@ -439,7 +439,7 @@ namespace Playnite.Database
             "-", "--", "\u2013", "\u2014", "n/a", "na", "null"
         };
 
-        private static string GetCell(
+        internal static string GetCell(
             IReadOnlyList<string> fields,
             IReadOnlyDictionary<string, int> header,
             string column)

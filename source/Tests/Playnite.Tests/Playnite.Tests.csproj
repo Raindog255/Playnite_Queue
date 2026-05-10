@@ -199,6 +199,7 @@
     <Compile Include="QueueOrderingTests.cs" />
     <Compile Include="QueueCompletedDateAutoFillerTests.cs" />
     <Compile Include="QueuePropertiesImporterTests.cs" />
+    <Compile Include="QueueImportStagingTests.cs" />
     <Compile Include="SanitizerRulesTests.cs" />
     <Compile Include="LibrarySanitizerEngineTests.cs" />
     <Compile Include="StringExtensionsTests.cs" />

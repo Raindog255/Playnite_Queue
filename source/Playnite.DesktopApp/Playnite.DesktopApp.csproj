@@ -287,6 +287,7 @@
     <Compile Include="Controls\Views\QueueSettingsPanel.cs" />
     <Compile Include="Controls\Views\LibrarySanitizer.cs" />
     <Compile Include="Controls\Views\LibrarySanitizerSettingsPanel.cs" />
+    <Compile Include="Controls\Views\QueueImportReview.cs" />
     <Compile Include="Controls\Views\GameOverview.cs" />
     <Compile Include="Controls\Views\BaseGamesView.cs" />
     <Compile Include="Controls\Views\DetailsViewGameOverview.cs" />
@@ -341,6 +342,7 @@
     <Compile Include="PluginSettingsHelper.cs" />
     <Compile Include="ViewModels\QueueViewModel.cs" />
     <Compile Include="ViewModels\LibrarySanitizerViewModel.cs" />
+    <Compile Include="ViewModels\QueueImportReviewViewModel.cs" />
     <Compile Include="ViewModels\StatisticsViewModel.cs" />
     <Compile Include="ViewModels\ToolsConfigViewModel.cs" />
     <Compile Include="Windows\SingleItemSelectionWindow.xaml.cs">
@@ -991,6 +993,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Themes\Desktop\Default\Views\LibrarySanitizerSettingsPanelView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\Desktop\Default\Views\QueueImportReview.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

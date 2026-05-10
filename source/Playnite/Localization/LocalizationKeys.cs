@@ -4653,6 +4653,78 @@ namespace Playnite
         /// CSV import failed: {0}
         /// </summary>
         public const string QueueImportFailed = "LOCQueueImportFailed";
+        /// <summary>
+        /// Staged {0} row(s): {1} clean, {2} needing review, {3} error(s).
+        /// </summary>
+        public const string QueueImportStagedSummary = "LOCQueueImportStagedSummary";
+        /// <summary>
+        /// A queue import is already staged. Commit or discard it before importing another CSV.
+        /// </summary>
+        public const string QueueImportStagingBlocked = "LOCQueueImportStagingBlocked";
+        /// <summary>
+        /// Import Review
+        /// </summary>
+        public const string QueueImportReviewSidebarTitle = "LOCQueueImportReviewSidebarTitle";
+        /// <summary>
+        /// Queue Import Review
+        /// </summary>
+        public const string QueueImportReviewHeader = "LOCQueueImportReviewHeader";
+        /// <summary>
+        /// row(s) need review
+        /// </summary>
+        public const string QueueImportReviewNeedsReviewSuffix = "LOCQueueImportReviewNeedsReviewSuffix";
+        /// <summary>
+        /// Import review
+        /// </summary>
+        public const string QueueImportReviewSettingsTitle = "LOCQueueImportReviewSettingsTitle";
+        /// <summary>
+        /// Commit staged import
+        /// </summary>
+        public const string QueueImportReviewCommit = "LOCQueueImportReviewCommit";
+        /// <summary>
+        /// Discard staged import
+        /// </summary>
+        public const string QueueImportReviewDiscard = "LOCQueueImportReviewDiscard";
+        /// <summary>
+        /// Refresh
+        /// </summary>
+        public const string QueueImportReviewRefresh = "LOCQueueImportReviewRefresh";
+        /// <summary>
+        /// Clean matches are hidden here and will be applied when you commit. Use the cards to sanitize staged CSV names or manually pick a matching game.
+        /// </summary>
+        public const string QueueImportReviewHint = "LOCQueueImportReviewHint";
+        /// <summary>
+        /// CSV row
+        /// </summary>
+        public const string QueueImportReviewRowPrefix = "LOCQueueImportReviewRowPrefix";
+        /// <summary>
+        /// Original
+        /// </summary>
+        public const string QueueImportReviewOriginalName = "LOCQueueImportReviewOriginalName";
+        /// <summary>
+        /// Sanitized
+        /// </summary>
+        public const string QueueImportReviewSanitizedName = "LOCQueueImportReviewSanitizedName";
+        /// <summary>
+        /// Manual match search
+        /// </summary>
+        public const string QueueImportReviewManualMatch = "LOCQueueImportReviewManualMatch";
+        /// <summary>
+        /// Use match
+        /// </summary>
+        public const string QueueImportReviewUseMatch = "LOCQueueImportReviewUseMatch";
+        /// <summary>
+        /// Dismiss row
+        /// </summary>
+        public const string QueueImportReviewDismissRow = "LOCQueueImportReviewDismissRow";
+        /// <summary>
+        /// No staged import
+        /// </summary>
+        public const string QueueImportReviewEmptyTitle = "LOCQueueImportReviewEmptyTitle";
+        /// <summary>
+        /// Import queue properties from CSV to stage rows for review. Clean matches will stay hidden until commit.
+        /// </summary>
+        public const string QueueImportReviewEmptyHint = "LOCQueueImportReviewEmptyHint";
 
         // ---- Library Sanitizer ----
 
