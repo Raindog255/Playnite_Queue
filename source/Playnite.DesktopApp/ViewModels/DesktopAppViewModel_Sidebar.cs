@@ -209,6 +209,7 @@ namespace Playnite.DesktopApp.ViewModels
         {
             libraryView = new Controls.Views.Library(this);
             queueView = new Controls.Views.Queue(this);
+            librarySanitizerView = new Controls.Views.LibrarySanitizer(this);
             statsView = new Controls.LibraryStatistics(LibraryStats);
 
             var libraryItem = new MainSidebarViewItem(libraryView, this, ApplicationView.Library)
@@ -221,6 +222,12 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 Icon = "SidebarQueueIcon",
                 Title = Resources.GetString(LOC.Queue)
+            };
+
+            var sanitizerItem = new MainSidebarViewItem(librarySanitizerView, this, ApplicationView.LibrarySanitizer)
+            {
+                Icon = "SidebarSanitizerIcon",
+                Title = Resources.GetString(LOC.SanitizerSidebarTitle)
             };
 
             var statsItem = new MainSidebarViewItem(statsView, this, ApplicationView.Statistics)
@@ -248,6 +255,7 @@ namespace Playnite.DesktopApp.ViewModels
 
             sideItems = sideItems.OrderByDescending(a => a.SideItem.Type).ThenBy(a => a.SideItem.Title).ToList();
             sideItems.Insert(0, new SidebarWrapperItem(statsItem, this));
+            sideItems.Insert(0, new SidebarWrapperItem(sanitizerItem, this));
             sideItems.Insert(0, new SidebarWrapperItem(queueItem, this));
             sideItems.Insert(0, new SidebarWrapperItem(libraryItem, this));
             sideItems[0].Command.Execute(null);

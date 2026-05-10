@@ -1,0 +1,204 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    mc:Ignorable="d">
+
+    <Style TargetType="{x:Type LibrarySanitizerSettingsPanel}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type LibrarySanitizerSettingsPanel}">
+                    <Border Width="380"
+                            Background="{DynamicResource WindowBackgourndBrush}"
+                            BorderBrush="{DynamicResource NormalBorderBrush}"
+                            BorderThickness="1,0,0,0"
+                            Padding="16"
+                            TextElement.Foreground="{DynamicResource TextBrush}"
+                            TextElement.FontFamily="{DynamicResource FontFamily}"
+                            TextElement.FontSize="{DynamicResource FontSize}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource LOCSanitizerSettingsTitle}"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,16" />
+
+                                <!-- ============= Action sources ============= -->
+                                <GroupBox Header="{DynamicResource LOCSanitizerActionSourcesTitle}"
+                                          Margin="0,0,0,12">
+                                    <StackPanel Margin="8">
+                                        <CheckBox Content="{DynamicResource LOCSanitizerSourceSanitize}"
+                                                  IsChecked="{Binding Settings.SanitizeEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerSourceMissing}"
+                                                  IsChecked="{Binding Settings.MissingPropertiesEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerSourceSplit}"
+                                                  IsChecked="{Binding Settings.SplitCollectionEnabled, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <!-- ============= Sanitize: scope + rules ============= -->
+                                <GroupBox Header="{DynamicResource LOCSanitizerSanitizeScopeTitle}"
+                                          Margin="0,0,0,12">
+                                    <StackPanel Margin="8">
+                                        <CheckBox Content="{DynamicResource LOCSanitizerScopeGames}"
+                                                  IsChecked="{Binding Settings.SanitizeGames, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerScopeSeries}"
+                                                  IsChecked="{Binding Settings.SanitizeSeries, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerScopeDevelopers}"
+                                                  IsChecked="{Binding Settings.SanitizeDevelopers, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerScopePublishers}"
+                                                  IsChecked="{Binding Settings.SanitizePublishers, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <GroupBox Header="{DynamicResource LOCSanitizerSanitizeRulesTitle}"
+                                          Margin="0,0,0,12">
+                                    <StackPanel Margin="8">
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRuleWhitespace}"
+                                                  IsChecked="{Binding Settings.WhitespaceRule, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRuleSmartPunctuation}"
+                                                  IsChecked="{Binding Settings.SmartPunctuationRule, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRuleTrademark}"
+                                                  IsChecked="{Binding Settings.TrademarkSymbolsRule, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRuleSeparator}"
+                                                  IsChecked="{Binding Settings.SeparatorRule, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRuleNumerals}"
+                                                  IsChecked="{Binding Settings.NumeralsRule, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRuleEditionSpillover}"
+                                                  IsChecked="{Binding Settings.EditionSpilloverRule, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRuleYearSuffix}"
+                                                  IsChecked="{Binding Settings.YearSuffixRule, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRuleHtmlEntities}"
+                                                  IsChecked="{Binding Settings.HtmlEntitiesRule, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRuleAmpersand}"
+                                                  IsChecked="{Binding Settings.AmpersandToAndRule, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <!-- ============= Edition keyword editor ============= -->
+                                <GroupBox Header="{DynamicResource LOCSanitizerEditionKeywordsTitle}"
+                                          Margin="0,0,0,12">
+                                    <StackPanel Margin="8">
+                                        <ItemsControl ItemsSource="{Binding Settings.EditionKeywords, RelativeSource={RelativeSource TemplatedParent}}"
+                                                      Margin="0,0,0,8">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <DockPanel Margin="0,0,0,4">
+                                                        <Button DockPanel.Dock="Right"
+                                                                Content="{DynamicResource LOCRemoveLabel}"
+                                                                Margin="6,0,0,0"
+                                                                Command="{Binding RemoveEditionKeywordCommand, RelativeSource={RelativeSource AncestorType={x:Type LibrarySanitizerSettingsPanel}}}"
+                                                                CommandParameter="{Binding}" />
+                                                        <TextBlock Text="{Binding}"
+                                                                   VerticalAlignment="Center" />
+                                                    </DockPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+
+                                        <DockPanel>
+                                            <Button DockPanel.Dock="Right"
+                                                    Content="{DynamicResource LOCAddLabel}"
+                                                    Margin="6,0,0,0"
+                                                    Command="{Binding AddEditionKeywordCommand, RelativeSource={RelativeSource TemplatedParent}}" />
+                                            <TextBox Text="{Binding NewEditionKeyword, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
+                                        </DockPanel>
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <!-- ============= Missing properties: required-fields checklist ============= -->
+                                <GroupBox Header="{DynamicResource LOCSanitizerRequiredFieldsTitle}"
+                                          Margin="0,0,0,12">
+                                    <StackPanel Margin="8">
+                                        <CheckBox Content="{DynamicResource LOCAcquiredDateLabel}"
+                                                  IsChecked="{Binding Settings.RequireAcquiredDate, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCGameReleaseDateTitle}"
+                                                  IsChecked="{Binding Settings.RequireReleaseDate, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRequiredCompletionStatus}"
+                                                  IsChecked="{Binding Settings.RequireCompletionStatus, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRequiredSeries}"
+                                                  IsChecked="{Binding Settings.RequireSeries, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRequiredDevelopers}"
+                                                  IsChecked="{Binding Settings.RequireDevelopers, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRequiredCategories}"
+                                                  IsChecked="{Binding Settings.RequireCategories, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRequiredGenres}"
+                                                  IsChecked="{Binding Settings.RequireGenres, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <!-- ============= Split collection: keywords + multi-title detection ============= -->
+                                <GroupBox Header="{DynamicResource LOCSanitizerCollectionKeywordsTitle}"
+                                          Margin="0,0,0,12">
+                                    <StackPanel Margin="8">
+                                        <CheckBox Content="{DynamicResource LOCSanitizerDetectMultiTitle}"
+                                                  IsChecked="{Binding Settings.DetectMultiTitlePatterns, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,8" />
+
+                                        <ItemsControl ItemsSource="{Binding Settings.CollectionKeywords, RelativeSource={RelativeSource TemplatedParent}}"
+                                                      Margin="0,0,0,8">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <DockPanel Margin="0,0,0,4">
+                                                        <Button DockPanel.Dock="Right"
+                                                                Content="{DynamicResource LOCRemoveLabel}"
+                                                                Margin="6,0,0,0"
+                                                                Command="{Binding RemoveCollectionKeywordCommand, RelativeSource={RelativeSource AncestorType={x:Type LibrarySanitizerSettingsPanel}}}"
+                                                                CommandParameter="{Binding}" />
+                                                        <TextBlock Text="{Binding}"
+                                                                   VerticalAlignment="Center" />
+                                                    </DockPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+
+                                        <DockPanel>
+                                            <Button DockPanel.Dock="Right"
+                                                    Content="{DynamicResource LOCAddLabel}"
+                                                    Margin="6,0,0,0"
+                                                    Command="{Binding AddCollectionKeywordCommand, RelativeSource={RelativeSource TemplatedParent}}" />
+                                            <TextBox Text="{Binding NewCollectionKeyword, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
+                                        </DockPanel>
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <!-- ============= Dismissed actions ============= -->
+                                <GroupBox Header="{DynamicResource LOCSanitizerDismissedTitle}">
+                                    <StackPanel Margin="8">
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Foreground="{DynamicResource TextBrushDarker}"
+                                                   Margin="0,0,0,8"
+                                                   Text="{DynamicResource LOCSanitizerDismissedHint}" />
+                                        <Button Content="{DynamicResource LOCSanitizerRestoreDismissed}"
+                                                HorizontalAlignment="Left"
+                                                Command="{Binding RestoreDismissedCommand, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    </StackPanel>
+                                </GroupBox>
+
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

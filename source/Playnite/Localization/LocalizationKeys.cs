@@ -4653,5 +4653,213 @@ namespace Playnite
         /// CSV import failed: {0}
         /// </summary>
         public const string QueueImportFailed = "LOCQueueImportFailed";
+
+        // ---- Library Sanitizer ----
+
+        /// <summary>
+        /// Library Sanitizer
+        /// </summary>
+        public const string SanitizerSidebarTitle = "LOCSanitizerSidebarTitle";
+        /// <summary>
+        /// Library Sanitizer
+        /// </summary>
+        public const string SanitizerHeader = "LOCSanitizerHeader";
+        /// <summary>
+        /// action(s)
+        /// </summary>
+        public const string SanitizerActionCountSuffix = "LOCSanitizerActionCountSuffix";
+        /// <summary>
+        /// Nothing to sanitize
+        /// </summary>
+        public const string SanitizerEmptyTitle = "LOCSanitizerEmptyTitle";
+        /// <summary>
+        /// Your library has no actionable items right now. Adjust the rule toggles or required-fields checklist on the right to surface more proposals.
+        /// </summary>
+        public const string SanitizerEmptyHint = "LOCSanitizerEmptyHint";
+        /// <summary>
+        /// Sanitizer settings
+        /// </summary>
+        public const string SanitizerSettingsTitle = "LOCSanitizerSettingsTitle";
+        /// <summary>
+        /// Action sources
+        /// </summary>
+        public const string SanitizerActionSourcesTitle = "LOCSanitizerActionSourcesTitle";
+        /// <summary>
+        /// Sanitize names
+        /// </summary>
+        public const string SanitizerSourceSanitize = "LOCSanitizerSourceSanitize";
+        /// <summary>
+        /// Add missing properties
+        /// </summary>
+        public const string SanitizerSourceMissing = "LOCSanitizerSourceMissing";
+        /// <summary>
+        /// Split collections
+        /// </summary>
+        public const string SanitizerSourceSplit = "LOCSanitizerSourceSplit";
+        /// <summary>
+        /// Sanitize scope
+        /// </summary>
+        public const string SanitizerSanitizeScopeTitle = "LOCSanitizerSanitizeScopeTitle";
+        /// <summary>
+        /// Games
+        /// </summary>
+        public const string SanitizerScopeGames = "LOCSanitizerScopeGames";
+        /// <summary>
+        /// Series
+        /// </summary>
+        public const string SanitizerScopeSeries = "LOCSanitizerScopeSeries";
+        /// <summary>
+        /// Developers
+        /// </summary>
+        public const string SanitizerScopeDevelopers = "LOCSanitizerScopeDevelopers";
+        /// <summary>
+        /// Publishers
+        /// </summary>
+        public const string SanitizerScopePublishers = "LOCSanitizerScopePublishers";
+        /// <summary>
+        /// Rules
+        /// </summary>
+        public const string SanitizerSanitizeRulesTitle = "LOCSanitizerSanitizeRulesTitle";
+        /// <summary>
+        /// Trim &amp; collapse whitespace
+        /// </summary>
+        public const string SanitizerRuleWhitespace = "LOCSanitizerRuleWhitespace";
+        /// <summary>
+        /// Normalize smart punctuation
+        /// </summary>
+        public const string SanitizerRuleSmartPunctuation = "LOCSanitizerRuleSmartPunctuation";
+        /// <summary>
+        /// Strip trademark / copyright symbols
+        /// </summary>
+        public const string SanitizerRuleTrademark = "LOCSanitizerRuleTrademark";
+        /// <summary>
+        /// Convert " - " to ": "
+        /// </summary>
+        public const string SanitizerRuleSeparator = "LOCSanitizerRuleSeparator";
+        /// <summary>
+        /// Use Roman numerals (Arabic SortingName)
+        /// </summary>
+        public const string SanitizerRuleNumerals = "LOCSanitizerRuleNumerals";
+        /// <summary>
+        /// Move edition keywords to Version
+        /// </summary>
+        public const string SanitizerRuleEditionSpillover = "LOCSanitizerRuleEditionSpillover";
+        /// <summary>
+        /// Strip trailing (year) suffix
+        /// </summary>
+        public const string SanitizerRuleYearSuffix = "LOCSanitizerRuleYearSuffix";
+        /// <summary>
+        /// Decode HTML entities
+        /// </summary>
+        public const string SanitizerRuleHtmlEntities = "LOCSanitizerRuleHtmlEntities";
+        /// <summary>
+        /// Replace " &amp; " with " and "
+        /// </summary>
+        public const string SanitizerRuleAmpersand = "LOCSanitizerRuleAmpersand";
+        /// <summary>
+        /// Edition keywords
+        /// </summary>
+        public const string SanitizerEditionKeywordsTitle = "LOCSanitizerEditionKeywordsTitle";
+        /// <summary>
+        /// Required fields
+        /// </summary>
+        public const string SanitizerRequiredFieldsTitle = "LOCSanitizerRequiredFieldsTitle";
+        /// <summary>
+        /// Completion status
+        /// </summary>
+        public const string SanitizerRequiredCompletionStatus = "LOCSanitizerRequiredCompletionStatus";
+        /// <summary>
+        /// Series
+        /// </summary>
+        public const string SanitizerRequiredSeries = "LOCSanitizerRequiredSeries";
+        /// <summary>
+        /// Developers
+        /// </summary>
+        public const string SanitizerRequiredDevelopers = "LOCSanitizerRequiredDevelopers";
+        /// <summary>
+        /// Categories (Style)
+        /// </summary>
+        public const string SanitizerRequiredCategories = "LOCSanitizerRequiredCategories";
+        /// <summary>
+        /// Genres
+        /// </summary>
+        public const string SanitizerRequiredGenres = "LOCSanitizerRequiredGenres";
+        /// <summary>
+        /// Collection keywords
+        /// </summary>
+        public const string SanitizerCollectionKeywordsTitle = "LOCSanitizerCollectionKeywordsTitle";
+        /// <summary>
+        /// Also detect multi-title patterns (X 1+2, X &amp; Y, X / Y, X I-II)
+        /// </summary>
+        public const string SanitizerDetectMultiTitle = "LOCSanitizerDetectMultiTitle";
+        /// <summary>
+        /// Dismissed actions
+        /// </summary>
+        public const string SanitizerDismissedTitle = "LOCSanitizerDismissedTitle";
+        /// <summary>
+        /// Dismissed cards stay hidden until you restore them. Re-evaluation runs against the current rule + required-field settings.
+        /// </summary>
+        public const string SanitizerDismissedHint = "LOCSanitizerDismissedHint";
+        /// <summary>
+        /// Restore dismissed
+        /// </summary>
+        public const string SanitizerRestoreDismissed = "LOCSanitizerRestoreDismissed";
+        /// <summary>
+        /// Sanitize
+        /// </summary>
+        public const string SanitizerActionSanitize = "LOCSanitizerActionSanitize";
+        /// <summary>
+        /// Missing properties
+        /// </summary>
+        public const string SanitizerActionMissing = "LOCSanitizerActionMissing";
+        /// <summary>
+        /// Split collection
+        /// </summary>
+        public const string SanitizerActionSplit = "LOCSanitizerActionSplit";
+        /// <summary>
+        /// Before
+        /// </summary>
+        public const string SanitizerBeforeLabel = "LOCSanitizerBeforeLabel";
+        /// <summary>
+        /// After
+        /// </summary>
+        public const string SanitizerAfterLabel = "LOCSanitizerAfterLabel";
+        /// <summary>
+        /// Sorting
+        /// </summary>
+        public const string SanitizerSortLabel = "LOCSanitizerSortLabel";
+        /// <summary>
+        /// Version
+        /// </summary>
+        public const string SanitizerVersionLabel = "LOCSanitizerVersionLabel";
+        /// <summary>
+        /// Apply
+        /// </summary>
+        public const string SanitizerApply = "LOCSanitizerApply";
+        /// <summary>
+        /// Dismiss
+        /// </summary>
+        public const string SanitizerDismiss = "LOCSanitizerDismiss";
+
+        /// <summary>
+        /// "LOCSanitizerEdit" =&gt; "Edit"
+        /// </summary>
+        public const string SanitizerEdit = "LOCSanitizerEdit";
+        /// <summary>
+        /// Inline editing covers Acquired and Release dates. Use the game's Edit window for series, developers, categories, and genres.
+        /// </summary>
+        public const string SanitizerMissingHint = "LOCSanitizerMissingHint";
+        /// <summary>
+        /// Proposed child titles
+        /// </summary>
+        public const string SanitizerSplitChildrenLabel = "LOCSanitizerSplitChildrenLabel";
+        /// <summary>
+        /// Detected as:
+        /// </summary>
+        public const string SanitizerSplitReasonPrefix = "LOCSanitizerSplitReasonPrefix";
+        /// <summary>
+        /// Edit the names below before applying. Each non-empty entry becomes a new game record. The original is hidden but kept for history.
+        /// </summary>
+        public const string SanitizerSplitHint = "LOCSanitizerSplitHint";
     }
 }

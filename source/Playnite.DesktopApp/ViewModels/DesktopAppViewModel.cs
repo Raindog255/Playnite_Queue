@@ -47,6 +47,7 @@ namespace Playnite.DesktopApp.ViewModels
         private Controls.LibraryStatistics statsView;
         private Controls.Views.Library libraryView;
         private Controls.Views.Queue queueView;
+        private Controls.Views.LibrarySanitizer librarySanitizerView;
         private QueueCompletedDateAutoFiller queueCompletedDateAutoFiller;
         private SearchViewModel currentGlobalSearch;
 
