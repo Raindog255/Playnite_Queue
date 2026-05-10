@@ -1303,6 +1303,24 @@ Open new issue on Playnite's GitHub page with a request to fix corruption in you
     <sys:String x:Key="LOCQueueImportSummary">Updated {0} game(s). Matched {1}, not found {2}, ambiguous {3}, errors {4}.</sys:String>
     <sys:String x:Key="LOCQueueImportSeeReviewFile">Items needing review were written to:&#xA;{0}</sys:String>
     <sys:String x:Key="LOCQueueImportFailed">CSV import failed: {0}</sys:String>
+    <sys:String x:Key="LOCQueueImportStagedSummary">Staged {0} row(s): {1} clean, {2} needing review, {3} error(s).</sys:String>
+    <sys:String x:Key="LOCQueueImportStagingBlocked">A queue import is already staged. Commit or discard it before importing another CSV.</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewSidebarTitle">Import Review</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewHeader">Queue Import Review</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewNeedsReviewSuffix">row(s) need review</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewSettingsTitle">Import review</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewCommit">Commit staged import</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewDiscard">Discard staged import</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewRefresh">Refresh</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewHint">Clean matches are hidden here and will be applied when you commit. The cards below show staged rows that need a manual library match.</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewRowPrefix">CSV row</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewOriginalName">Inbound</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewSanitizedName">Sanitized</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewManualMatch">Manual match search</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewUseMatch">Use match</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewDismissRow">Dismiss row</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewEmptyTitle">No staged import</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewEmptyHint">Import queue properties from CSV to stage rows for review. Clean matches will stay hidden until commit.</sys:String>
 
     <!-- Library Sanitizer -->
     <sys:String x:Key="LOCSanitizerSidebarTitle">Library Sanitizer</sys:String>

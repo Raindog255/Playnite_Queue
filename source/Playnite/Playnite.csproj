@@ -498,6 +498,7 @@
     <Compile Include="QueueOrdering.cs" />
     <Compile Include="QueueCompletedDateAutoFiller.cs" />
     <Compile Include="Database\QueuePropertiesImporter.cs" />
+    <Compile Include="Database\QueueImportStaging.cs" />
     <Compile Include="LibrarySanitizer\SanitizerRules.cs" />
     <Compile Include="LibrarySanitizer\SanitizerAction.cs" />
     <Compile Include="LibrarySanitizer\MissingPropertyAction.cs" />

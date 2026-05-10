@@ -102,6 +102,7 @@ namespace Playnite
         Library,
         Queue,
         LibrarySanitizer,
+        QueueImportReview,
         Statistics
     }
 
