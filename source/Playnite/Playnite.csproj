@@ -494,9 +494,15 @@
     <Compile Include="Metadata\MetadataDownloader.cs" />
     <Compile Include="Settings\AutoClientShutdownSettings.cs" />
     <Compile Include="Settings\QueueSettings.cs" />
+    <Compile Include="Settings\LibrarySanitizerSettings.cs" />
     <Compile Include="QueueOrdering.cs" />
     <Compile Include="QueueCompletedDateAutoFiller.cs" />
     <Compile Include="Database\QueuePropertiesImporter.cs" />
+    <Compile Include="LibrarySanitizer\SanitizerRules.cs" />
+    <Compile Include="LibrarySanitizer\SanitizerAction.cs" />
+    <Compile Include="LibrarySanitizer\MissingPropertyAction.cs" />
+    <Compile Include="LibrarySanitizer\SplitCollectionAction.cs" />
+    <Compile Include="LibrarySanitizer\LibrarySanitizerEngine.cs" />
     <Compile Include="Settings\DetailsVisibilitySettings.cs" />
     <Compile Include="Settings\FullscreenSettings.cs" />
     <Compile Include="Settings\OldSettings\Plugins.cs" />

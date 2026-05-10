@@ -101,6 +101,7 @@ namespace Playnite
     {
         Library,
         Queue,
+        LibrarySanitizer,
         Statistics
     }
 
@@ -1560,6 +1561,17 @@ namespace Playnite
             set
             {
                 queueSettings = value ?? new QueueSettings();
+                OnPropertyChanged();
+            }
+        }
+
+        private LibrarySanitizerSettings librarySanitizerSettings = new LibrarySanitizerSettings();
+        public LibrarySanitizerSettings LibrarySanitizerSettings
+        {
+            get => librarySanitizerSettings;
+            set
+            {
+                librarySanitizerSettings = value ?? new LibrarySanitizerSettings();
                 OnPropertyChanged();
             }
         }

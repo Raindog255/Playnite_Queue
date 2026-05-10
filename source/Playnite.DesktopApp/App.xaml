@@ -105,6 +105,8 @@
                 <ResourceDictionary Source="Themes/Desktop/Default/Views/Library.xaml" />
                 <ResourceDictionary Source="Themes/Desktop/Default/Views/Queue.xaml" />
                 <ResourceDictionary Source="Themes/Desktop/Default/Views/QueueSettingsPanelView.xaml" />
+                <ResourceDictionary Source="Themes/Desktop/Default/Views/LibrarySanitizer.xaml" />
+                <ResourceDictionary Source="Themes/Desktop/Default/Views/LibrarySanitizerSettingsPanelView.xaml" />
                 <ResourceDictionary Source="Themes/Desktop/Default/Views/MainWindow.xaml" />
                 <ResourceDictionary Source="Themes/Desktop/Default/Views/SearchView.xaml" />
             </ResourceDictionary.MergedDictionaries>
