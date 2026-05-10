@@ -14,10 +14,13 @@ namespace Playnite
     public static class QueueOrdering
     {
         /// <summary>
-        /// Builds the ordered queue. The result is what the Queue view should show,
-        /// already truncated to <see cref="QueueSettings.VisibleCount"/> with any
-        /// always-visible Playing games prepended (Playing games are exempt from the
-        /// visible-count cap and may exceed it).
+        /// Builds the ordered queue. The result is what the Queue view should show:
+        /// always-visible Playing games are prepended, and the rest of the queue is
+        /// truncated so the total length never exceeds
+        /// <see cref="QueueSettings.VisibleCount"/>. Playing games consume slots —
+        /// once enough games are Playing to fill the cap, no upcoming queue items
+        /// are added. If more than <c>VisibleCount</c> games are Playing the result
+        /// will exceed the cap (they are still always shown).
         /// </summary>
         public static IList<Game> BuildQueue(IEnumerable<Game> allGames, QueueSettings settings)
         {
@@ -89,9 +92,14 @@ namespace Playnite
             // 5. Grouping replacement (Playing games are exempt — they're separate).
             var grouped = ApplyGrouping(orderedGames, settings.GroupByDeveloper, settings.GroupBySeries);
 
-            // 6. Take top N.
+            // 6. Take top N — but reserve a slot for every Playing game first.
+            // Playing tiles are always shown, so they consume the visible cap.
+            // (When more games are Playing than VisibleCount, the queue portion
+            // is empty and Playing tiles overflow on their own — they're never
+            // hidden.)
             var visibleCount = Math.Max(0, settings.VisibleCount);
-            var takeN = grouped.Take(visibleCount).ToList();
+            var slotsForQueue = Math.Max(0, visibleCount - playingGames.Count);
+            var takeN = grouped.Take(slotsForQueue).ToList();
 
             // 7. Prepend Playing games (sorted by the same priority + date pipeline,
             // but never grouped or pushed back; they always show).

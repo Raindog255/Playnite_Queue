@@ -488,24 +488,52 @@ namespace Playnite.Tests
         // ---- 7. Playing merge ----------------------------------------------
 
         [Test]
-        public void PlayingMerge_PrependsAllPlayingGamesEvenWhenExceedingN()
+        public void PlayingMerge_PlayingGamesConsumeVisibleSlots()
         {
+            // VisibleCount=2 with 1 Playing game: 1 Playing + 1 queued = 2 total.
+            // The cap is the *total* number of concurrent slots, not just the
+            // queue portion.
             var settings = DefaultSettings(n: 2);
+            var playing = NewGame("P1", acquired: new DateTime(2018, 1, 1), statusId: PlayingId);
+            var q1 = NewGame("Q1", acquired: new DateTime(2020, 1, 1));
+            var q2 = NewGame("Q2", acquired: new DateTime(2021, 1, 1));
 
+            var queue = QueueOrdering.BuildQueue(new[] { playing, q1, q2 }, settings);
+
+            CollectionAssert.AreEqual(new[] { "P1", "Q1" }, queue.Select(g => g.Name).ToArray());
+        }
+
+        [Test]
+        public void PlayingMerge_PlayingFillsAllSlots_NoQueueItemsShown()
+        {
+            // The user-reported bug: VisibleCount=1 with 2 Playing games.
+            // Before fix the queue would show P1+P2+Q1 (3 tiles). After fix
+            // the queue is just the Playing games — no upcoming-queue overflow.
+            var settings = DefaultSettings(n: 1);
+            var p1 = NewGame("P1", acquired: new DateTime(2018, 1, 1), statusId: PlayingId);
+            var p2 = NewGame("P2", acquired: new DateTime(2019, 1, 1), statusId: PlayingId);
+            var q1 = NewGame("Q1", acquired: new DateTime(2020, 1, 1));
+
+            var queue = QueueOrdering.BuildQueue(new[] { p1, p2, q1 }, settings);
+
+            CollectionAssert.AreEqual(new[] { "P1", "P2" }, queue.Select(g => g.Name).ToArray());
+        }
+
+        [Test]
+        public void PlayingMerge_MoreThanVisibleCountPlaying_AllPlayingStillShown()
+        {
+            // Playing tiles are never hidden — they only ever overflow the cap,
+            // never get truncated. With n=1 and 3 Playing games, all 3 show
+            // (and zero queue items).
+            var settings = DefaultSettings(n: 1);
             var p1 = NewGame("P1", acquired: new DateTime(2018, 1, 1), statusId: PlayingId);
             var p2 = NewGame("P2", acquired: new DateTime(2017, 1, 1), statusId: PlayingId);
             var p3 = NewGame("P3", acquired: new DateTime(2019, 1, 1), statusId: PlayingId);
             var q1 = NewGame("Q1", acquired: new DateTime(2020, 1, 1));
-            var q2 = NewGame("Q2", acquired: new DateTime(2021, 1, 1));
-            var q3 = NewGame("Q3", acquired: new DateTime(2022, 1, 1));
 
-            var queue = QueueOrdering.BuildQueue(new[] { q3, p3, q2, p2, p1, q1 }, settings);
+            var queue = QueueOrdering.BuildQueue(new[] { q1, p3, p1, p2 }, settings);
 
-            // All 3 playing games show up first (date-sorted ascending), then the 2
-            // top eligible games. Total length is 5 even though VisibleCount=2.
-            CollectionAssert.AreEqual(
-                new[] { "P2", "P1", "P3", "Q1", "Q2" },
-                queue.Select(q => q.Name).ToArray());
+            CollectionAssert.AreEqual(new[] { "P2", "P1", "P3" }, queue.Select(g => g.Name).ToArray());
         }
 
         [Test]
