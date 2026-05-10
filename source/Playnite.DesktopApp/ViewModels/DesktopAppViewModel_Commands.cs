@@ -37,6 +37,7 @@ namespace Playnite.DesktopApp.ViewModels
         public RelayCommand<object> AddInstalledGamesCommand { get; private set; }
         public RelayCommand<object> AddEmulatedGamesCommand { get; private set; }
         public RelayCommand<object> AddWindowsStoreGamesCommand { get; private set; }
+        public RelayCommand<object> ImportQueuePropertiesCommand { get; private set; }
         public RelayCommand<object> OpenFullScreenCommand { get; private set; }
         public RelayCommand<object> OpenFullScreenFromControllerCommand { get; private set; }
         public RelayCommand<object> ClearMessagesCommand { get; private set; }
@@ -236,6 +237,11 @@ namespace Playnite.DesktopApp.ViewModels
                     new InstalledGamesWindowFactory(),
                     Dialogs,
                     Database));
+            }, (a) => Database?.IsOpen == true);
+
+            ImportQueuePropertiesCommand = new RelayCommand<object>((a) =>
+            {
+                ImportQueueProperties();
             }, (a) => Database?.IsOpen == true);
 
             OpenFullScreenCommand = new RelayCommand<object>((a) =>

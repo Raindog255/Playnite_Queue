@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -738,6 +739,134 @@ namespace Playnite.DesktopApp.ViewModels
             }
 
             await SetSortingNames(model.ImportedGames);
+        }
+
+        public void ImportQueueProperties()
+        {
+            var filter = Resources.GetString(LOC.QueueImportDialogFilter) ?? "CSV files|*.csv";
+            var path = Dialogs.SelectFile(filter);
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            var title = Resources.GetString(LOC.QueueImportDialogTitle);
+            try
+            {
+                // Off the UI thread: a few hundred rows is fast, but the file
+                // could be big and we don't want to freeze the window. The
+                // BufferedUpdate inside the importer keeps notifications
+                // batched so the queue view refreshes once at the end.
+                var result = Task.Run(() => QueuePropertiesImporter.ImportFromCsv(path, Database)).GetAwaiter().GetResult();
+                foreach (var msg in result.Messages)
+                {
+                    Logger.Info($"[QueueImport] {msg}");
+                }
+
+                var reviewPath = WriteQueueImportReview(path, result);
+
+                var summary = string.Format(
+                    Resources.GetString(LOC.QueueImportSummary) ?? "Updated {0} game(s). Matched {1}, not found {2}, ambiguous {3}, errors {4}.",
+                    result.Updated,
+                    result.Matched,
+                    result.NotFound,
+                    result.Ambiguous,
+                    result.Errors);
+
+                if (reviewPath != null)
+                {
+                    summary += "\n\n" + string.Format(
+                        Resources.GetString(LOC.QueueImportSeeReviewFile) ?? "Review file: {0}",
+                        reviewPath);
+                }
+
+                Dialogs.ShowMessage(summary, title, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Queue properties CSV import failed.");
+                var msg = string.Format(
+                    Resources.GetString(LOC.QueueImportFailed) ?? "CSV import failed: {0}",
+                    ex.Message);
+                Dialogs.ShowMessage(msg, title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Standalone review log so the user can act on import outcomes without
+        // grepping the noisy app log. Overwritten on every import — only the
+        // most recent run is interesting, and a stable path is easier to share
+        // / tail than per-run timestamped files.
+        private string WriteQueueImportReview(string sourceCsvPath, QueueImportResult result)
+        {
+            if (result.Messages.Count == 0)
+            {
+                return null;
+            }
+
+            try
+            {
+                var reviewPath = Path.Combine(PlaynitePaths.ConfigRootPath, "queue-import-review.log");
+                var notFound = new List<string>();
+                var multiMatch = new List<string>();
+                var errors = new List<string>();
+                foreach (var msg in result.Messages)
+                {
+                    // Bucket purely by the message body the importer wrote —
+                    // keeps the review log decoupled from the result counters
+                    // in case those drift.
+                    if (msg.IndexOf("no matching game", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        notFound.Add(msg);
+                    }
+                    else if (msg.IndexOf("applied to all", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        multiMatch.Add(msg);
+                    }
+                    else
+                    {
+                        errors.Add(msg);
+                    }
+                }
+
+                var sb = new StringBuilder();
+                sb.AppendLine("Playnite Queue Import — Review Items");
+                sb.AppendLine(new string('=', 40));
+                sb.AppendLine($"Source CSV: {sourceCsvPath}");
+                sb.AppendLine($"Run:        {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                sb.AppendLine($"Totals:     Updated={result.Updated}, Matched={result.Matched}, NotFound={result.NotFound}, MultiMatch={result.Ambiguous}, Errors={result.Errors}");
+                sb.AppendLine();
+
+                AppendReviewSection(sb, "PARSE ERRORS / BAD VALUES", errors);
+                AppendReviewSection(sb, "NOT FOUND IN LIBRARY (rename or import these in Playnite)", notFound);
+                AppendReviewSection(sb, "MULTI-MATCH (informational — applied to every matching game)", multiMatch);
+
+                File.WriteAllText(reviewPath, sb.ToString(), new UTF8Encoding(false));
+                return reviewPath;
+            }
+            catch (Exception ex)
+            {
+                Logger.Warn(ex, "Failed to write queue import review log.");
+                return null;
+            }
+        }
+
+        private static void AppendReviewSection(StringBuilder sb, string heading, List<string> items)
+        {
+            sb.AppendLine($"{heading} ({items.Count})");
+            sb.AppendLine(new string('-', heading.Length + 4));
+            if (items.Count == 0)
+            {
+                sb.AppendLine("(none)");
+            }
+            else
+            {
+                foreach (var item in items)
+                {
+                    sb.AppendLine(item);
+                }
+            }
+
+            sb.AppendLine();
         }
 
         public void OpenAboutWindow(AboutViewModel model)
