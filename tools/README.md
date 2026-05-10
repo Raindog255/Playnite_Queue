@@ -61,6 +61,37 @@ snapshot.
 | `ExePath` | `source\Playnite.DesktopApp\bin\Debug\Playnite.DesktopApp.exe`           | Override if your build output is somewhere else.      |
 | `Build`   | `$false`                                                                 | Run MSBuild against `Playnite.DesktopApp.csproj` first. |
 
+### [`Deploy-Release.ps1`](Deploy-Release.ps1)
+
+Builds Release | Any CPU and updates the binaries in an existing portable
+install (default `%LOCALAPPDATA%\Playnite-Queue`) without touching the bundled
+`library/`, `Extensions/`, `ExtensionsData/`, `Backup/`, `cache/`,
+`browsercache/`, `JITProfiles/`, or any portable-mode config / log file.
+
+Refuses to run while a Playnite process is running out of the deploy dir
+(LiteDB lock + half-updated install risk). Won't create a new install --
+the deploy dir must already contain `Playnite.DesktopApp.exe` and
+`config.json`.
+
+| Parameter        | Default                                  | Description                                                              |
+| ---------------- | ---------------------------------------- | ------------------------------------------------------------------------ |
+| `DeployDir`      | `%LOCALAPPDATA%\Playnite-Queue`          | Existing portable install root to update.                                |
+| `Backup`         | `$false`                                 | Zip `DeployDir\library` into `BackupDir` before deploying.               |
+| `BackupDir`      | `%APPDATA%\Playnite-Queue-Backups`       | Where backup zips land. Created on demand.                               |
+| `SkipBuild`      | `$false`                                 | Deploy whatever's in `bin\Release` without rebuilding.                   |
+| `Configuration`  | `Release`                                | MSBuild configuration. `Debug` allowed for quick sanity checks.          |
+
+```powershell
+# Build & deploy, no backup.
+.\tools\Deploy-Release.ps1
+
+# Same, but zip library/ first.
+.\tools\Deploy-Release.ps1 -Backup
+
+# Already built in Visual Studio; just push the bits.
+.\tools\Deploy-Release.ps1 -SkipBuild
+```
+
 ## Reverting / cleaning up
 
 The real library is never modified by these scripts. To wipe the dev snapshot,
