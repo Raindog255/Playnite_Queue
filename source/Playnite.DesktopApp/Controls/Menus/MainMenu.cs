@@ -114,6 +114,8 @@ namespace Playnite.DesktopApp.Controls
             AddMenuChild(libraryItem.Items, "LOCMenuDownloadMetadata", mainModel.DownloadMetadataCommand);
             AddMenuChild(libraryItem.Items, "LOCMenuSoftwareTools", mainModel.OpenSoftwareToolsCommand);
             libraryItem.Items.Add(new Separator());
+            AddMenuChild(libraryItem.Items, "LOCMenuImportQueueProperties", mainModel.ImportQueuePropertiesCommand);
+            libraryItem.Items.Add(new Separator());
             AddMenuChild(libraryItem.Items, "LOCMenuBackupData", mainModel.BackupDataCommand, null, "BackupIcon");
             AddMenuChild(libraryItem.Items, "LOCMenuRestoreBackup", mainModel.RestoreDataBackupCommand, null, "RestoreBackupIcon");
 

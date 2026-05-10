@@ -4617,5 +4617,29 @@ namespace Playnite
         /// Add games to your library, then check the queue settings panel to control what shows up here.
         /// </summary>
         public const string QueueEmptyHint = "LOCQueueEmptyHint";
+        /// <summary>
+        /// Import Queue Properties from CSV…
+        /// </summary>
+        public const string MenuImportQueueProperties = "LOCMenuImportQueueProperties";
+        /// <summary>
+        /// Import Queue Properties
+        /// </summary>
+        public const string QueueImportDialogTitle = "LOCQueueImportDialogTitle";
+        /// <summary>
+        /// CSV files|*.csv
+        /// </summary>
+        public const string QueueImportDialogFilter = "LOCQueueImportDialogFilter";
+        /// <summary>
+        /// Updated {0} game(s). Matched {1}, not found {2}, ambiguous {3}, errors {4}.
+        /// </summary>
+        public const string QueueImportSummary = "LOCQueueImportSummary";
+        /// <summary>
+        /// Items needing review were written to: {0}
+        /// </summary>
+        public const string QueueImportSeeReviewFile = "LOCQueueImportSeeReviewFile";
+        /// <summary>
+        /// CSV import failed: {0}
+        /// </summary>
+        public const string QueueImportFailed = "LOCQueueImportFailed";
     }
 }

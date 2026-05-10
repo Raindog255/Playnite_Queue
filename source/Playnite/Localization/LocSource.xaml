@@ -1294,4 +1294,10 @@ Open new issue on Playnite's GitHub page with a request to fix corruption in you
     <sys:String x:Key="LOCMoveDownLabel">Down</sys:String>
     <sys:String x:Key="LOCQueueEmptyTitle">Queue is empty</sys:String>
     <sys:String x:Key="LOCQueueEmptyHint">Add games to your library, then check the queue settings panel to control what shows up here.</sys:String>
+    <sys:String x:Key="LOCMenuImportQueueProperties">Import Queue Properties from CSV…</sys:String>
+    <sys:String x:Key="LOCQueueImportDialogTitle">Import Queue Properties</sys:String>
+    <sys:String x:Key="LOCQueueImportDialogFilter">CSV files|*.csv</sys:String>
+    <sys:String x:Key="LOCQueueImportSummary">Updated {0} game(s). Matched {1}, not found {2}, ambiguous {3}, errors {4}.</sys:String>
+    <sys:String x:Key="LOCQueueImportSeeReviewFile">Items needing review were written to:&#xA;{0}</sys:String>
+    <sys:String x:Key="LOCQueueImportFailed">CSV import failed: {0}</sys:String>
 </ResourceDictionary>
