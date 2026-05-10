@@ -1284,8 +1284,11 @@ Open new issue on Playnite's GitHub page with a request to fix corruption in you
     <sys:String x:Key="LOCQueueBufferSeries">Series buffer</sys:String>
     <sys:String x:Key="LOCQueueBufferDeveloper">Developer buffer</sys:String>
     <sys:String x:Key="LOCQueueBufferGenre">Genre buffer</sys:String>
+    <sys:String x:Key="LOCQueueBufferType">Buffer</sys:String>
     <sys:String x:Key="LOCQueuePushIfPlaying">Push back if matching a Playing game</sys:String>
-    <sys:String x:Key="LOCQueueRecentCompletedCountHint">Numbers above are the count of recently completed games to buffer against. Set 0 to disable the recent-completed part.</sys:String>
+    <sys:String x:Key="LOCQueuePushIfPlayingShort">Playing</sys:String>
+    <sys:String x:Key="LOCQueueRecentCompletedCount">Recent</sys:String>
+    <sys:String x:Key="LOCQueueRecentCompletedCountHint">Enable a buffer to prevent the queue from displaying concurrent games of the same series, developer, etc. Add a number to prevent concurrency across recent games completed.</sys:String>
     <sys:String x:Key="LOCQueueGroupingTitle">Grouping</sys:String>
     <sys:String x:Key="LOCQueueGroupByDeveloper">Group by developer</sys:String>
     <sys:String x:Key="LOCQueueGroupBySeries">Group by series</sys:String>

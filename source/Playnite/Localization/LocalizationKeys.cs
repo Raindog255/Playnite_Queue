@@ -4578,11 +4578,23 @@ namespace Playnite
         /// </summary>
         public const string QueueBufferGenre = "LOCQueueBufferGenre";
         /// <summary>
+        /// Buffer
+        /// </summary>
+        public const string QueueBufferType = "LOCQueueBufferType";
+        /// <summary>
         /// Push back if matching a Playing game
         /// </summary>
         public const string QueuePushIfPlaying = "LOCQueuePushIfPlaying";
         /// <summary>
-        /// Numbers above are the count of recently completed games to buffer against. Set 0 to disable the recent-completed part.
+        /// Playing
+        /// </summary>
+        public const string QueuePushIfPlayingShort = "LOCQueuePushIfPlayingShort";
+        /// <summary>
+        /// Recent
+        /// </summary>
+        public const string QueueRecentCompletedCount = "LOCQueueRecentCompletedCount";
+        /// <summary>
+        /// Enable a buffer to prevent the queue from displaying concurrent games of the same series, developer, etc. Add a number to prevent concurrency across recent games completed.
         /// </summary>
         public const string QueueRecentCompletedCountHint = "LOCQueueRecentCompletedCountHint";
         /// <summary>

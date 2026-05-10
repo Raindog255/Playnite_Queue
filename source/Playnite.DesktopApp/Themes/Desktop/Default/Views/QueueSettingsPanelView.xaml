@@ -131,28 +131,108 @@
 
                                 <GroupBox Header="{DynamicResource LOCQueueBuffersTitle}" Margin="0,0,0,12">
                                     <StackPanel Margin="8">
-                                        <TextBlock Text="{DynamicResource LOCQueueBufferStyle}" FontWeight="SemiBold" />
-                                        <CheckBox Content="{DynamicResource LOCQueuePushIfPlaying}"
-                                                  IsChecked="{Binding Settings.StyleBuffer.PushIfPlayingMatches, RelativeSource={RelativeSource TemplatedParent}}" />
-                                        <TextBox Text="{Binding Settings.StyleBuffer.RecentCompletedCount, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
-                                                 Margin="0,2,0,10" />
+                                        <Grid Margin="0,0,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="92" />
+                                            </Grid.ColumnDefinitions>
 
-                                        <TextBlock Text="{DynamicResource LOCQueueBufferSeries}" FontWeight="SemiBold" />
-                                        <CheckBox Content="{DynamicResource LOCQueuePushIfPlaying}"
-                                                  IsChecked="{Binding Settings.SeriesBuffer.PushIfPlayingMatches, RelativeSource={RelativeSource TemplatedParent}}" />
-                                        <TextBox Text="{Binding Settings.SeriesBuffer.RecentCompletedCount, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
-                                                 Margin="0,2,0,10" />
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{DynamicResource LOCQueueBufferType}"
+                                                       FontWeight="SemiBold"
+                                                       Margin="0,0,8,4" />
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{DynamicResource LOCQueuePushIfPlayingShort}"
+                                                       FontWeight="SemiBold"
+                                                       TextAlignment="Center"
+                                                       Margin="0,0,12,4" />
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{DynamicResource LOCQueueRecentCompletedCount}"
+                                                       FontWeight="SemiBold"
+                                                       TextAlignment="Right"
+                                                       Margin="0,0,0,4" />
+                                        </Grid>
 
-                                        <TextBlock Text="{DynamicResource LOCQueueBufferDeveloper}" FontWeight="SemiBold" />
-                                        <CheckBox Content="{DynamicResource LOCQueuePushIfPlaying}"
-                                                  IsChecked="{Binding Settings.DeveloperBuffer.PushIfPlayingMatches, RelativeSource={RelativeSource TemplatedParent}}" />
-                                        <TextBox Text="{Binding Settings.DeveloperBuffer.RecentCompletedCount, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
-                                                 Margin="0,2,0,10" />
+                                        <Grid Margin="0,0,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="92" />
+                                            </Grid.ColumnDefinitions>
 
-                                        <TextBlock Text="{DynamicResource LOCQueueBufferGenre}" FontWeight="SemiBold" />
-                                        <CheckBox Content="{DynamicResource LOCQueuePushIfPlaying}"
-                                                  IsChecked="{Binding Settings.GenreBuffer.PushIfPlayingMatches, RelativeSource={RelativeSource TemplatedParent}}" />
-                                        <TextBox Text="{Binding Settings.GenreBuffer.RecentCompletedCount, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{DynamicResource LOCQueueBufferStyle}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0" />
+                                            <CheckBox Grid.Column="1"
+                                                      HorizontalAlignment="Center"
+                                                      Margin="0,0,12,0"
+                                                      ToolTip="{DynamicResource LOCQueuePushIfPlaying}"
+                                                      IsChecked="{Binding Settings.StyleBuffer.PushIfPlayingMatches, RelativeSource={RelativeSource TemplatedParent}}" />
+                                            <TextBox Grid.Column="2"
+                                                     Text="{Binding Settings.StyleBuffer.RecentCompletedCount, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Grid>
+
+                                        <Grid Margin="0,0,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="92" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{DynamicResource LOCQueueBufferSeries}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0" />
+                                            <CheckBox Grid.Column="1"
+                                                      HorizontalAlignment="Center"
+                                                      Margin="0,0,12,0"
+                                                      ToolTip="{DynamicResource LOCQueuePushIfPlaying}"
+                                                      IsChecked="{Binding Settings.SeriesBuffer.PushIfPlayingMatches, RelativeSource={RelativeSource TemplatedParent}}" />
+                                            <TextBox Grid.Column="2"
+                                                     Text="{Binding Settings.SeriesBuffer.RecentCompletedCount, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Grid>
+
+                                        <Grid Margin="0,0,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="92" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{DynamicResource LOCQueueBufferDeveloper}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0" />
+                                            <CheckBox Grid.Column="1"
+                                                      HorizontalAlignment="Center"
+                                                      Margin="0,0,12,0"
+                                                      ToolTip="{DynamicResource LOCQueuePushIfPlaying}"
+                                                      IsChecked="{Binding Settings.DeveloperBuffer.PushIfPlayingMatches, RelativeSource={RelativeSource TemplatedParent}}" />
+                                            <TextBox Grid.Column="2"
+                                                     Text="{Binding Settings.DeveloperBuffer.RecentCompletedCount, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Grid>
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="92" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{DynamicResource LOCQueueBufferGenre}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,8,0" />
+                                            <CheckBox Grid.Column="1"
+                                                      HorizontalAlignment="Center"
+                                                      Margin="0,0,12,0"
+                                                      ToolTip="{DynamicResource LOCQueuePushIfPlaying}"
+                                                      IsChecked="{Binding Settings.GenreBuffer.PushIfPlayingMatches, RelativeSource={RelativeSource TemplatedParent}}" />
+                                            <TextBox Grid.Column="2"
+                                                     Text="{Binding Settings.GenreBuffer.RecentCompletedCount, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
+                                        </Grid>
 
                                         <TextBlock Text="{DynamicResource LOCQueueRecentCompletedCountHint}"
                                                    Foreground="{DynamicResource TextBrushDarker}"
