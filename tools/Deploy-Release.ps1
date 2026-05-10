@@ -189,6 +189,9 @@ $rc = $LASTEXITCODE
 if ($rc -ge 8) {
     throw "robocopy failed with exit code $rc."
 }
+# robocopy leaks its non-zero "success with extras" code into $LASTEXITCODE.
+# Reset it so callers (and the host shell) see a clean exit.
+$global:LASTEXITCODE = 0
 
 # --- Sanity check the deployed binary --------------------------------------
 
@@ -203,3 +206,5 @@ if (Test-Path $deployedDll) {
 Write-Host ""
 Write-Host "Launch with the desktop shortcut, or:" -ForegroundColor Yellow
 Write-Host "  & '$deployedExe'"
+
+exit 0
