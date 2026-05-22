@@ -4,6 +4,7 @@
                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                     xmlns:p="clr-namespace:Playnite;assembly=Playnite"
                     xmlns:conv="clr-namespace:Playnite.Converters;assembly=Playnite"
+                    xmlns:views="clr-namespace:Playnite.DesktopApp.Controls.Views;assembly=Playnite.DesktopApp"
                     mc:Ignorable="d">
 
     <Style TargetType="{x:Type Queue}">
@@ -18,7 +19,7 @@
 
                         <Grid>
                             <ExtendedListBox x:Name="PART_ListGames"
-                                             ItemsSource="{Binding QueueGames}"
+                                             ItemsSource="{Binding ViewModel.QueueGames, RelativeSource={RelativeSource AncestorType={x:Type views:Queue}}}"
                                              ItemContainerStyle="{DynamicResource GridViewItemStyle}"
                                              SelectionMode="Extended"
                                              BorderThickness="0"
@@ -27,7 +28,7 @@
                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
                                              ScrollViewer.PanningMode="VerticalOnly"
                                              Padding="20"
-                                             Visibility="{Binding IsEmpty, Converter={conv:InvertedBooleanToVisibilityConverter}}">
+                                             Visibility="{Binding ViewModel.IsEmpty, RelativeSource={RelativeSource AncestorType={x:Type views:Queue}}, Converter={conv:InvertedBooleanToVisibilityConverter}}">
                                 <ExtendedListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <WrapPanel Orientation="Horizontal" />
@@ -42,7 +43,7 @@
 
                             <StackPanel HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        Visibility="{Binding IsEmpty, Converter={conv:BooleanToVisibilityConverter}}">
+                                        Visibility="{Binding ViewModel.IsEmpty, RelativeSource={RelativeSource AncestorType={x:Type views:Queue}}, Converter={conv:BooleanToVisibilityConverter}}">
                                 <TextBlock Text="{DynamicResource LOCQueueEmptyTitle}"
                                            FontSize="{DynamicResource FontSizeLarge}"
                                            Foreground="{DynamicResource TextBrush}"

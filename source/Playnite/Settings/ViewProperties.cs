@@ -515,6 +515,61 @@ namespace Playnite
                 OnPropertyChanged();
             }
         }
+
+        private ListViewColumnProperty onHold = new ListViewColumnProperty(GameField.OnHold);
+        public ListViewColumnProperty OnHold
+        {
+            get => onHold;
+            set
+            {
+                onHold = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ListViewColumnProperty free = new ListViewColumnProperty(GameField.Free);
+        public ListViewColumnProperty Free
+        {
+            get => free;
+            set
+            {
+                free = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ListViewColumnProperty mobile = new ListViewColumnProperty(GameField.Mobile);
+        public ListViewColumnProperty Mobile
+        {
+            get => mobile;
+            set
+            {
+                mobile = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ListViewColumnProperty completedDate = new ListViewColumnProperty(GameField.CompletedDate);
+        public ListViewColumnProperty CompletedDate
+        {
+            get => completedDate;
+            set
+            {
+                completedDate = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ListViewColumnProperty acquiredDate = new ListViewColumnProperty(GameField.AcquiredDate);
+        public ListViewColumnProperty AcquiredDate
+        {
+            get => acquiredDate;
+            set
+            {
+                acquiredDate = value;
+                OnPropertyChanged();
+            }
+        }
     }
 
     public class ViewSettingsBase : ObservableObject

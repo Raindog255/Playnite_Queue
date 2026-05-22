@@ -25,6 +25,19 @@ namespace Playnite.DesktopApp.Controls.Views
         private QueueViewModel viewModel;
         private ExtendedListBox listGames;
 
+        /// <summary>
+        /// Binds the queue list to <see cref="QueueViewModel"/> before <see cref="FrameworkElement.DataContext"/>
+        /// is assigned on <see cref="Queue_Loaded"/>, so list/empty state never reads the wrong data context
+        /// (inherited <see cref="DesktopAppViewModel"/>) during initial measure.
+        /// </summary>
+        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register(
+            nameof(ViewModel),
+            typeof(QueueViewModel),
+            typeof(Queue),
+            new PropertyMetadata(null));
+
+        public QueueViewModel ViewModel => (QueueViewModel)GetValue(ViewModelProperty);
+
         static Queue()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Queue), new FrameworkPropertyMetadata(typeof(Queue)));
@@ -116,12 +129,14 @@ namespace Playnite.DesktopApp.Controls.Views
             if (viewModel == null)
             {
                 viewModel = new QueueViewModel(mainModel);
-                DataContext = viewModel;
             }
             else
             {
                 viewModel.Refresh();
             }
+
+            SetCurrentValue(ViewModelProperty, viewModel);
+            DataContext = viewModel;
         }
 
         private void Queue_Unloaded(object sender, RoutedEventArgs e)

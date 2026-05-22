@@ -17,12 +17,8 @@ namespace Playnite.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null)
-            {
-                return Visibility.Collapsed;
-            }
-
-            return ((bool)value) ? Visibility.Visible : Visibility.Collapsed;
+            // Binding failures supply DependencyProperty.UnsetValue; bad paths may send non-bools.
+            return value is bool b && b ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -47,7 +43,7 @@ namespace Playnite.Converters
                 return Visibility.Collapsed;
             }
 
-            return values.All(a => a is bool val && val == true) ? Visibility.Visible : Visibility.Collapsed;
+            return values.All(a => a is bool val && val) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

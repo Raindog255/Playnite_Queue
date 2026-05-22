@@ -266,7 +266,9 @@ namespace Playnite.DesktopApp.ViewModels
             sideItems.Insert(0, new SidebarWrapperItem(sanitizerItem, this));
             sideItems.Insert(0, new SidebarWrapperItem(queueItem, this));
             sideItems.Insert(0, new SidebarWrapperItem(libraryItem, this));
-            sideItems[0].Command.Execute(null);
+            // sideItems[0] is Statistics (inserted last). Activating it before OpenDatabase() leaves
+            // LibraryStats.GlobalStats unset while the statistics templates bind; default to Library instead.
+            sideItems.First(a => a.SideItem is MainSidebarViewItem mi && mi.AppView == ApplicationView.Library).Command.Execute(null);
             SidebarItems.AddRange(sideItems);
         }
 

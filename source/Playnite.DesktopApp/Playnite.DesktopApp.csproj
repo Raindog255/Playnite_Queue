@@ -308,6 +308,7 @@
     <Compile Include="DesktopCollectionView.cs" />
     <Compile Include="DesktopDialogs.cs" />
     <Compile Include="DesktopGamesEditor.cs" />
+    <Compile Include="Converters\QueuePriorityRuleSummaryConverter.cs" />
     <Compile Include="Markups.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\ActionSelectionViewModel.cs" />

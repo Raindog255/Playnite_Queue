@@ -418,6 +418,8 @@ namespace Playnite.DesktopApp.ViewModels
                 return;
             }
 
+            LibraryStats?.Calculate();
+
             GamesView = new DesktopCollectionView(Database, AppSettings, Extensions);
             BindingOperations.EnableCollectionSynchronization(GamesView.Items, gamesLock);
             queueCompletedDateAutoFiller = new QueueCompletedDateAutoFiller(Database, AppSettings.QueueSettings);

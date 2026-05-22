@@ -135,6 +135,11 @@ namespace Playnite.DesktopApp.Controls
             AppSettings.ViewSettings.ListViewColumns.UserScore.PropertyChanged += ListViewColumn_PropertyChanged;
             AppSettings.ViewSettings.ListViewColumns.Version.PropertyChanged += ListViewColumn_PropertyChanged;
             AppSettings.ViewSettings.ListViewColumns.Roms.PropertyChanged += ListViewColumn_PropertyChanged;
+            AppSettings.ViewSettings.ListViewColumns.OnHold.PropertyChanged += ListViewColumn_PropertyChanged;
+            AppSettings.ViewSettings.ListViewColumns.Free.PropertyChanged += ListViewColumn_PropertyChanged;
+            AppSettings.ViewSettings.ListViewColumns.Mobile.PropertyChanged += ListViewColumn_PropertyChanged;
+            AppSettings.ViewSettings.ListViewColumns.CompletedDate.PropertyChanged += ListViewColumn_PropertyChanged;
+            AppSettings.ViewSettings.ListViewColumns.AcquiredDate.PropertyChanged += ListViewColumn_PropertyChanged;
         }
 
         private void ListViewColumn_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -327,6 +332,26 @@ namespace Playnite.DesktopApp.Controls
             else if (field == GameField.Roms)
             {
                 newColumn = CreateColumn(field, SortOrder.RomList, "CellTemplateRoms", "HeaderTemplateRoms");
+            }
+            else if (field == GameField.OnHold)
+            {
+                newColumn = CreateColumn(field, SortOrder.OnHold, "CellTemplateOnHold", "HeaderTemplateOnHold");
+            }
+            else if (field == GameField.Free)
+            {
+                newColumn = CreateColumn(field, SortOrder.Free, "CellTemplateFree", "HeaderTemplateFree");
+            }
+            else if (field == GameField.Mobile)
+            {
+                newColumn = CreateColumn(field, SortOrder.Mobile, "CellTemplateMobile", "HeaderTemplateMobile");
+            }
+            else if (field == GameField.CompletedDate)
+            {
+                newColumn = CreateColumn(field, SortOrder.CompletedDate, "CellTemplateCompletedDate", "HeaderTemplateCompletedDate");
+            }
+            else if (field == GameField.AcquiredDate)
+            {
+                newColumn = CreateColumn(field, SortOrder.AcquiredDate, "CellTemplateAcquiredDate", "HeaderTemplateAcquiredDate");
             }
 
             return newColumn;

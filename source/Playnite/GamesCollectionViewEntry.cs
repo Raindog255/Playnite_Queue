@@ -86,6 +86,11 @@ namespace Playnite
         public string InstallDriveGroup => Game.GetInstallDriveGroup();
         public InstallSizeGroup InstallSizeGroup => Game.GetInstallSizeGroup();
         public bool OverrideInstallState => Game.OverrideInstallState;
+        public bool OnHold => Game.OnHold;
+        public bool Free => Game.Free;
+        public bool Mobile => Game.Mobile;
+        public DateTime? CompletedDate => Game.CompletedDate;
+        public DateTime? AcquiredDate => Game.AcquiredDate;
 
         public List<Guid> CategoryIds => Game.CategoryIds;
         public List<Guid> GenreIds => Game.GenreIds;

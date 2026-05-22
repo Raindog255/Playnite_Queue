@@ -270,7 +270,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{DynamicResource LOCGameROMTitle}" />
                 <ContentControl Style="{StaticResource SortIndicator}"
-                                Visibility="{pmrk:Settings ViewSettings.SortingOrder, Converter={StaticResource EnumCompVisibilityConverter}, ConverterParameter={x:Static sdkm:SortOrder.InstallSize}}"/>
+                                Visibility="{pmrk:Settings ViewSettings.SortingOrder, Converter={StaticResource EnumCompVisibilityConverter}, ConverterParameter={x:Static sdkm:SortOrder.RomList}}"/>
             </StackPanel>
         </DataTemplate>
 
@@ -413,6 +413,66 @@
         <DataTemplate x:Key="CellTemplateCommunityScore">
             <TextBlock Text="{Binding CommunityScore, Mode=OneWay}" />
         </DataTemplate>
+
+        <DataTemplate x:Key="HeaderTemplateOnHold">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{DynamicResource LOCGameOnHoldTitle}" />
+                <ContentControl Style="{StaticResource SortIndicator}"
+                                Visibility="{pmrk:Settings ViewSettings.SortingOrder, Converter={StaticResource EnumCompVisibilityConverter}, ConverterParameter={x:Static sdkm:SortOrder.OnHold}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="CellTemplateOnHold">
+            <TextBlock Text="{Binding OnHold, Mode=OneWay, Converter={StaticResource BoolToYesNoConverter}}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="HeaderTemplateFree">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{DynamicResource LOCGameFreeTitle}" />
+                <ContentControl Style="{StaticResource SortIndicator}"
+                                Visibility="{pmrk:Settings ViewSettings.SortingOrder, Converter={StaticResource EnumCompVisibilityConverter}, ConverterParameter={x:Static sdkm:SortOrder.Free}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="CellTemplateFree">
+            <TextBlock Text="{Binding Free, Mode=OneWay, Converter={StaticResource BoolToYesNoConverter}}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="HeaderTemplateMobile">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{DynamicResource LOCGameMobileTitle}" />
+                <ContentControl Style="{StaticResource SortIndicator}"
+                                Visibility="{pmrk:Settings ViewSettings.SortingOrder, Converter={StaticResource EnumCompVisibilityConverter}, ConverterParameter={x:Static sdkm:SortOrder.Mobile}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="CellTemplateMobile">
+            <TextBlock Text="{Binding Mobile, Mode=OneWay, Converter={StaticResource BoolToYesNoConverter}}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="HeaderTemplateCompletedDate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{DynamicResource LOCCompletedDateLabel}" />
+                <ContentControl Style="{StaticResource SortIndicator}"
+                                Visibility="{pmrk:Settings ViewSettings.SortingOrder, Converter={StaticResource EnumCompVisibilityConverter}, ConverterParameter={x:Static sdkm:SortOrder.CompletedDate}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="CellTemplateCompletedDate">
+            <TextBlock Text="{Binding CompletedDate, Mode=OneWay, Converter={StaticResource NullableDateToStringConverter}, ConverterParameter={pmrk:Settings DateTimeFormatAdded, DirectValue=True}}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="HeaderTemplateAcquiredDate">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{DynamicResource LOCAcquiredDateLabel}" />
+                <ContentControl Style="{StaticResource SortIndicator}"
+                                Visibility="{pmrk:Settings ViewSettings.SortingOrder, Converter={StaticResource EnumCompVisibilityConverter}, ConverterParameter={x:Static sdkm:SortOrder.AcquiredDate}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="CellTemplateAcquiredDate">
+            <TextBlock Text="{Binding AcquiredDate, Mode=OneWay, Converter={StaticResource NullableDateToStringConverter}, ConverterParameter={pmrk:Settings DateTimeFormatAdded, DirectValue=True}}" />
+        </DataTemplate>
     </UserControl.Resources>
 
     <ListView x:Name="GridGames" SelectionMode="Extended" BorderThickness="0"
@@ -525,6 +585,16 @@
                                     IsCheckable="True" IsChecked="{Binding ListViewColumns.Added.Visible}" />
                         <MenuItem Header="{DynamicResource LOCModifiedLabel}"
                                     IsCheckable="True" IsChecked="{Binding ListViewColumns.Modified.Visible}" />
+                        <MenuItem Header="{DynamicResource LOCGameOnHoldTitle}"
+                                    IsCheckable="True" IsChecked="{Binding ListViewColumns.OnHold.Visible}" />
+                        <MenuItem Header="{DynamicResource LOCGameFreeTitle}"
+                                    IsCheckable="True" IsChecked="{Binding ListViewColumns.Free.Visible}" />
+                        <MenuItem Header="{DynamicResource LOCGameMobileTitle}"
+                                    IsCheckable="True" IsChecked="{Binding ListViewColumns.Mobile.Visible}" />
+                        <MenuItem Header="{DynamicResource LOCAcquiredDateLabel}"
+                                    IsCheckable="True" IsChecked="{Binding ListViewColumns.AcquiredDate.Visible}" />
+                        <MenuItem Header="{DynamicResource LOCCompletedDateLabel}"
+                                    IsCheckable="True" IsChecked="{Binding ListViewColumns.CompletedDate.Visible}" />
                         <MenuItem Header="{DynamicResource LOCUserScore}"
                                     IsCheckable="True" IsChecked="{Binding ListViewColumns.UserScore.Visible}" />
                         <MenuItem Header="{DynamicResource LOCCriticScore}"

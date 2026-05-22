@@ -60,6 +60,11 @@ namespace Playnite.DesktopApp.Controls
         {
             base.OnApplyTemplate();
 
+            if (mainModel == null && !DesignerProperties.GetIsInDesignMode(this))
+            {
+                return;
+            }
+
             PanelHost = Template.FindName("PART_PanelHost", this) as FrameworkElement;
             if (PanelHost != null)
             {

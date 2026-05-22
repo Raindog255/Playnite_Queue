@@ -4514,43 +4514,47 @@ namespace Playnite
         /// </summary>
         public const string Queue = "LOCQueue";
         /// <summary>
-        /// Queue settings
+        /// Queue Settings
         /// </summary>
         public const string QueueSettingsTitle = "LOCQueueSettingsTitle";
         /// <summary>
-        /// Basics
+        /// General (queue basics section)
         /// </summary>
         public const string QueueBasicsTitle = "LOCQueueBasicsTitle";
         /// <summary>
-        /// Visible titles
+        /// Active Titles
         /// </summary>
         public const string QueueVisibleCount = "LOCQueueVisibleCount";
         /// <summary>
-        /// Date source
+        /// Sort Date
         /// </summary>
         public const string QueueDateSource = "LOCQueueDateSource";
         /// <summary>
-        /// Completion statuses
+        /// Status (completion statuses section)
         /// </summary>
         public const string QueueCompletionStatusesTitle = "LOCQueueCompletionStatusesTitle";
         /// <summary>
-        /// Playing status
+        /// Active Status
         /// </summary>
         public const string QueuePlayingStatus = "LOCQueuePlayingStatus";
         /// <summary>
-        /// Terminal statuses
+        /// Terminal Statuses
         /// </summary>
         public const string QueueTerminalStatuses = "LOCQueueTerminalStatuses";
         /// <summary>
-        /// Priority rules
+        /// Priority (queue priority rules section)
         /// </summary>
         public const string QueuePriorityRules = "LOCQueuePriorityRules";
         /// <summary>
-        /// ID value
+        /// Property (priority rule field)
+        /// </summary>
+        public const string QueuePriorityProperty = "LOCQueuePriorityProperty";
+        /// <summary>
+        /// Value (priority rule value)
         /// </summary>
         public const string QueuePriorityValue = "LOCQueuePriorityValue";
         /// <summary>
-        /// Boolean value
+        /// Boolean Value
         /// </summary>
         public const string QueuePriorityBoolValue = "LOCQueuePriorityBoolValue";
         /// <summary>
