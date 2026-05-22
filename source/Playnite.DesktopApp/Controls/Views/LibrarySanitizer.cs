@@ -11,7 +11,7 @@ namespace Playnite.DesktopApp.Controls.Views
     /// that watches the database + sanitizer settings and rebuilds the
     /// action card list. The XAML template binds an ItemsControl to
     /// <c>LibrarySanitizerViewModel.Actions</c> and routes per-card
-    /// commands (Apply/Dismiss/ToggleEdit) back through the view model.
+    /// commands (Apply/Dismiss/EditGame) back through the view model.
     /// </summary>
     public class LibrarySanitizer : Control
     {

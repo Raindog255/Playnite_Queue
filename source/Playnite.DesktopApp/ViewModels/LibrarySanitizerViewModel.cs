@@ -21,12 +21,9 @@ namespace Playnite.DesktopApp.ViewModels
     /// the pure <see cref="LibrarySanitizerEngine"/> for action generation.
     /// </summary>
     /// <remarks>
-    /// Apply, Dismiss, Restore, Edit, and Refresh commands all live here so
-    /// the view template can stay declarative. Per-action edit toggle state
-    /// is tracked in <see cref="ExpandedSignatures"/> rather than on the
-    /// action objects -- the engine treats actions as throwaway and
-    /// regenerates them on every rebuild, so any per-card UI state must
-    /// survive that churn by being keyed off Signature.
+    /// Apply, Dismiss, Restore, EditGame, and Refresh commands all live here so
+    /// the view template can stay declarative. The engine treats actions as
+    /// throwaway and regenerates them on every rebuild.
     /// </remarks>
     public class LibrarySanitizerViewModel : ObservableObject, IDisposable
     {
@@ -47,19 +44,13 @@ namespace Playnite.DesktopApp.ViewModels
 
         public ObservableCollection<SanitizerAction> Actions { get; } = new ObservableCollection<SanitizerAction>();
 
-        /// <summary>
-        /// Set of action signatures the user has expanded for in-place
-        /// editing. Persisted only for the lifetime of the view model.
-        /// </summary>
-        public HashSet<string> ExpandedSignatures { get; } = new HashSet<string>();
-
         public bool IsEmpty => Actions.Count == 0;
 
         public int ActionCount => Actions.Count;
 
         public RelayCommand<SanitizerAction> ApplyCommand { get; }
         public RelayCommand<SanitizerAction> DismissCommand { get; }
-        public RelayCommand<SanitizerAction> ToggleEditCommand { get; }
+        public RelayCommand<SanitizerAction> EditGameCommand { get; }
         public RelayCommand RestoreDismissedCommand { get; }
         public RelayCommand RefreshCommand { get; }
 
@@ -80,7 +71,7 @@ namespace Playnite.DesktopApp.ViewModels
 
             ApplyCommand = new RelayCommand<SanitizerAction>(ApplyAction, a => a != null);
             DismissCommand = new RelayCommand<SanitizerAction>(DismissAction, a => a != null);
-            ToggleEditCommand = new RelayCommand<SanitizerAction>(ToggleEdit, a => a != null);
+            EditGameCommand = new RelayCommand<SanitizerAction>(EditGame, a => a?.GetTargetGame() != null);
             RestoreDismissedCommand = new RelayCommand(RestoreDismissed,
                 () => boundSettings?.DismissedActionSignatures?.Count > 0);
             RefreshCommand = new RelayCommand(Refresh);
@@ -325,19 +316,6 @@ namespace Playnite.DesktopApp.ViewModels
 
         private void ApplyActions(IList<SanitizerAction> next)
         {
-            // Drop expanded-signature entries that no longer correspond to a
-            // visible card so the set doesn't leak across rebuilds.
-            var nextSignatures = new HashSet<string>(next.Select(a => a.Signature));
-            ExpandedSignatures.RemoveWhere(s => !nextSignatures.Contains(s));
-
-            // Restore IsEditing on the freshly built action instances so the
-            // user's edit-mode toggle survives rebuilds (the engine throws
-            // away the previous instances every pass).
-            foreach (var a in next)
-            {
-                a.IsEditing = ExpandedSignatures.Contains(a.Signature);
-            }
-
             lock (actionsLock)
             {
                 Actions.Clear();
@@ -364,7 +342,6 @@ namespace Playnite.DesktopApp.ViewModels
                 {
                     Actions.Remove(action);
                 }
-                ExpandedSignatures.Remove(action.Signature);
             }
             catch (Exception ex)
             {
@@ -386,25 +363,13 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 Actions.Remove(action);
             }
-            ExpandedSignatures.Remove(action.Signature);
         }
 
-        private void ToggleEdit(SanitizerAction action)
+        private void EditGame(SanitizerAction action)
         {
-            if (action == null) return;
-            var nowEditing = !ExpandedSignatures.Contains(action.Signature);
-            if (nowEditing)
-            {
-                ExpandedSignatures.Add(action.Signature);
-            }
-            else
-            {
-                ExpandedSignatures.Remove(action.Signature);
-            }
-            // Push state onto the action so its bound visibility flags
-            // refresh immediately (the action is a per-card ObservableObject).
-            action.IsEditing = nowEditing;
-            OnPropertyChanged(nameof(ExpandedSignatures));
+            var game = action?.GetTargetGame();
+            if (game == null) return;
+            mainModel.EditGame(game);
         }
 
         private void RestoreDismissed()
@@ -415,7 +380,5 @@ namespace Playnite.DesktopApp.ViewModels
             // the rebuild and re-evaluates the restore button availability.
         }
 
-        public bool IsActionExpanded(SanitizerAction action) =>
-            action != null && ExpandedSignatures.Contains(action.Signature);
     }
 }

@@ -136,6 +136,8 @@ namespace Playnite.LibrarySanitizer
 
         public override string DisplayTitle => SourceGameName;
 
+        public override Game GetTargetGame() => sourceRef;
+
         public override string Signature
         {
             get

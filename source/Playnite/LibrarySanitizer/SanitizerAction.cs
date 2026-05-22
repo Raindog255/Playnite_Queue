@@ -78,6 +78,12 @@ namespace Playnite.LibrarySanitizer
         protected virtual void OnEditingChanged() { }
 
         /// <summary>
+        /// When this action targets a <see cref="Game"/>, returns that record
+        /// so the sanitizer view can open the standard game edit window.
+        /// </summary>
+        public virtual Game GetTargetGame() => null;
+
+        /// <summary>
         /// Commits the proposed change. Implementations are responsible for
         /// calling the appropriate IItemCollection.Update method so listeners
         /// (Library / Queue views) refresh.
@@ -140,6 +146,9 @@ namespace Playnite.LibrarySanitizer
         public override SanitizerActionType Type => SanitizerActionType.Sanitize;
 
         public override string DisplayTitle => OriginalName;
+
+        public override Game GetTargetGame() =>
+            TargetKind == SanitizerTargetKind.Game ? gameRef : null;
 
         /// <summary>
         /// Whether the SortingName row should be visible on the card.
