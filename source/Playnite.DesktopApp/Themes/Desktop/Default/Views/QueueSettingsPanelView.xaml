@@ -112,8 +112,7 @@
                                                               DisplayMemberPath="Name"
                                                               SelectedValue="{Binding NewPriorityValueId, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
                                                               MaxDropDownHeight="280"
-                                                              IsTextSearchEnabled="True"
-                                                              IsTextSearchCaseSensitive="False" />
+                                                              IsTextSearchEnabled="False" />
                                                 </StackPanel>
 
                                                 <StackPanel Margin="0,10,0,0"

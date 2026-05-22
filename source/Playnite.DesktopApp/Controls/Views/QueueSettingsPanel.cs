@@ -1,4 +1,5 @@
 using Playnite.Common;
+using Playnite.Database;
 using Playnite.DesktopApp.ViewModels;
 using Playnite.SDK;
 using Playnite.SDK.Models;
@@ -83,11 +84,23 @@ namespace Playnite.DesktopApp.Controls.Views
 
     public class QueueSettingsPanel : Control, INotifyPropertyChanged
     {
+        private const int MaxPriorityValuePickerResults = 200;
+
         private readonly DesktopAppViewModel mainModel;
 
         private QueueSettings attachedQueueSettings;
         private ObservableCollection<Guid> subscribedTerminalIds;
         private ObservableCollection<QueuePriorityRule> subscribedPriorityRules;
+
+        /// <summary>
+        /// Pre-sorted priority value options per field (built once, filtered into the ComboBox).
+        /// </summary>
+        private readonly Dictionary<QueuePriorityField, IReadOnlyList<QueuePriorityValueOption>> priorityOptionsCache =
+            new Dictionary<QueuePriorityField, IReadOnlyList<QueuePriorityValueOption>>();
+
+        private bool priorityOptionsCacheValid;
+        private GameDatabase subscribedPriorityCacheDatabase;
+        private DispatcherTimer priorityFilterDebounceTimer;
 
         /// <summary>
         /// Guard against re-entrant refresh: clearing picker ItemsSource forces the playing-status
@@ -111,9 +124,6 @@ namespace Playnite.DesktopApp.Controls.Views
 
         public ObservableCollection<CompletionStatus> TerminalAddPickerItems { get; } =
             new ObservableCollection<CompletionStatus>();
-
-        private readonly Dictionary<QueuePriorityField, List<QueuePriorityValueOption>> priorityOptionsByField =
-            new Dictionary<QueuePriorityField, List<QueuePriorityValueOption>>();
 
         public ObservableCollection<QueuePriorityValueOption> NewPriorityFilteredValueOptions { get; } =
             new ObservableCollection<QueuePriorityValueOption>();
@@ -205,7 +215,7 @@ namespace Playnite.DesktopApp.Controls.Views
             {
                 newPriorityValueSearchText = value;
                 OnPropertyChanged();
-                ApplyNewPriorityValueFilter();
+                ScheduleApplyNewPriorityValueFilter();
             }
         }
 
@@ -257,8 +267,10 @@ namespace Playnite.DesktopApp.Controls.Views
         private void QueueSettingsPanel_Loaded(object sender, RoutedEventArgs e)
         {
             AttachQueueSettingsHandlers();
+            SubscribePriorityOptionsCacheInvalidation();
             if (mainModel?.Database?.IsOpen == true)
             {
+                EnsurePriorityOptionsCache();
                 RefreshStatusPickerLists();
             }
         }
@@ -266,6 +278,8 @@ namespace Playnite.DesktopApp.Controls.Views
         private void QueueSettingsPanel_Unloaded(object sender, RoutedEventArgs e)
         {
             DetachQueueSettingsHandlers();
+            UnsubscribePriorityOptionsCacheInvalidation();
+            priorityFilterDebounceTimer?.Stop();
         }
 
         private void AttachQueueSettingsHandlers()
@@ -410,17 +424,13 @@ namespace Playnite.DesktopApp.Controls.Views
         private void LoadOptions()
         {
             masterCompletionStatuses.Clear();
-            RebuildPriorityOptionBuckets();
+            InvalidatePriorityOptionsCache();
 
             var database = mainModel?.Database;
             if (database?.IsOpen == true)
             {
                 database.CompletionStatuses.OrderBy(a => a.Name).ForEach(masterCompletionStatuses.Add);
-                AddPriorityValuesToField(QueuePriorityField.Series, database.Series);
-                AddPriorityValuesToField(QueuePriorityField.Developer, database.Companies);
-                AddLibraryPriorityValuesToField(mainModel.Extensions?.LibraryPlugins);
-                AddPriorityValuesToField(QueuePriorityField.Style, database.Categories);
-                AddPriorityValuesToField(QueuePriorityField.Genre, database.Genres);
+                EnsurePriorityOptionsCache();
             }
 
             ApplyNewPriorityValueFilter();
@@ -431,17 +441,154 @@ namespace Playnite.DesktopApp.Controls.Views
             }
         }
 
-        private void RebuildPriorityOptionBuckets()
-        {
-            foreach (QueuePriorityField field in Enum.GetValues(typeof(QueuePriorityField)))
-            {
-                priorityOptionsByField[field] = new List<QueuePriorityValueOption>();
-            }
-        }
-
         private static bool IsIdBasedPriorityField(QueuePriorityField field) =>
             field != QueuePriorityField.Free && field != QueuePriorityField.Mobile;
 
+        private void InvalidatePriorityOptionsCache()
+        {
+            priorityOptionsCacheValid = false;
+        }
+
+        private void EnsurePriorityOptionsCache()
+        {
+            if (priorityOptionsCacheValid)
+            {
+                return;
+            }
+
+            var db = mainModel?.Database as GameDatabase;
+            if (db?.IsOpen != true)
+            {
+                return;
+            }
+
+            RebuildPriorityOptionsCache(db);
+            priorityOptionsCacheValid = true;
+        }
+
+        private void RebuildPriorityOptionsCache(GameDatabase db)
+        {
+            priorityOptionsCache.Clear();
+            foreach (QueuePriorityField field in Enum.GetValues(typeof(QueuePriorityField)))
+            {
+                priorityOptionsCache[field] = Array.Empty<QueuePriorityValueOption>();
+            }
+
+            priorityOptionsCache[QueuePriorityField.Series] = BuildSortedPriorityOptions(
+                db.UsedSeries.Select(id => db.Series.Get(id)));
+            priorityOptionsCache[QueuePriorityField.Developer] = BuildSortedPriorityOptions(
+                db.UsedDevelopers.Select(id => db.Companies.Get(id)));
+            priorityOptionsCache[QueuePriorityField.Style] = BuildSortedPriorityOptions(
+                db.UsedCategories.Select(id => db.Categories.Get(id)));
+            priorityOptionsCache[QueuePriorityField.Genre] = BuildSortedPriorityOptions(
+                db.UsedGenres.Select(id => db.Genres.Get(id)));
+            priorityOptionsCache[QueuePriorityField.Library] = BuildLibraryPriorityOptions(
+                mainModel.Extensions?.LibraryPlugins);
+        }
+
+        private static IReadOnlyList<QueuePriorityValueOption> BuildSortedPriorityOptions(
+            IEnumerable<DatabaseObject> items)
+        {
+            if (items == null)
+            {
+                return Array.Empty<QueuePriorityValueOption>();
+            }
+
+            return items
+                .Where(item => item != null)
+                .OrderBy(item => item.Name)
+                .Select(item => new QueuePriorityValueOption(item.Id, item.Name))
+                .ToList();
+        }
+
+        private static IReadOnlyList<QueuePriorityValueOption> BuildLibraryPriorityOptions(
+            IEnumerable<LibraryPlugin> libraryPlugins)
+        {
+            var libs = new List<LibraryPlugin>();
+            if (libraryPlugins != null)
+            {
+                libs.AddRange(libraryPlugins);
+            }
+
+            libs.Add(new FakePlayniteLibraryPlugin());
+            return libs
+                .OrderBy(a => a.Name)
+                .Select(plugin => new QueuePriorityValueOption(plugin.Id, plugin.Name))
+                .ToList();
+        }
+
+        private void SubscribePriorityOptionsCacheInvalidation()
+        {
+            UnsubscribePriorityOptionsCacheInvalidation();
+            var db = mainModel?.Database as GameDatabase;
+            if (db == null)
+            {
+                return;
+            }
+
+            subscribedPriorityCacheDatabase = db;
+            db.SeriesInUseUpdated += PriorityOptionsCache_InUseChanged;
+            db.DevelopersInUseUpdated += PriorityOptionsCache_InUseChanged;
+            db.CategoriesInUseUpdated += PriorityOptionsCache_InUseChanged;
+            db.GenresInUseUpdated += PriorityOptionsCache_InUseChanged;
+        }
+
+        private void UnsubscribePriorityOptionsCacheInvalidation()
+        {
+            if (subscribedPriorityCacheDatabase == null)
+            {
+                return;
+            }
+
+            var db = subscribedPriorityCacheDatabase;
+            db.SeriesInUseUpdated -= PriorityOptionsCache_InUseChanged;
+            db.DevelopersInUseUpdated -= PriorityOptionsCache_InUseChanged;
+            db.CategoriesInUseUpdated -= PriorityOptionsCache_InUseChanged;
+            db.GenresInUseUpdated -= PriorityOptionsCache_InUseChanged;
+            subscribedPriorityCacheDatabase = null;
+        }
+
+        private void PriorityOptionsCache_InUseChanged(object sender, EventArgs e) =>
+            RefreshPriorityOptionsCache();
+
+        private void RefreshPriorityOptionsCache()
+        {
+            InvalidatePriorityOptionsCache();
+            if (mainModel?.Database?.IsOpen == true)
+            {
+                EnsurePriorityOptionsCache();
+                ApplyNewPriorityValueFilter();
+            }
+        }
+
+        private void ScheduleApplyNewPriorityValueFilter()
+        {
+            if (Dispatcher.HasShutdownStarted)
+            {
+                return;
+            }
+
+            if (priorityFilterDebounceTimer == null)
+            {
+                priorityFilterDebounceTimer = new DispatcherTimer
+                {
+                    Interval = TimeSpan.FromMilliseconds(200)
+                };
+                priorityFilterDebounceTimer.Tick += (_, __) =>
+                {
+                    priorityFilterDebounceTimer.Stop();
+                    ApplyNewPriorityValueFilter();
+                };
+            }
+
+            priorityFilterDebounceTimer.Stop();
+            priorityFilterDebounceTimer.Start();
+        }
+
+        /// <summary>
+        /// Copies a capped slice from <see cref="priorityOptionsCache"/> into the bound ComboBox.
+        /// Empty search shows no items (type in the search box first) so WPF does not materialize thousands of rows.
+        /// </summary>
         private void ApplyNewPriorityValueFilter()
         {
             NewPriorityFilteredValueOptions.Clear();
@@ -450,19 +597,36 @@ namespace Playnite.DesktopApp.Controls.Views
                 return;
             }
 
-            if (!priorityOptionsByField.TryGetValue(NewPriorityField.Value, out var full) || full == null)
+            EnsurePriorityOptionsCache();
+            if (!priorityOptionsCache.TryGetValue(NewPriorityField.Value, out var full) || full.Count == 0)
             {
                 return;
             }
 
             var q = (NewPriorityValueSearchText ?? string.Empty).Trim();
-            foreach (var opt in full.OrderBy(o => o.Name))
+            IEnumerable<QueuePriorityValueOption> matches;
+            if (q.Length == 0)
             {
-                if (q.Length == 0 ||
-                    opt.Name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0)
+                matches = Enumerable.Empty<QueuePriorityValueOption>();
+            }
+            else
+            {
+                matches = full.Where(opt => opt.Name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
+            var results = matches.Take(MaxPriorityValuePickerResults).ToList();
+            if (NewPriorityValueId.HasValue)
+            {
+                var selected = full.FirstOrDefault(opt => opt.Id == NewPriorityValueId.Value);
+                if (selected != null && results.All(opt => opt.Id != selected.Id))
                 {
-                    NewPriorityFilteredValueOptions.Add(opt);
+                    results.Insert(0, selected);
                 }
+            }
+
+            foreach (var opt in results)
+            {
+                NewPriorityFilteredValueOptions.Add(opt);
             }
         }
 
@@ -640,40 +804,6 @@ namespace Playnite.DesktopApp.Controls.Views
         {
             var cs = mainModel?.Database?.CompletionStatuses?.Get(statusId);
             return new QueueTerminalStatusRow(statusId, cs?.Name ?? statusId.ToString(), RemoveTerminalStatusCommand);
-        }
-
-        private void AddPriorityValuesToField<T>(QueuePriorityField field, IEnumerable<T> items)
-            where T : DatabaseObject
-        {
-            if (items == null || !priorityOptionsByField.TryGetValue(field, out var list))
-            {
-                return;
-            }
-
-            foreach (var item in items.OrderBy(a => a.Name))
-            {
-                list.Add(new QueuePriorityValueOption(item.Id, item.Name));
-            }
-        }
-
-        private void AddLibraryPriorityValuesToField(IEnumerable<LibraryPlugin> libraryPlugins)
-        {
-            if (!priorityOptionsByField.TryGetValue(QueuePriorityField.Library, out var list))
-            {
-                return;
-            }
-
-            var libs = new List<LibraryPlugin>();
-            if (libraryPlugins != null)
-            {
-                libs.AddRange(libraryPlugins.OrderBy(a => a.Name));
-            }
-
-            libs.Add(new FakePlayniteLibraryPlugin());
-            foreach (var plugin in libs.OrderBy(a => a.Name))
-            {
-                list.Add(new QueuePriorityValueOption(plugin.Id, plugin.Name));
-            }
         }
 
         private void RemovePriorityRule(QueuePriorityRule rule)
