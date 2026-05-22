@@ -67,6 +67,22 @@ namespace Playnite.Tests
         }
 
         [Test]
+        public void Build_EmitsActionForAllLowercaseSeriesName()
+        {
+            var s = Series("rogue legacy");
+
+            var actions = LibrarySanitizerEngine.BuildActions(
+                Enumerable.Empty<Game>(),
+                new[] { s },
+                Enumerable.Empty<Company>(),
+                SanitizeOnlySettings());
+
+            var sa = actions.OfType<SanitizeAction>().Single();
+            Assert.AreEqual(SanitizerTargetKind.Series, sa.TargetKind);
+            Assert.AreEqual("Rogue Legacy", sa.ProposedName);
+        }
+
+        [Test]
         public void Build_EmitsActionForSeriesAndCompany()
         {
             var s = Series("  Halo  ");

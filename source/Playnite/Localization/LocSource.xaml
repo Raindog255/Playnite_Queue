@@ -1350,6 +1350,7 @@ Open new issue on Playnite's GitHub page with a request to fix corruption in you
     <sys:String x:Key="LOCSanitizerRuleYearSuffix">Strip trailing (year) suffix</sys:String>
     <sys:String x:Key="LOCSanitizerRuleHtmlEntities">Decode HTML entities</sys:String>
     <sys:String x:Key="LOCSanitizerRuleAmpersand">Replace " &amp; " with " and "</sys:String>
+    <sys:String x:Key="LOCSanitizerRuleTitleCase">Title-case all-lowercase names</sys:String>
     <sys:String x:Key="LOCSanitizerEditionKeywordsTitle">Edition keywords</sys:String>
     <sys:String x:Key="LOCSanitizerRequiredFieldsTitle">Required fields</sys:String>
     <sys:String x:Key="LOCSanitizerRequiredCompletionStatus">Completion status</sys:String>

@@ -4837,6 +4837,10 @@ namespace Playnite
         /// </summary>
         public const string SanitizerRuleAmpersand = "LOCSanitizerRuleAmpersand";
         /// <summary>
+        /// Title-case all-lowercase names
+        /// </summary>
+        public const string SanitizerRuleTitleCase = "LOCSanitizerRuleTitleCase";
+        /// <summary>
         /// Edition keywords
         /// </summary>
         public const string SanitizerEditionKeywordsTitle = "LOCSanitizerEditionKeywordsTitle";

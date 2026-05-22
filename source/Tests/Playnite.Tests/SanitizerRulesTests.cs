@@ -28,6 +28,7 @@ namespace Playnite.Tests
             s.YearSuffixRule = false;
             s.HtmlEntitiesRule = false;
             s.AmpersandToAndRule = false;
+            s.TitleCaseRule = false;
             return s;
         }
 
@@ -344,6 +345,46 @@ namespace Playnite.Tests
             var r = SanitizerRules.Apply("Sid Meier&#39;s Civilization &amp; Friends", SanitizerScope.GameName, s);
             Assert.AreEqual("Sid Meier's Civilization & Friends", r.SanitizedName);
             CollectionAssert.Contains(r.AppliedRules, SanitizerRuleId.HtmlEntities);
+        }
+
+        // ---- Title case ----------------------------------------------------
+
+        [Test]
+        public void TitleCase_AllLowercaseSeriesName()
+        {
+            var s = AllOff();
+            s.TitleCaseRule = true;
+            var r = SanitizerRules.Apply("rogue legacy", SanitizerScope.SeriesName, s);
+            Assert.AreEqual("Rogue Legacy", r.SanitizedName);
+            CollectionAssert.Contains(r.AppliedRules, SanitizerRuleId.TitleCase);
+        }
+
+        [Test]
+        public void TitleCase_LeavesMixedCaseAlone()
+        {
+            var s = AllOff();
+            s.TitleCaseRule = true;
+            var r = SanitizerRules.Apply("Rogue Legacy", SanitizerScope.SeriesName, s);
+            Assert.AreEqual("Rogue Legacy", r.SanitizedName);
+            Assert.IsFalse(r.AppliedRules.Contains(SanitizerRuleId.TitleCase));
+        }
+
+        [Test]
+        public void TitleCase_HyphenatedWord()
+        {
+            var s = AllOff();
+            s.TitleCaseRule = true;
+            var r = SanitizerRules.Apply("half-life", SanitizerScope.GameName, s);
+            Assert.AreEqual("Half-Life", r.SanitizedName);
+        }
+
+        [Test]
+        public void TitleCase_DisabledLeavesLowercase()
+        {
+            var s = AllOff();
+            var r = SanitizerRules.Apply("rogue legacy", SanitizerScope.SeriesName, s);
+            Assert.AreEqual("rogue legacy", r.SanitizedName);
+            Assert.IsFalse(r.Changed);
         }
 
         // ---- End-to-end orchestration -------------------------------------

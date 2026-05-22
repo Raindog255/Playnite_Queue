@@ -134,6 +134,13 @@ namespace Playnite
             set { ampersandToAndRule = value; OnPropertyChanged(); }
         }
 
+        private bool titleCaseRule = true;
+        public bool TitleCaseRule
+        {
+            get => titleCaseRule;
+            set { titleCaseRule = value; OnPropertyChanged(); }
+        }
+
         private ObservableCollection<string> editionKeywords = new ObservableCollection<string>(DefaultEditionKeywords);
         public ObservableCollection<string> EditionKeywords
         {

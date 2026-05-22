@@ -84,7 +84,10 @@
                                                   IsChecked="{Binding Settings.HtmlEntitiesRule, RelativeSource={RelativeSource TemplatedParent}}"
                                                   Margin="0,0,0,4" />
                                         <CheckBox Content="{DynamicResource LOCSanitizerRuleAmpersand}"
-                                                  IsChecked="{Binding Settings.AmpersandToAndRule, RelativeSource={RelativeSource TemplatedParent}}" />
+                                                  IsChecked="{Binding Settings.AmpersandToAndRule, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRuleTitleCase}"
+                                                  IsChecked="{Binding Settings.TitleCaseRule, RelativeSource={RelativeSource TemplatedParent}}" />
                                     </StackPanel>
                                 </GroupBox>
 

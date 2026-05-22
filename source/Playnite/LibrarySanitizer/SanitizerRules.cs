@@ -22,6 +22,7 @@ namespace Playnite.LibrarySanitizer
         YearSuffix,
         HtmlEntities,
         AmpersandToAnd,
+        TitleCase,
     }
 
     /// <summary>
@@ -95,6 +96,7 @@ namespace Playnite.LibrarySanitizer
     /// 8. Ampersand -> and -- stylistic pass.
     /// 9. Whitespace -- final cleanup picks up any double-space artefacts
     ///    introduced by earlier substitutions.
+    /// 10. Title case -- capitalize all-lowercase names (e.g. "rogue legacy").
     /// </remarks>
     public static class SanitizerRules
     {
@@ -118,6 +120,7 @@ namespace Playnite.LibrarySanitizer
             if (settings.NumeralsRule) ApplyNumeralsRule(result);
             if (settings.AmpersandToAndRule) ApplyAmpersandToAnd(result);
             if (settings.WhitespaceRule) ApplyWhitespace(result);
+            if (settings.TitleCaseRule) ApplyTitleCase(result);
 
             return result;
         }
@@ -322,6 +325,88 @@ namespace Playnite.LibrarySanitizer
                 r.SanitizedName = output;
                 r.AppliedRules.Add(SanitizerRuleId.Whitespace);
             }
+        }
+
+        // -------------------------------------------------------------------
+        //  Title case (all-lowercase names)
+        // -------------------------------------------------------------------
+
+        internal static void ApplyTitleCase(SanitizationResult r)
+        {
+            var input = r.SanitizedName;
+            if (!IsAllLowercaseName(input))
+            {
+                return;
+            }
+
+            var output = ToTitleCaseWords(input);
+            if (!string.Equals(input, output, StringComparison.Ordinal))
+            {
+                r.SanitizedName = output;
+                r.AppliedRules.Add(SanitizerRuleId.TitleCase);
+            }
+        }
+
+        /// <summary>
+        /// True when the name contains at least one letter and no uppercase
+        /// letters, e.g. "rogue legacy" or "half-life".
+        /// </summary>
+        internal static bool IsAllLowercaseName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return false;
+            }
+
+            var hasLetter = false;
+            foreach (var ch in name)
+            {
+                if (!char.IsLetter(ch))
+                {
+                    continue;
+                }
+
+                hasLetter = true;
+                if (char.IsUpper(ch))
+                {
+                    return false;
+                }
+            }
+
+            return hasLetter;
+        }
+
+        /// <summary>
+        /// Capitalizes the first letter after word separators (space, hyphen,
+        /// colon, slash). Remaining letters in each word are lowercased.
+        /// </summary>
+        internal static string ToTitleCaseWords(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return name;
+            }
+
+            var sb = new StringBuilder(name.Length);
+            var capNext = true;
+            foreach (var ch in name)
+            {
+                if (char.IsLetter(ch))
+                {
+                    sb.Append(capNext ? char.ToUpperInvariant(ch) : char.ToLowerInvariant(ch));
+                    capNext = false;
+                }
+                else
+                {
+                    sb.Append(ch);
+                    if (ch == ' ' || ch == '-' || ch == ':' || ch == '/')
+                    {
+                        capNext = true;
+                    }
+                }
+            }
+
+            return sb.ToString();
         }
 
         // -------------------------------------------------------------------
