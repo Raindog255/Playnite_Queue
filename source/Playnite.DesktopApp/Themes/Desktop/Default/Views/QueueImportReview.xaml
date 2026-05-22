@@ -140,6 +140,9 @@
                                                                     Command="{Binding UseMatchCommand}"
                                                                     IsEnabled="{Binding HasSelectedMatch}"
                                                                     Margin="0,0,8,0" />
+                                                            <Button Content="{DynamicResource LOCQueueImportReviewCreateGame}"
+                                                                    Command="{Binding CreateNewGameCommand}"
+                                                                    Margin="0,0,8,0" />
                                                             <Button Content="{DynamicResource LOCQueueImportReviewDismissRow}"
                                                                     Command="{Binding DismissCommand}" />
                                                         </StackPanel>

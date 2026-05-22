@@ -117,6 +117,30 @@ namespace Playnite.Tests
         }
 
         [Test]
+        public void CreateGameForRow_UnmatchedRowCommitsToNewGame()
+        {
+            WithDb((db, path) =>
+            {
+                Stage(db, path, "Name,Free\r\nNew Title,true\r\n");
+                var file = QueueImportStaging.Load(path);
+                var row = file.Rows.Single();
+                Assert.AreEqual(0, row.MatchedGameIds.Count);
+
+                var created = QueueImportStaging.CreateGameForRow(row, db);
+                QueueImportStaging.Save(file, path);
+
+                Assert.AreEqual(1, row.MatchedGameIds.Count);
+                Assert.AreEqual(created.Id, row.MatchedGameIds[0]);
+                Assert.AreEqual("New Title", db.Games[created.Id].Name);
+
+                var commit = QueueImportStaging.Commit(QueueImportStaging.Load(path), db, path);
+
+                Assert.AreEqual(1, commit.Updated);
+                Assert.IsTrue(db.Games[created.Id].Free);
+            });
+        }
+
+        [Test]
         public void ManualMatch_SelectedDuplicateNameAppliesToAllMatches()
         {
             WithDb((db, path) =>

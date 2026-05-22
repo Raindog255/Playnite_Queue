@@ -29,6 +29,7 @@ namespace Playnite.DesktopApp.ViewModels
 
         public QueueImportStagedRow Row { get; }
         public RelayCommand UseMatchCommand { get; }
+        public RelayCommand CreateNewGameCommand { get; }
         public RelayCommand DismissCommand { get; }
 
         public ObservableCollection<QueueImportGameMatch> SearchResults { get; } =
@@ -117,6 +118,7 @@ namespace Playnite.DesktopApp.ViewModels
             this.sanitizerSettings = sanitizerSettings;
             this.save = save;
             UseMatchCommand = new RelayCommand(UseMatch, () => HasSelectedMatch);
+            CreateNewGameCommand = new RelayCommand(CreateNewGame, () => !HasMatch);
             DismissCommand = new RelayCommand(() => dismiss?.Invoke(this));
 
             // When the inbound name has no library match but the sanitized form
@@ -131,6 +133,14 @@ namespace Playnite.DesktopApp.ViewModels
         {
             if (SelectedMatch?.Game == null) return;
             QueueImportStaging.SetManualMatch(Row, SelectedMatch.Game, database);
+            RefreshComputed();
+            save?.Invoke();
+        }
+
+        private void CreateNewGame()
+        {
+            if (HasMatch) return;
+            QueueImportStaging.CreateGameForRow(Row, database);
             RefreshComputed();
             save?.Invoke();
         }

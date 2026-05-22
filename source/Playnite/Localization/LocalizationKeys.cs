@@ -4718,6 +4718,10 @@ namespace Playnite
         /// </summary>
         public const string QueueImportReviewUseMatch = "LOCQueueImportReviewUseMatch";
         /// <summary>
+        /// Create new game
+        /// </summary>
+        public const string QueueImportReviewCreateGame = "LOCQueueImportReviewCreateGame";
+        /// <summary>
         /// Dismiss row
         /// </summary>
         public const string QueueImportReviewDismissRow = "LOCQueueImportReviewDismissRow";

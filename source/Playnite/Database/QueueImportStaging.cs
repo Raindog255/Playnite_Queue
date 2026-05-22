@@ -259,6 +259,31 @@ namespace Playnite.Database
             row.Messages.RemoveAll(m => string.Equals(m, "No matching game.", StringComparison.OrdinalIgnoreCase));
         }
 
+        /// <summary>
+        /// Creates a new library game for an unmatched staged row and pins the
+        /// row to that record so queue properties can be applied on commit.
+        /// </summary>
+        public static Game CreateGameForRow(QueueImportStagedRow row, IGameDatabaseMain db)
+        {
+            if (row == null) throw new ArgumentNullException(nameof(row));
+            if (db == null) throw new ArgumentNullException(nameof(db));
+
+            var name = row.Name?.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("Staged row is missing a Name.", nameof(row));
+            }
+
+            var game = new Game(name)
+            {
+                CompletionStatusId = db.GetCompletionStatusSettings().DefaultStatus
+            };
+            db.Games.Add(game);
+            row.MatchedGameIds = new List<Guid> { game.Id };
+            row.Messages.RemoveAll(m => string.Equals(m, "No matching game.", StringComparison.OrdinalIgnoreCase));
+            return game;
+        }
+
         public static QueueImportResult Commit(QueueImportStagingFile file, IGameDatabaseMain db, string stagingPath = null)
         {
             if (file == null) throw new ArgumentNullException(nameof(file));

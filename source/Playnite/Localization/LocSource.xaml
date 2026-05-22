@@ -1319,6 +1319,7 @@ Open new issue on Playnite's GitHub page with a request to fix corruption in you
     <sys:String x:Key="LOCQueueImportReviewSanitizedName">Sanitized</sys:String>
     <sys:String x:Key="LOCQueueImportReviewManualMatch">Manual match search</sys:String>
     <sys:String x:Key="LOCQueueImportReviewUseMatch">Use match</sys:String>
+    <sys:String x:Key="LOCQueueImportReviewCreateGame">Create new game</sys:String>
     <sys:String x:Key="LOCQueueImportReviewDismissRow">Dismiss row</sys:String>
     <sys:String x:Key="LOCQueueImportReviewEmptyTitle">No staged import</sys:String>
     <sys:String x:Key="LOCQueueImportReviewEmptyHint">Import queue properties from CSV to stage rows for review. Clean matches will stay hidden until commit.</sys:String>
