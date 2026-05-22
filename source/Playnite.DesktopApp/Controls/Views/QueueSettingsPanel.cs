@@ -82,11 +82,14 @@ namespace Playnite.DesktopApp.Controls.Views
         public ICommand RemoveCommand { get; }
     }
 
+    [TemplatePart(Name = "PART_NewPriorityValueCombo", Type = typeof(ComboBox))]
     public class QueueSettingsPanel : Control, INotifyPropertyChanged
     {
         private const int MaxPriorityValuePickerResults = 200;
 
         private readonly DesktopAppViewModel mainModel;
+        private ComboBox newPriorityValueCombo;
+        private bool syncingPriorityValueCombo;
 
         private QueueSettings attachedQueueSettings;
         private ObservableCollection<Guid> subscribedTerminalIds;
@@ -173,10 +176,10 @@ namespace Playnite.DesktopApp.Controls.Views
 
                 newPriorityField = value;
                 OnPropertyChanged();
+                NewPrioritySelectedOption = null;
                 NewPriorityValueId = null;
                 NewPriorityBoolValue = null;
-                NewPriorityValueSearchText = string.Empty;
-                ApplyNewPriorityValueFilter();
+                SetNewPriorityValueSearchText(string.Empty, refreshFilter: true);
                 OnPropertyChanged(nameof(ShowNewPriorityIdValueEditor));
                 OnPropertyChanged(nameof(ShowNewPriorityBoolEditor));
                 InvalidatePriorityAddCommand();
@@ -190,6 +193,24 @@ namespace Playnite.DesktopApp.Controls.Views
             set
             {
                 newPriorityValueId = value;
+                OnPropertyChanged();
+                InvalidatePriorityAddCommand();
+            }
+        }
+
+        private QueuePriorityValueOption newPrioritySelectedOption;
+        public QueuePriorityValueOption NewPrioritySelectedOption
+        {
+            get => newPrioritySelectedOption;
+            set
+            {
+                if (newPrioritySelectedOption == value)
+                {
+                    return;
+                }
+
+                newPrioritySelectedOption = value;
+                NewPriorityValueId = value?.Id;
                 OnPropertyChanged();
                 InvalidatePriorityAddCommand();
             }
@@ -211,10 +232,28 @@ namespace Playnite.DesktopApp.Controls.Views
         public string NewPriorityValueSearchText
         {
             get => newPriorityValueSearchText;
-            set
+            set => SetNewPriorityValueSearchText(value, refreshFilter: true);
+        }
+
+        private void SetNewPriorityValueSearchText(string value, bool refreshFilter)
+        {
+            value = value ?? string.Empty;
+            if (newPriorityValueSearchText == value)
             {
-                newPriorityValueSearchText = value;
-                OnPropertyChanged();
+                return;
+            }
+
+            newPriorityValueSearchText = value;
+            if (!syncingPriorityValueCombo &&
+                newPrioritySelectedOption != null &&
+                !string.Equals(newPrioritySelectedOption.Name, value, StringComparison.Ordinal))
+            {
+                NewPrioritySelectedOption = null;
+            }
+
+            OnPropertyChanged(nameof(NewPriorityValueSearchText));
+            if (refreshFilter)
+            {
                 ScheduleApplyNewPriorityValueFilter();
             }
         }
@@ -279,7 +318,60 @@ namespace Playnite.DesktopApp.Controls.Views
         {
             DetachQueueSettingsHandlers();
             UnsubscribePriorityOptionsCacheInvalidation();
+            DetachNewPriorityValueComboHandlers();
             priorityFilterDebounceTimer?.Stop();
+        }
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            DetachNewPriorityValueComboHandlers();
+            newPriorityValueCombo = Template.FindName("PART_NewPriorityValueCombo", this) as ComboBox;
+            if (newPriorityValueCombo != null && !DesignerProperties.GetIsInDesignMode(this))
+            {
+                newPriorityValueCombo.DropDownOpened += NewPriorityValueCombo_DropDownOpened;
+                newPriorityValueCombo.SelectionChanged += NewPriorityValueCombo_SelectionChanged;
+            }
+        }
+
+        private void DetachNewPriorityValueComboHandlers()
+        {
+            if (newPriorityValueCombo == null)
+            {
+                return;
+            }
+
+            newPriorityValueCombo.DropDownOpened -= NewPriorityValueCombo_DropDownOpened;
+            newPriorityValueCombo.SelectionChanged -= NewPriorityValueCombo_SelectionChanged;
+            newPriorityValueCombo = null;
+        }
+
+        private void NewPriorityValueCombo_DropDownOpened(object sender, EventArgs e)
+        {
+            ApplyNewPriorityValueFilter(listAllWhenSearchEmpty: true);
+        }
+
+        private void NewPriorityValueCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (syncingPriorityValueCombo || newPriorityValueCombo == null)
+            {
+                return;
+            }
+
+            if (newPriorityValueCombo.SelectedItem is QueuePriorityValueOption opt)
+            {
+                syncingPriorityValueCombo = true;
+                try
+                {
+                    NewPrioritySelectedOption = opt;
+                    SetNewPriorityValueSearchText(opt.Name, refreshFilter: false);
+                    newPriorityValueCombo.IsDropDownOpen = false;
+                }
+                finally
+                {
+                    syncingPriorityValueCombo = false;
+                }
+            }
         }
 
         private void AttachQueueSettingsHandlers()
@@ -578,6 +670,7 @@ namespace Playnite.DesktopApp.Controls.Views
                 {
                     priorityFilterDebounceTimer.Stop();
                     ApplyNewPriorityValueFilter();
+                    OpenPriorityValueDropDownWhenFiltering();
                 };
             }
 
@@ -587,9 +680,10 @@ namespace Playnite.DesktopApp.Controls.Views
 
         /// <summary>
         /// Copies a capped slice from <see cref="priorityOptionsCache"/> into the bound ComboBox.
-        /// Empty search shows no items (type in the search box first) so WPF does not materialize thousands of rows.
+        /// When <paramref name="listAllWhenSearchEmpty"/> is true (dropdown opened), an empty query lists the first
+        /// <see cref="MaxPriorityValuePickerResults"/> entries; otherwise an empty query yields no items until the user types.
         /// </summary>
-        private void ApplyNewPriorityValueFilter()
+        private void ApplyNewPriorityValueFilter(bool listAllWhenSearchEmpty = false)
         {
             NewPriorityFilteredValueOptions.Clear();
             if (!NewPriorityField.HasValue || !IsIdBasedPriorityField(NewPriorityField.Value))
@@ -607,7 +701,7 @@ namespace Playnite.DesktopApp.Controls.Views
             IEnumerable<QueuePriorityValueOption> matches;
             if (q.Length == 0)
             {
-                matches = Enumerable.Empty<QueuePriorityValueOption>();
+                matches = listAllWhenSearchEmpty ? full : Enumerable.Empty<QueuePriorityValueOption>();
             }
             else
             {
@@ -615,18 +709,28 @@ namespace Playnite.DesktopApp.Controls.Views
             }
 
             var results = matches.Take(MaxPriorityValuePickerResults).ToList();
-            if (NewPriorityValueId.HasValue)
+            if (NewPrioritySelectedOption != null && results.All(opt => opt.Id != NewPrioritySelectedOption.Id))
             {
-                var selected = full.FirstOrDefault(opt => opt.Id == NewPriorityValueId.Value);
-                if (selected != null && results.All(opt => opt.Id != selected.Id))
-                {
-                    results.Insert(0, selected);
-                }
+                results.Insert(0, NewPrioritySelectedOption);
             }
 
             foreach (var opt in results)
             {
                 NewPriorityFilteredValueOptions.Add(opt);
+            }
+        }
+
+        private void OpenPriorityValueDropDownWhenFiltering()
+        {
+            if (newPriorityValueCombo == null)
+            {
+                return;
+            }
+
+            var q = (NewPriorityValueSearchText ?? string.Empty).Trim();
+            if (q.Length > 0 && NewPriorityFilteredValueOptions.Count > 0)
+            {
+                newPriorityValueCombo.IsDropDownOpen = true;
             }
         }
 
@@ -643,7 +747,7 @@ namespace Playnite.DesktopApp.Controls.Views
             var field = NewPriorityField.Value;
             if (IsIdBasedPriorityField(field))
             {
-                return NewPriorityValueId.HasValue;
+                return NewPrioritySelectedOption != null;
             }
 
             return NewPriorityBoolValue.HasValue;
@@ -665,7 +769,7 @@ namespace Playnite.DesktopApp.Controls.Views
 
             if (IsIdBasedPriorityField(field))
             {
-                rule.ValueId = NewPriorityValueId.Value;
+                rule.ValueId = NewPrioritySelectedOption.Id;
                 rule.BoolValue = null;
             }
             else
@@ -682,10 +786,15 @@ namespace Playnite.DesktopApp.Controls.Views
         private void ResetNewPriorityEditor()
         {
             NewPriorityField = null;
+            NewPrioritySelectedOption = null;
             NewPriorityValueId = null;
             NewPriorityBoolValue = null;
-            NewPriorityValueSearchText = string.Empty;
+            SetNewPriorityValueSearchText(string.Empty, refreshFilter: false);
             NewPriorityFilteredValueOptions.Clear();
+            if (newPriorityValueCombo != null)
+            {
+                newPriorityValueCombo.IsDropDownOpen = false;
+            }
             OnPropertyChanged(nameof(ShowNewPriorityIdValueEditor));
             OnPropertyChanged(nameof(ShowNewPriorityBoolEditor));
             InvalidatePriorityAddCommand();

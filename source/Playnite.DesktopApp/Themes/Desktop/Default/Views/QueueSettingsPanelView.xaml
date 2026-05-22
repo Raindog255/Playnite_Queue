@@ -104,15 +104,16 @@
                                                 <StackPanel Margin="0,10,0,0"
                                                             Visibility="{Binding ShowNewPriorityIdValueEditor, RelativeSource={RelativeSource TemplatedParent}, Converter={pcon:BooleanToVisibilityConverter}, FallbackValue=Collapsed, TargetNullValue=Collapsed}">
                                                     <TextBlock Text="{DynamicResource LOCQueuePriorityValue}" />
-                                                    <TextBox Text="{Binding NewPriorityValueSearchText, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
-                                                             Margin="0,4,0,4"
-                                                             ToolTip="{DynamicResource LOCSearchLabel}" />
-                                                    <ComboBox ItemsSource="{Binding NewPriorityFilteredValueOptions, RelativeSource={RelativeSource TemplatedParent}}"
-                                                              SelectedValuePath="Id"
-                                                              DisplayMemberPath="Name"
-                                                              SelectedValue="{Binding NewPriorityValueId, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
+                                                    <ComboBox x:Name="PART_NewPriorityValueCombo"
+                                                              Margin="0,4,0,0"
+                                                              IsEditable="True"
+                                                              StaysOpenOnEdit="True"
+                                                              IsTextSearchEnabled="False"
                                                               MaxDropDownHeight="280"
-                                                              IsTextSearchEnabled="False" />
+                                                              DisplayMemberPath="Name"
+                                                              ItemsSource="{Binding NewPriorityFilteredValueOptions, RelativeSource={RelativeSource TemplatedParent}}"
+                                                              SelectedItem="{Binding NewPrioritySelectedOption, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
+                                                              Text="{Binding NewPriorityValueSearchText, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
                                                 </StackPanel>
 
                                                 <StackPanel Margin="0,10,0,0"
