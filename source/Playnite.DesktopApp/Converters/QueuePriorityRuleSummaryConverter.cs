@@ -40,6 +40,8 @@ namespace Playnite.DesktopApp.QueueConverters
                         return $"Style · {ResolveDbName(db?.Categories, rule.ValueId)}";
                     case QueuePriorityField.Genre:
                         return $"Genre · {ResolveDbName(db?.Genres, rule.ValueId)}";
+                    case QueuePriorityField.Tag:
+                        return $"Tag · {ResolveDbName(db?.Tags, rule.ValueId)}";
                     case QueuePriorityField.Library:
                         return $"Library · {ResolveLibraryName(rule.ValueId, desktop)}";
                     default:

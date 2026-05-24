@@ -574,6 +574,8 @@ namespace Playnite.DesktopApp.Controls.Views
                 db.UsedCategories.Select(id => db.Categories.Get(id)));
             priorityOptionsCache[QueuePriorityField.Genre] = BuildSortedPriorityOptions(
                 db.UsedGenres.Select(id => db.Genres.Get(id)));
+            priorityOptionsCache[QueuePriorityField.Tag] = BuildSortedPriorityOptions(
+                db.UsedTags.Select(id => db.Tags.Get(id)));
             priorityOptionsCache[QueuePriorityField.Library] = BuildLibraryPriorityOptions(
                 mainModel.Extensions?.LibraryPlugins);
         }
@@ -623,6 +625,7 @@ namespace Playnite.DesktopApp.Controls.Views
             db.DevelopersInUseUpdated += PriorityOptionsCache_InUseChanged;
             db.CategoriesInUseUpdated += PriorityOptionsCache_InUseChanged;
             db.GenresInUseUpdated += PriorityOptionsCache_InUseChanged;
+            db.TagsInUseUpdated += PriorityOptionsCache_InUseChanged;
         }
 
         private void UnsubscribePriorityOptionsCacheInvalidation()
@@ -637,6 +640,7 @@ namespace Playnite.DesktopApp.Controls.Views
             db.DevelopersInUseUpdated -= PriorityOptionsCache_InUseChanged;
             db.CategoriesInUseUpdated -= PriorityOptionsCache_InUseChanged;
             db.GenresInUseUpdated -= PriorityOptionsCache_InUseChanged;
+            db.TagsInUseUpdated -= PriorityOptionsCache_InUseChanged;
             subscribedPriorityCacheDatabase = null;
         }
 

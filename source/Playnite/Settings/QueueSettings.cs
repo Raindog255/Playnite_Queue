@@ -25,7 +25,8 @@ namespace Playnite
         Free,
         Mobile,
         Style,
-        Genre
+        Genre,
+        Tag
     }
 
     /// <summary>
@@ -51,7 +52,7 @@ namespace Playnite
         private Guid? valueId;
         /// <summary>
         /// Database id of the matched value for fields that reference db items
-        /// (Series, Developer, Library, Style/Category, Genre). Null when the field
+        /// (Series, Developer, Library, Style/Category, Genre, Tag). Null when the field
         /// is a boolean (Free, Mobile).
         /// </summary>
         public Guid? ValueId

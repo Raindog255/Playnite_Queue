@@ -231,6 +231,8 @@ namespace Playnite
                     return rule.ValueId.HasValue && ContainsId(game.CategoryIds, rule.ValueId.Value);
                 case QueuePriorityField.Genre:
                     return rule.ValueId.HasValue && ContainsId(game.GenreIds, rule.ValueId.Value);
+                case QueuePriorityField.Tag:
+                    return rule.ValueId.HasValue && ContainsId(game.TagIds, rule.ValueId.Value);
                 case QueuePriorityField.Free:
                     return rule.BoolValue.HasValue && game.Free == rule.BoolValue.Value;
                 case QueuePriorityField.Mobile:

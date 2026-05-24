@@ -31,7 +31,8 @@ namespace Playnite.Tests
             IEnumerable<Guid> publishers = null,
             IEnumerable<Guid> series = null,
             IEnumerable<Guid> genres = null,
-            IEnumerable<Guid> categories = null)
+            IEnumerable<Guid> categories = null,
+            IEnumerable<Guid> tags = null)
         {
             var g = new Game
             {
@@ -49,7 +50,8 @@ namespace Playnite.Tests
                 PublisherIds = publishers?.ToList() ?? new List<Guid>(),
                 SeriesIds = series?.ToList() ?? new List<Guid>(),
                 GenreIds = genres?.ToList() ?? new List<Guid>(),
-                CategoryIds = categories?.ToList() ?? new List<Guid>()
+                CategoryIds = categories?.ToList() ?? new List<Guid>(),
+                TagIds = tags?.ToList() ?? new List<Guid>()
             };
 
             if (released.HasValue)
@@ -224,6 +226,25 @@ namespace Playnite.Tests
             var queue = QueueOrdering.BuildQueue(new[] { none, low, top }, settings);
 
             CollectionAssert.AreEqual(new[] { "Top", "Low", "None" }, queue.Select(q => q.Name).ToArray());
+        }
+
+        [Test]
+        public void PriorityRule_Tag_PromotesMatchingGames()
+        {
+            var tagId = Guid.NewGuid();
+            var settings = DefaultSettings();
+            settings.PriorityRules.Add(new QueuePriorityRule
+            {
+                Field = QueuePriorityField.Tag,
+                ValueId = tagId
+            });
+
+            var unmatched = NewGame("Other", acquired: new DateTime(2020, 1, 1));
+            var tagged = NewGame("Tagged", acquired: new DateTime(2024, 1, 1), tags: new[] { tagId });
+
+            var queue = QueueOrdering.BuildQueue(new[] { unmatched, tagged }, settings);
+
+            CollectionAssert.AreEqual(new[] { "Tagged", "Other" }, queue.Select(q => q.Name).ToArray());
         }
 
         [Test]
