@@ -85,6 +85,7 @@ namespace Playnite.Database
         public const double MaximumRecommendedIconSize = 0.1;
         public const double MaximumRecommendedCoverSize = 1;
         public const double MaximumRecommendedBackgroundSize = 4;
+        internal const string NeedsReviewTagName = "Needs Review";
 
         private static ILogger logger = LogManager.GetLogger();
 
@@ -1194,6 +1195,29 @@ namespace Playnite.Database
             return toAdd;
         }
 
+        private bool ApplyNeedsReviewTag(Game game)
+        {
+            if (game == null)
+            {
+                return false;
+            }
+
+            var tag = Tags.Add(NeedsReviewTagName);
+            if (game.TagIds == null)
+            {
+                game.TagIds = new List<Guid> { tag.Id };
+                return true;
+            }
+
+            if (game.TagIds.Contains(tag.Id))
+            {
+                return false;
+            }
+
+            game.TagIds.Add(tag.Id);
+            return true;
+        }
+
         public Game ImportGame(GameMetadata game)
         {
             return ImportGame(game, Guid.Empty);
@@ -1224,6 +1248,11 @@ namespace Playnite.Database
             }
 
             toAdd.IncludeLibraryPluginAction = true;
+            if (pluginId != Guid.Empty)
+            {
+                ApplyNeedsReviewTag(toAdd);
+            }
+
             Games.Add(toAdd);
             return toAdd;
         }
@@ -1257,7 +1286,21 @@ namespace Playnite.Database
                     var importedGames = library.ImportGames(new LibraryImportGamesArgs { CancelToken = cancelToken })?.ToList() ?? new List<Game>();
                     foreach (var game in importedGames)
                     {
-                        updateCompletionStatus(game, statusSettings);
+                        var updated = false;
+                        if (game.PluginId == library.Id)
+                        {
+                            updated = ApplyNeedsReviewTag(game);
+                        }
+
+                        if (updateCompletionStatus(game, statusSettings))
+                        {
+                            updated = true;
+                        }
+
+                        if (updated)
+                        {
+                            Games.Update(game);
+                        }
                     }
 
                     return importedGames;

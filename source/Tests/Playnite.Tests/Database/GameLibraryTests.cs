@@ -67,6 +67,49 @@ namespace Playnite.Tests.Database
         }
 
         [Test]
+        public void IntegrationImport_AddsNeedsReviewTag()
+        {
+            var gameId = "needsReviewTest";
+            var libPlugin = new Mock<LibraryPlugin>(MockBehavior.Loose, null);
+            libPlugin.Setup(a => a.Id).Returns(Guid.NewGuid());
+            libPlugin.Setup(a => a.GetGames(It.IsAny<LibraryGetGamesArgs>())).Returns(() => new List<GameMetadata>
+            {
+                new GameMetadata
+                {
+                    GameId = gameId,
+                    Name = "Imported Game"
+                }
+            });
+
+            using (var temp = TempDirectory.Create())
+            using (var db = new GameDatabase(temp.TempPath))
+            using (var token = new CancellationTokenSource())
+            {
+                db.OpenDatabase();
+                db.ImportGames(libPlugin.Object, token.Token, PlaytimeImportMode.Never);
+
+                var game = db.Games.First();
+                var needsReviewTag = db.Tags.FirstOrDefault(t => t.Name == GameDatabase.NeedsReviewTagName);
+                Assert.IsNotNull(needsReviewTag);
+                CollectionAssert.Contains(game.TagIds, needsReviewTag.Id);
+            }
+        }
+
+        [Test]
+        public void ManualImport_DoesNotAddNeedsReviewTag()
+        {
+            using (var temp = TempDirectory.Create())
+            using (var db = new GameDatabase(temp.TempPath))
+            {
+                db.OpenDatabase();
+                db.ImportGame(new GameMetadata { Name = "Manual Game" });
+
+                Assert.IsFalse(db.Tags.Any(t => t.Name == GameDatabase.NeedsReviewTagName));
+                Assert.IsTrue(db.Games.First().TagIds == null || db.Games.First().TagIds.Count == 0);
+            }
+        }
+
+        [Test]
         public void InstallSizeImportTest()
         {
             var gameId = "testId";
