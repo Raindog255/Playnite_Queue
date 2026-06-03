@@ -4777,6 +4777,18 @@ namespace Playnite
         /// </summary>
         public const string SanitizerSourceSplit = "LOCSanitizerSourceSplit";
         /// <summary>
+        /// Remove unused metadata
+        /// </summary>
+        public const string SanitizerSourceRemoveUnused = "LOCSanitizerSourceRemoveUnused";
+        /// <summary>
+        /// Remove unused scope
+        /// </summary>
+        public const string SanitizerRemoveUnusedScopeTitle = "LOCSanitizerRemoveUnusedScopeTitle";
+        /// <summary>
+        /// Tags
+        /// </summary>
+        public const string SanitizerRemoveUnusedTags = "LOCSanitizerRemoveUnusedTags";
+        /// <summary>
         /// Sanitize scope
         /// </summary>
         public const string SanitizerSanitizeScopeTitle = "LOCSanitizerSanitizeScopeTitle";
@@ -4900,6 +4912,18 @@ namespace Playnite
         /// Split collection
         /// </summary>
         public const string SanitizerActionSplit = "LOCSanitizerActionSplit";
+        /// <summary>
+        /// Remove unused
+        /// </summary>
+        public const string SanitizerActionRemoveUnused = "LOCSanitizerActionRemoveUnused";
+        /// <summary>
+        /// Items to remove
+        /// </summary>
+        public const string SanitizerRemoveUnusedItemsLabel = "LOCSanitizerRemoveUnusedItemsLabel";
+        /// <summary>
+        /// Remove unused hint
+        /// </summary>
+        public const string SanitizerRemoveUnusedHint = "LOCSanitizerRemoveUnusedHint";
         /// <summary>
         /// Before
         /// </summary>

@@ -245,8 +245,8 @@ namespace Playnite.Database
             database.Features.ItemCollectionChanged += (_, args) => FullUpdateAvailableFilterList(Features, args, database.Features, filter.Feature);
             database.Companies.ItemCollectionChanged += (_, args) =>
             {
-                FullUpdateAvailableFilterList(Publishers, args, database.Companies, filter.Publisher);
-                FullUpdateAvailableFilterList(Developers, args, database.Companies, filter.Developer);
+                FullUpdateAvailableFilterList(Publishers, args, database.Companies, filter.Publisher, database.UsedPublishers);
+                FullUpdateAvailableFilterList(Developers, args, database.Companies, filter.Developer, database.UsedDevelopers);
             };
             database.CompletionStatuses.ItemCollectionChanged += (_, args) => FullUpdateAvailableFilterList(CompletionStatuses, args, database.CompletionStatuses, filter.CompletionStatuses);
 
@@ -522,6 +522,50 @@ namespace Playnite.Database
             UpdateAllCollections(GameDatabaseCollection.CompletionStatuses);
         }
 
+        /// <summary>
+        /// Rebuilds sidebar filter picker lists for the given database collections.
+        /// Call after bulk metadata mutations that may not propagate through every cache.
+        /// </summary>
+        public void RefreshCollections(params GameDatabaseCollection[] fields)
+        {
+            if (fields == null || fields.Length == 0)
+            {
+                UpdateAllCollections();
+                return;
+            }
+
+            UpdateAllCollections(fields.Distinct().ToList());
+        }
+
+        private List<Guid> GetUsedIds(GameDatabaseCollection collectionType)
+        {
+            switch (collectionType)
+            {
+                case GameDatabaseCollection.Platforms:
+                    return database.UsedPlatforms;
+                case GameDatabaseCollection.Genres:
+                    return database.UsedGenres;
+                case GameDatabaseCollection.Tags:
+                    return database.UsedTags;
+                case GameDatabaseCollection.Categories:
+                    return database.UsedCategories;
+                case GameDatabaseCollection.Series:
+                    return database.UsedSeries;
+                case GameDatabaseCollection.AgeRatings:
+                    return database.UsedAgeRatings;
+                case GameDatabaseCollection.Regions:
+                    return database.UsedRegions;
+                case GameDatabaseCollection.Sources:
+                    return database.UsedSources;
+                case GameDatabaseCollection.Features:
+                    return database.UsedFeastures;
+                case GameDatabaseCollection.CompletionStatuses:
+                    return database.UsedCompletionStatuses;
+                default:
+                    return null;
+            }
+        }
+
         private void InUseOnlyUpdateAvailableFilterList<T>(
             SelectableDbItemList targetList,
             IItemCollection<T> sourceColletion,
@@ -547,17 +591,29 @@ namespace Playnite.Database
             SelectableDbItemList targetList,
             ItemCollectionChangedEventArgs<T> args,
             IItemCollection<T> sourceColletion,
-            IdItemFilterItemProperties filter) where T : DatabaseObject
+            IdItemFilterItemProperties filter,
+            List<Guid> usedIdsForInUseRefresh = null) where T : DatabaseObject
         {
-            if (settings.UsedFieldsOnlyOnFilterLists)
-            {
-                return;
-            }
-
             if (IgnoreDatabaseUpdates)
             {
                 missedDbUpdate = true;
                 missedCollection.AddMissing(sourceColletion.CollectionType);
+                return;
+            }
+
+            if (settings.UsedFieldsOnlyOnFilterLists)
+            {
+                if (!args.RemovedItems.HasItems())
+                {
+                    return;
+                }
+
+                var usedList = usedIdsForInUseRefresh ?? GetUsedIds(sourceColletion.CollectionType);
+                if (usedList != null)
+                {
+                    InUseOnlyUpdateAvailableFilterList(targetList, sourceColletion, usedList, filter);
+                }
+
                 return;
             }
 

@@ -502,6 +502,7 @@
     <Compile Include="LibrarySanitizer\SanitizerRules.cs" />
     <Compile Include="LibrarySanitizer\SanitizerAction.cs" />
     <Compile Include="LibrarySanitizer\MissingPropertyAction.cs" />
+    <Compile Include="LibrarySanitizer\RemoveUnusedMetadataAction.cs" />
     <Compile Include="LibrarySanitizer\SplitCollectionAction.cs" />
     <Compile Include="LibrarySanitizer\LibrarySanitizerEngine.cs" />
     <Compile Include="Settings\DetailsVisibilitySettings.cs" />

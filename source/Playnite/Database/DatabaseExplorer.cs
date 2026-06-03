@@ -318,7 +318,10 @@ namespace Playnite.Database
         {
             if (settings.UsedFieldsOnlyOnFilterLists && field != ExplorerField.Presets)
             {
-                return;
+                if (e?.RemovedItems?.HasItems() != true)
+                {
+                    return;
+                }
             }
 
             if (settings.ExplorerPanelVisible && SelectedField.Field == field)

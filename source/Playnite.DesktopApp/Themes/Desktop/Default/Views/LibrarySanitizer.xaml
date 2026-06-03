@@ -283,6 +283,56 @@
                                                 </Border>
                                             </DataTemplate>
 
+                                            <!-- Remove-unused card: list orphaned metadata -->
+                                            <DataTemplate DataType="{x:Type san:RemoveUnusedMetadataAction}">
+                                                <Border Style="{StaticResource SanitizerCardBorder}">
+                                                    <StackPanel>
+                                                        <DockPanel Margin="0,0,0,8">
+                                                            <TextBlock DockPanel.Dock="Right"
+                                                                       Text="{DynamicResource LOCSanitizerActionRemoveUnused}"
+                                                                       FontWeight="SemiBold"
+                                                                       Foreground="{DynamicResource GlyphBrush}" />
+                                                            <TextBlock Text="{Binding DisplayTitle}"
+                                                                       FontSize="14"
+                                                                       FontWeight="SemiBold"
+                                                                       TextTrimming="CharacterEllipsis" />
+                                                        </DockPanel>
+
+                                                        <TextBlock Text="{DynamicResource LOCSanitizerRemoveUnusedItemsLabel}"
+                                                                   Margin="0,0,0,4"
+                                                                   Foreground="{DynamicResource TextBrushDarker}" />
+                                                        <ItemsControl ItemsSource="{Binding ItemNames}"
+                                                                      MaxHeight="160"
+                                                                      Margin="0,0,0,8">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding}"
+                                                                               TextTrimming="CharacterEllipsis"
+                                                                               Margin="0,0,0,2" />
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+
+                                                        <TextBlock Text="{DynamicResource LOCSanitizerRemoveUnusedHint}"
+                                                                   FontStyle="Italic"
+                                                                   Foreground="{DynamicResource TextBrushDarker}"
+                                                                   TextWrapping="Wrap"
+                                                                   Margin="0,0,0,8" />
+
+                                                        <StackPanel Orientation="Horizontal"
+                                                                    HorizontalAlignment="Right">
+                                                            <Button Content="{DynamicResource LOCSanitizerDismiss}"
+                                                                    Margin="0,0,8,0"
+                                                                    Command="{Binding DataContext.DismissCommand, RelativeSource={RelativeSource AncestorType={x:Type LibrarySanitizer}}}"
+                                                                    CommandParameter="{Binding}" />
+                                                            <Button Content="{DynamicResource LOCSanitizerApply}"
+                                                                    Command="{Binding DataContext.ApplyCommand, RelativeSource={RelativeSource AncestorType={x:Type LibrarySanitizer}}}"
+                                                                    CommandParameter="{Binding}" />
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+
                                         </ItemsControl.Resources>
                                     </ItemsControl>
                                 </StackPanel>

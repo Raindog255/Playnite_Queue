@@ -36,6 +36,50 @@ namespace Playnite
             set { splitCollectionEnabled = value; OnPropertyChanged(); }
         }
 
+        private bool removeUnusedEnabled = true;
+        public bool RemoveUnusedEnabled
+        {
+            get => removeUnusedEnabled;
+            set { removeUnusedEnabled = value; OnPropertyChanged(); }
+        }
+
+        // ---------------- Remove unused scope ----------------
+
+        private bool removeUnusedSeries = true;
+        public bool RemoveUnusedSeries
+        {
+            get => removeUnusedSeries;
+            set { removeUnusedSeries = value; OnPropertyChanged(); }
+        }
+
+        private bool removeUnusedGenres = true;
+        public bool RemoveUnusedGenres
+        {
+            get => removeUnusedGenres;
+            set { removeUnusedGenres = value; OnPropertyChanged(); }
+        }
+
+        private bool removeUnusedTags = true;
+        public bool RemoveUnusedTags
+        {
+            get => removeUnusedTags;
+            set { removeUnusedTags = value; OnPropertyChanged(); }
+        }
+
+        private bool removeUnusedDevelopers = true;
+        public bool RemoveUnusedDevelopers
+        {
+            get => removeUnusedDevelopers;
+            set { removeUnusedDevelopers = value; OnPropertyChanged(); }
+        }
+
+        private bool removeUnusedPublishers = true;
+        public bool RemoveUnusedPublishers
+        {
+            get => removeUnusedPublishers;
+            set { removeUnusedPublishers = value; OnPropertyChanged(); }
+        }
+
         // ---------------- Sanitize scope ----------------
 
         private bool sanitizeGames = true;

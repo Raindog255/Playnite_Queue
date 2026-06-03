@@ -118,6 +118,10 @@ namespace Playnite.DesktopApp.ViewModels
             database.Series.ItemCollectionChanged += Db_GenericCollectionChanged;
             database.Companies.ItemUpdated += Db_GenericUpdated;
             database.Companies.ItemCollectionChanged += Db_GenericCollectionChanged;
+            database.Genres.ItemUpdated += Db_GenericUpdated;
+            database.Genres.ItemCollectionChanged += Db_GenericCollectionChanged;
+            database.Tags.ItemUpdated += Db_GenericUpdated;
+            database.Tags.ItemCollectionChanged += Db_GenericCollectionChanged;
             database.CompletionStatuses.ItemUpdated += Db_GenericUpdated;
         }
 
@@ -130,6 +134,10 @@ namespace Playnite.DesktopApp.ViewModels
             database.Series.ItemCollectionChanged -= Db_GenericCollectionChanged;
             database.Companies.ItemUpdated -= Db_GenericUpdated;
             database.Companies.ItemCollectionChanged -= Db_GenericCollectionChanged;
+            database.Genres.ItemUpdated -= Db_GenericUpdated;
+            database.Genres.ItemCollectionChanged -= Db_GenericCollectionChanged;
+            database.Tags.ItemUpdated -= Db_GenericUpdated;
+            database.Tags.ItemCollectionChanged -= Db_GenericCollectionChanged;
             database.CompletionStatuses.ItemUpdated -= Db_GenericUpdated;
         }
 
@@ -305,7 +313,9 @@ namespace Playnite.DesktopApp.ViewModels
                     database.Series,
                     database.Companies,
                     boundSettings,
-                    dismissed);
+                    dismissed,
+                    database.Genres,
+                    database.Tags);
                 ApplyActions(actions);
             }
             catch (Exception ex)
@@ -334,6 +344,7 @@ namespace Playnite.DesktopApp.ViewModels
             try
             {
                 action.Apply(database);
+                RefreshMetadataCaches(action);
                 // The DB update event will eventually trigger a rebuild that
                 // recomputes the action list. Remove the card immediately so
                 // the user sees the apply land without waiting for the
@@ -347,6 +358,22 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 logger.Error(ex, $"Failed to apply sanitizer action {action.Signature}.");
             }
+        }
+
+        private void RefreshMetadataCaches(SanitizerAction action)
+        {
+            if (!(action is RemoveUnusedMetadataAction removeUnused))
+            {
+                return;
+            }
+
+            var fields = removeUnused.GetAffectedCollections();
+            if (fields == null || fields.Count == 0)
+            {
+                return;
+            }
+
+            mainModel?.DatabaseFilters?.RefreshCollections(fields.ToArray());
         }
 
         private void DismissAction(SanitizerAction action)

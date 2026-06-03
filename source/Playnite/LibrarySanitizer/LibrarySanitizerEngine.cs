@@ -25,7 +25,9 @@ namespace Playnite.LibrarySanitizer
             IEnumerable<Series> series,
             IEnumerable<Company> companies,
             LibrarySanitizerSettings settings,
-            ISet<string> dismissed = null)
+            ISet<string> dismissed = null,
+            IEnumerable<Genre> genres = null,
+            IEnumerable<Tag> tags = null)
         {
             var actions = new List<SanitizerAction>();
             if (settings == null)
@@ -103,6 +105,11 @@ namespace Playnite.LibrarySanitizer
                 }
             }
 
+            if (settings.RemoveUnusedEnabled)
+            {
+                AddRemoveUnusedActions(actions, games, series, companies, genres, tags, settings);
+            }
+
             if (dismissed != null && dismissed.Count > 0)
             {
                 actions = actions.Where(a => !dismissed.Contains(a.Signature)).ToList();
@@ -171,6 +178,102 @@ namespace Playnite.LibrarySanitizer
             if (settings.RequireGenres && (g.GenreIds == null || g.GenreIds.Count == 0))
                 missing.Add(MissingField.Genres);
             return missing;
+        }
+
+        private static void AddRemoveUnusedActions(
+            IList<SanitizerAction> actions,
+            IEnumerable<Game> games,
+            IEnumerable<Series> series,
+            IEnumerable<Company> companies,
+            IEnumerable<Genre> genres,
+            IEnumerable<Tag> tags,
+            LibrarySanitizerSettings settings)
+        {
+            var usedSeries = CollectUsedIds(games, g => g.SeriesIds);
+            var usedGenres = CollectUsedIds(games, g => g.GenreIds);
+            var usedTags = CollectUsedIds(games, g => g.TagIds);
+            var usedDevelopers = CollectUsedIds(games, g => g.DeveloperIds);
+            var usedPublishers = CollectUsedIds(games, g => g.PublisherIds);
+
+            if (settings.RemoveUnusedSeries && series != null)
+            {
+                var unused = series.Where(s => s != null && !usedSeries.Contains(s.Id)).ToList();
+                if (unused.Count > 0)
+                {
+                    actions.Add(new RemoveUnusedMetadataAction(
+                        UnusedMetadataKind.Series,
+                        RemoveUnusedMetadataAction.FromSeries(unused)));
+                }
+            }
+
+            if (settings.RemoveUnusedGenres && genres != null)
+            {
+                var unused = genres.Where(g => g != null && !usedGenres.Contains(g.Id)).ToList();
+                if (unused.Count > 0)
+                {
+                    actions.Add(new RemoveUnusedMetadataAction(
+                        UnusedMetadataKind.Genre,
+                        RemoveUnusedMetadataAction.FromGenres(unused)));
+                }
+            }
+
+            if (settings.RemoveUnusedTags && tags != null)
+            {
+                var unused = tags.Where(t => t != null && !usedTags.Contains(t.Id)).ToList();
+                if (unused.Count > 0)
+                {
+                    actions.Add(new RemoveUnusedMetadataAction(
+                        UnusedMetadataKind.Tag,
+                        RemoveUnusedMetadataAction.FromTags(unused)));
+                }
+            }
+
+            if ((settings.RemoveUnusedDevelopers || settings.RemoveUnusedPublishers) && companies != null)
+            {
+                var usedCompanies = new HashSet<Guid>(usedDevelopers);
+                foreach (var id in usedPublishers)
+                {
+                    usedCompanies.Add(id);
+                }
+
+                var unused = companies.Where(c => c != null && !usedCompanies.Contains(c.Id)).ToList();
+                if (unused.Count > 0)
+                {
+                    actions.Add(new RemoveUnusedMetadataAction(
+                        UnusedMetadataKind.Company,
+                        RemoveUnusedMetadataAction.FromCompanies(unused)));
+                }
+            }
+        }
+
+        internal static HashSet<Guid> CollectUsedIds(IEnumerable<Game> games, Func<Game, List<Guid>> selector)
+        {
+            var used = new HashSet<Guid>();
+            if (games == null)
+            {
+                return used;
+            }
+
+            foreach (var game in games)
+            {
+                if (game == null)
+                {
+                    continue;
+                }
+
+                var ids = selector(game);
+                if (ids == null)
+                {
+                    continue;
+                }
+
+                foreach (var id in ids)
+                {
+                    used.Add(id);
+                }
+            }
+
+            return used;
         }
     }
 }

@@ -1335,6 +1335,9 @@ Open new issue on Playnite's GitHub page with a request to fix corruption in you
     <sys:String x:Key="LOCSanitizerSourceSanitize">Sanitize names</sys:String>
     <sys:String x:Key="LOCSanitizerSourceMissing">Add missing properties</sys:String>
     <sys:String x:Key="LOCSanitizerSourceSplit">Split collections</sys:String>
+    <sys:String x:Key="LOCSanitizerSourceRemoveUnused">Remove unused metadata</sys:String>
+    <sys:String x:Key="LOCSanitizerRemoveUnusedScopeTitle">Remove unused scope</sys:String>
+    <sys:String x:Key="LOCSanitizerRemoveUnusedTags">Tags</sys:String>
     <sys:String x:Key="LOCSanitizerSanitizeScopeTitle">Sanitize scope</sys:String>
     <sys:String x:Key="LOCSanitizerScopeGames">Games</sys:String>
     <sys:String x:Key="LOCSanitizerScopeSeries">Series</sys:String>
@@ -1366,6 +1369,9 @@ Open new issue on Playnite's GitHub page with a request to fix corruption in you
     <sys:String x:Key="LOCSanitizerActionSanitize">Sanitize</sys:String>
     <sys:String x:Key="LOCSanitizerActionMissing">Missing properties</sys:String>
     <sys:String x:Key="LOCSanitizerActionSplit">Split collection</sys:String>
+    <sys:String x:Key="LOCSanitizerActionRemoveUnused">Remove unused</sys:String>
+    <sys:String x:Key="LOCSanitizerRemoveUnusedItemsLabel">Items to remove</sys:String>
+    <sys:String x:Key="LOCSanitizerRemoveUnusedHint">These items are not assigned to any game. Apply permanently deletes them from the library. Developers and publishers must be unused in both roles before a company can be removed.</sys:String>
     <sys:String x:Key="LOCSanitizerBeforeLabel">Before</sys:String>
     <sys:String x:Key="LOCSanitizerAfterLabel">After</sys:String>
     <sys:String x:Key="LOCSanitizerSortLabel">Sorting</sys:String>

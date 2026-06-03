@@ -34,7 +34,31 @@
                                                   IsChecked="{Binding Settings.MissingPropertiesEnabled, RelativeSource={RelativeSource TemplatedParent}}"
                                                   Margin="0,0,0,4" />
                                         <CheckBox Content="{DynamicResource LOCSanitizerSourceSplit}"
-                                                  IsChecked="{Binding Settings.SplitCollectionEnabled, RelativeSource={RelativeSource TemplatedParent}}" />
+                                                  IsChecked="{Binding Settings.SplitCollectionEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerSourceRemoveUnused}"
+                                                  IsChecked="{Binding Settings.RemoveUnusedEnabled, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <!-- ============= Remove unused scope ============= -->
+                                <GroupBox Header="{DynamicResource LOCSanitizerRemoveUnusedScopeTitle}"
+                                          Margin="0,0,0,12">
+                                    <StackPanel Margin="8">
+                                        <CheckBox Content="{DynamicResource LOCSanitizerScopeSeries}"
+                                                  IsChecked="{Binding Settings.RemoveUnusedSeries, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRequiredGenres}"
+                                                  IsChecked="{Binding Settings.RemoveUnusedGenres, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerRemoveUnusedTags}"
+                                                  IsChecked="{Binding Settings.RemoveUnusedTags, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerScopeDevelopers}"
+                                                  IsChecked="{Binding Settings.RemoveUnusedDevelopers, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerScopePublishers}"
+                                                  IsChecked="{Binding Settings.RemoveUnusedPublishers, RelativeSource={RelativeSource TemplatedParent}}" />
                                     </StackPanel>
                                 </GroupBox>
 

@@ -25,6 +25,16 @@ namespace Playnite.Tests
             var s = new LibrarySanitizerSettings();
             s.MissingPropertiesEnabled = false;
             s.SplitCollectionEnabled = false;
+            s.RemoveUnusedEnabled = false;
+            return s;
+        }
+
+        private static LibrarySanitizerSettings RemoveUnusedOnlySettings()
+        {
+            var s = new LibrarySanitizerSettings();
+            s.SanitizeEnabled = false;
+            s.MissingPropertiesEnabled = false;
+            s.SplitCollectionEnabled = false;
             return s;
         }
 
@@ -41,6 +51,16 @@ namespace Playnite.Tests
         private static Company Company(string name)
         {
             return new Company { Id = Guid.NewGuid(), Name = name };
+        }
+
+        private static Genre Genre(string name)
+        {
+            return new Genre { Id = Guid.NewGuid(), Name = name };
+        }
+
+        private static Tag Tag(string name)
+        {
+            return new Tag { Id = Guid.NewGuid(), Name = name };
         }
 
         // ---- Generation ---------------------------------------------------
@@ -717,6 +737,123 @@ namespace Playnite.Tests
 
             Assert.IsFalse(db.Games.Get(g.Id).Hidden, "Empty proposal should not mutate state.");
             Assert.AreEqual(1, db.Games.Count);
+        }
+
+        // ---- Remove unused metadata ---------------------------------------
+
+        [Test]
+        public void Build_EmitsRemoveUnusedGenreWhenOrphanExists()
+        {
+            var usedGenre = Genre("RPG");
+            var orphan = Genre("Orphan");
+            var game = Game("Test");
+            game.GenreIds = new List<Guid> { usedGenre.Id };
+
+            var actions = LibrarySanitizerEngine.BuildActions(
+                new[] { game },
+                Enumerable.Empty<Series>(),
+                Enumerable.Empty<Company>(),
+                RemoveUnusedOnlySettings(),
+                null,
+                new[] { usedGenre, orphan },
+                Enumerable.Empty<Tag>());
+
+            var remove = actions.OfType<RemoveUnusedMetadataAction>().Single();
+            Assert.AreEqual(UnusedMetadataKind.Genre, remove.Kind);
+            Assert.AreEqual(1, remove.ItemCount);
+            Assert.AreEqual("Orphan", remove.ItemNames.Single());
+        }
+
+        [Test]
+        public void Build_SkipsRemoveUnusedWhenReferenced()
+        {
+            var genre = Genre("RPG");
+            var game = Game("Test");
+            game.GenreIds = new List<Guid> { genre.Id };
+
+            var actions = LibrarySanitizerEngine.BuildActions(
+                new[] { game },
+                Enumerable.Empty<Series>(),
+                Enumerable.Empty<Company>(),
+                RemoveUnusedOnlySettings(),
+                null,
+                new[] { genre },
+                Enumerable.Empty<Tag>());
+
+            Assert.IsFalse(actions.OfType<RemoveUnusedMetadataAction>().Any());
+        }
+
+        [Test]
+        public void Build_EmitsRemoveUnusedCompanyWhenFullyOrphaned()
+        {
+            var devOnly = Company("Dev Only");
+            var pubOnly = Company("Pub Only");
+            var both = Company("Both");
+            var orphan = Company("Orphan");
+            var game = Game("Test");
+            game.DeveloperIds = new List<Guid> { both.Id, devOnly.Id };
+            game.PublisherIds = new List<Guid> { both.Id, pubOnly.Id };
+
+            var actions = LibrarySanitizerEngine.BuildActions(
+                new[] { game },
+                Enumerable.Empty<Series>(),
+                new[] { devOnly, pubOnly, both, orphan },
+                RemoveUnusedOnlySettings());
+
+            var companyAction = actions.OfType<RemoveUnusedMetadataAction>()
+                .SingleOrDefault(a => a.Kind == UnusedMetadataKind.Company);
+            Assert.IsNotNull(companyAction);
+            CollectionAssert.AreEquivalent(
+                new[] { "Orphan" },
+                companyAction.ItemNames.ToArray());
+        }
+
+        [Test]
+        public void Build_SkipsRemoveUnusedCompanyWhenEitherToggleOff()
+        {
+            var orphan = Company("Orphan");
+            var settings = RemoveUnusedOnlySettings();
+            settings.RemoveUnusedDevelopers = false;
+            settings.RemoveUnusedPublishers = false;
+
+            var actions = LibrarySanitizerEngine.BuildActions(
+                Enumerable.Empty<Game>(),
+                Enumerable.Empty<Series>(),
+                new[] { orphan },
+                settings);
+
+            Assert.IsFalse(actions.OfType<RemoveUnusedMetadataAction>()
+                .Any(a => a.Kind == UnusedMetadataKind.Company));
+        }
+
+        [Test]
+        public void RemoveUnusedMetadataAction_Apply_RemovesOrphanGenre()
+        {
+            var db = new InMemoryGameDatabase();
+            var genre = Genre("Orphan");
+            db.Genres.Add(genre);
+
+            var action = new RemoveUnusedMetadataAction(
+                UnusedMetadataKind.Genre,
+                RemoveUnusedMetadataAction.FromGenres(new[] { genre }));
+            action.Apply(db);
+
+            Assert.AreEqual(0, db.Genres.Count);
+        }
+
+        [Test]
+        public void RemoveUnusedMetadataAction_Apply_RemovesOrphanCompany()
+        {
+            var db = new InMemoryGameDatabase();
+            var company = Company("Orphan");
+            db.Companies.Add(company);
+
+            var action = new RemoveUnusedMetadataAction(
+                UnusedMetadataKind.Company,
+                RemoveUnusedMetadataAction.FromCompanies(new[] { company }));
+            action.Apply(db);
+
+            Assert.AreEqual(0, db.Companies.Count);
         }
     }
 }

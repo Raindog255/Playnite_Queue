@@ -17,6 +17,7 @@ namespace Playnite.LibrarySanitizer
         Sanitize,
         MissingProperty,
         SplitCollection,
+        RemoveUnused,
     }
 
     /// <summary>

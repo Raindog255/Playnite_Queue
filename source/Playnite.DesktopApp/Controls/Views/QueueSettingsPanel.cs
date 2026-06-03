@@ -623,9 +623,14 @@ namespace Playnite.DesktopApp.Controls.Views
             subscribedPriorityCacheDatabase = db;
             db.SeriesInUseUpdated += PriorityOptionsCache_InUseChanged;
             db.DevelopersInUseUpdated += PriorityOptionsCache_InUseChanged;
+            db.PublishersInUseUpdated += PriorityOptionsCache_InUseChanged;
             db.CategoriesInUseUpdated += PriorityOptionsCache_InUseChanged;
             db.GenresInUseUpdated += PriorityOptionsCache_InUseChanged;
             db.TagsInUseUpdated += PriorityOptionsCache_InUseChanged;
+            db.Series.ItemCollectionChanged += PriorityOptionsCache_CollectionChanged;
+            db.Genres.ItemCollectionChanged += PriorityOptionsCache_CollectionChanged;
+            db.Tags.ItemCollectionChanged += PriorityOptionsCache_CollectionChanged;
+            db.Companies.ItemCollectionChanged += PriorityOptionsCache_CollectionChanged;
         }
 
         private void UnsubscribePriorityOptionsCacheInvalidation()
@@ -638,14 +643,28 @@ namespace Playnite.DesktopApp.Controls.Views
             var db = subscribedPriorityCacheDatabase;
             db.SeriesInUseUpdated -= PriorityOptionsCache_InUseChanged;
             db.DevelopersInUseUpdated -= PriorityOptionsCache_InUseChanged;
+            db.PublishersInUseUpdated -= PriorityOptionsCache_InUseChanged;
             db.CategoriesInUseUpdated -= PriorityOptionsCache_InUseChanged;
             db.GenresInUseUpdated -= PriorityOptionsCache_InUseChanged;
             db.TagsInUseUpdated -= PriorityOptionsCache_InUseChanged;
+            db.Series.ItemCollectionChanged -= PriorityOptionsCache_CollectionChanged;
+            db.Genres.ItemCollectionChanged -= PriorityOptionsCache_CollectionChanged;
+            db.Tags.ItemCollectionChanged -= PriorityOptionsCache_CollectionChanged;
+            db.Companies.ItemCollectionChanged -= PriorityOptionsCache_CollectionChanged;
             subscribedPriorityCacheDatabase = null;
         }
 
         private void PriorityOptionsCache_InUseChanged(object sender, EventArgs e) =>
             RefreshPriorityOptionsCache();
+
+        private void PriorityOptionsCache_CollectionChanged<T>(object sender, ItemCollectionChangedEventArgs<T> e)
+            where T : DatabaseObject
+        {
+            if (e?.RemovedItems?.HasItems() == true)
+            {
+                RefreshPriorityOptionsCache();
+            }
+        }
 
         private void RefreshPriorityOptionsCache()
         {
