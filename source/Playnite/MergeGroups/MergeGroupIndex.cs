@@ -141,5 +141,60 @@ namespace Playnite.MergeGroups
 
             return GetMembers(game.MergeGroupId.Value).Count;
         }
+
+        /// <summary>
+        /// Collapses merge groups to representatives and projects group-wide queue
+        /// state so <see cref="QueueOrdering.BuildQueue"/> treats each merged title
+        /// as one slot (including playing / terminal / hold / hidden checks).
+        /// </summary>
+        public IList<Game> PrepareForQueue(IEnumerable<Game> allGames, QueueSettings settings)
+        {
+            var result = new List<Game>();
+            if (allGames == null)
+            {
+                return result;
+            }
+
+            foreach (var rep in CollapseForDisplay(allGames))
+            {
+                if (rep == null)
+                {
+                    continue;
+                }
+
+                if (rep.MergeGroupId == null)
+                {
+                    result.Add(rep);
+                    continue;
+                }
+
+                var members = GetMembers(rep.MergeGroupId.Value);
+                if (members.Count <= 1)
+                {
+                    result.Add(rep);
+                    continue;
+                }
+
+                var projected = rep.GetCopy();
+                projected.Hidden = members.All(m => m.Hidden);
+                projected.OnHold = members.All(m => m.OnHold);
+
+                if (settings?.PlayingStatusId is Guid playingId
+                    && playingId != Guid.Empty
+                    && members.Any(m => m.CompletionStatusId == playingId))
+                {
+                    projected.CompletionStatusId = playingId;
+                }
+                else if (settings?.TerminalStatusIds?.Count > 0
+                    && members.All(m => settings.TerminalStatusIds.Contains(m.CompletionStatusId)))
+                {
+                    projected.CompletionStatusId = members[0].CompletionStatusId;
+                }
+
+                result.Add(projected);
+            }
+
+            return result;
+        }
     }
 }

@@ -363,11 +363,10 @@ namespace Playnite.DesktopApp.ViewModels
                     return;
                 }
 
-                var ordered = QueueOrdering.BuildQueue(database.Games, boundSettings);
-                if (database is GameDatabase gameDatabase)
-                {
-                    ordered = gameDatabase.MergeGroups.CollapseForDisplay(ordered).ToList();
-                }
+                var sourceGames = database is GameDatabase gameDatabase
+                    ? gameDatabase.MergeGroups.PrepareForQueue(database.Games, boundSettings)
+                    : database.Games.ToList();
+                var ordered = QueueOrdering.BuildQueue(sourceGames, boundSettings);
 
                 ApplyOrdered(ordered);
             }

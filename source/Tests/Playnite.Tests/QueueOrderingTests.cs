@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Playnite;
+using Playnite.MergeGroups;
 using Playnite.SDK.Models;
 using System;
 using System.Collections.Generic;
@@ -555,6 +556,38 @@ namespace Playnite.Tests
             var queue = QueueOrdering.BuildQueue(new[] { q1, p3, p1, p2 }, settings);
 
             CollectionAssert.AreEqual(new[] { "P2", "P1", "P3" }, queue.Select(g => g.Name).ToArray());
+        }
+
+        [Test]
+        public void BuildQueue_PreparedMergeGroupUsesSingleVisibleSlot()
+        {
+            var groupId = Guid.NewGuid();
+            var mergeIndex = new MergeGroupIndex();
+            var m1 = NewGame("Merge 1", acquired: new DateTime(2020, 1, 1));
+            m1.MergeGroupId = groupId;
+            m1.Added = new DateTime(2020, 1, 1);
+            var m2 = NewGame("Merge 2", acquired: new DateTime(2020, 1, 2));
+            m2.MergeGroupId = groupId;
+            m2.Added = new DateTime(2020, 1, 2);
+            var m3 = NewGame("Merge 3", acquired: new DateTime(2020, 1, 3));
+            m3.MergeGroupId = groupId;
+            m3.Added = new DateTime(2020, 1, 3);
+            var g4 = NewGame("Game 4", acquired: new DateTime(2020, 2, 1));
+            var g5 = NewGame("Game 5", acquired: new DateTime(2020, 2, 2));
+            var g6 = NewGame("Game 6", acquired: new DateTime(2020, 2, 3));
+            var g7 = NewGame("Game 7", acquired: new DateTime(2020, 2, 4));
+            var games = new List<Game> { m1, m2, m3, g4, g5, g6, g7 };
+            mergeIndex.Rebuild(games);
+
+            var unprepared = QueueOrdering.BuildQueue(games, DefaultSettings(n: 4));
+            Assert.AreEqual(4, unprepared.Count);
+            Assert.AreEqual(3, unprepared.Count(g => g.MergeGroupId == groupId));
+
+            var prepared = mergeIndex.PrepareForQueue(games, DefaultSettings(n: 4));
+            var queue = QueueOrdering.BuildQueue(prepared, DefaultSettings(n: 4));
+
+            Assert.AreEqual(4, queue.Count);
+            Assert.AreEqual(1, queue.Count(g => g.MergeGroupId == groupId));
         }
 
         [Test]
