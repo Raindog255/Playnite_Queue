@@ -191,10 +191,13 @@
                         </DockPanel>
 
                         <!-- Library -->
-                        <TextBlock Grid.Column="0" Grid.Row="3" Text="{DynamicResource LOCGameProviderTitle}"
-                                   Visibility="{Binding IsSingleGameEdit, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBlock Grid.Column="2" Grid.Row="3" Text="{Binding LibraryPlugin.Name, FallbackValue='Playnite'}"
-                                   Visibility="{Binding IsSingleGameEdit, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <TextBlock Grid.Column="0" Grid.Row="3" Text="{DynamicResource LOCGameProviderTitle}" />
+                        <CheckBox Grid.Column="1" Grid.Row="3" Style="{StaticResource SaveChangesCheck}"
+                                  IsChecked="{Binding UseLibraryChanges}" />
+                        <ComboBox Grid.Column="2" Grid.Row="3"
+                                  ItemsSource="{Binding LibraryPlugins}"
+                                  SelectedValuePath="Id" DisplayMemberPath="Name"
+                                  SelectedValue="{Binding EditingGame.PluginId, UpdateSourceTrigger=PropertyChanged}" />
 
                         <!-- Genres -->
                         <TextBlock Grid.Column="0" Grid.Row="4" Text="{DynamicResource LOCGenresLabel}" />

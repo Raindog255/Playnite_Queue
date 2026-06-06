@@ -458,6 +458,22 @@ namespace Playnite.DesktopApp.ViewModels
             }
         }
 
+        private bool useLibraryChanges;
+        public bool UseLibraryChanges
+        {
+            get
+            {
+                return useLibraryChanges;
+            }
+
+            set
+            {
+                useLibraryChanges = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowGeneralChangeNotif));
+            }
+        }
+
         private bool useCompletionStatusChanges;
         public bool UseCompletionStatusChanges
         {
@@ -839,6 +855,7 @@ namespace Playnite.DesktopApp.ViewModels
                     UseGenresChanges ||
                     UseTagChanges ||
                     UseSeriesChanges ||
+                    UseLibraryChanges ||
                     UseCompletionStatusChanges ||
                     UseAddedChanges ||
                     UseOnHoldChanges ||
@@ -1244,6 +1261,16 @@ namespace Playnite.DesktopApp.ViewModels
                     else
                     {
                         UseSourceChanges = true;
+                    }
+                    break;
+                case nameof(Game.PluginId):
+                    if (IsSingleGameEdit)
+                    {
+                        UseLibraryChanges = Game.PluginId != EditingGame.PluginId;
+                    }
+                    else
+                    {
+                        UseLibraryChanges = true;
                     }
                     break;
                 case nameof(Game.CompletionStatusId):

@@ -143,6 +143,12 @@ namespace Playnite
                 dummyGame.SourceId = firstSource;
             }
 
+            var firstPluginId = firstGame.PluginId;
+            if (games.All(a => a.PluginId == firstPluginId) == true)
+            {
+                dummyGame.PluginId = firstPluginId;
+            }
+
             var firstCompletionStatus = firstGame.CompletionStatusId;
             if (games.All(a => a.CompletionStatusId == firstCompletionStatus) == true)
             {

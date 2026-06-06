@@ -192,6 +192,8 @@ namespace Playnite.LibrarySanitizer
                 PlatformIds = src.PlatformIds == null ? null : new List<Guid>(src.PlatformIds),
                 FeatureIds = src.FeatureIds == null ? null : new List<Guid>(src.FeatureIds),
                 SourceId = src.SourceId,
+                PluginId = src.PluginId,
+                IncludeLibraryPluginAction = src.IncludeLibraryPluginAction,
                 Icon = src.Icon,
                 CoverImage = src.CoverImage,
                 BackgroundImage = src.BackgroundImage,

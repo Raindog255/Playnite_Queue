@@ -163,6 +163,8 @@ namespace Playnite.DesktopApp.ViewModels
 
         public ObservableCollection<GameSource> Sources { get; set; }
 
+        public ObservableCollection<LibraryPlugin> LibraryPlugins { get; set; }
+
         public SelectableDbItemList Regions { get; set; }
 
         public SelectableDbItemList Series { get; set; }
@@ -366,6 +368,14 @@ namespace Playnite.DesktopApp.ViewModels
 
             Sources = database.Sources.OrderBy(a => a.Name).ToObservable();
             Sources.Insert(0, new GameSource() { Id = Guid.Empty, Name = string.Empty });
+
+            var libraryPlugins = extensions?.LibraryPlugins?.OrderBy(a => a.Name).ToList() ?? new List<LibraryPlugin>();
+            if (libraryPlugins.All(a => a.Id != Guid.Empty))
+            {
+                libraryPlugins.Add(new FakePlayniteLibraryPlugin());
+            }
+
+            LibraryPlugins = libraryPlugins.ToObservable();
 
             CompletionStatuses = database.CompletionStatuses.OrderBy(a => a.Name).ToObservable();
             CompletionStatuses.Insert(0, new CompletionStatus() { Id = Guid.Empty, Name = string.Empty });
@@ -804,6 +814,11 @@ namespace Playnite.DesktopApp.ViewModels
                 if (UseSourceChanges)
                 {
                     game.SourceId = EditingGame.SourceId;
+                }
+
+                if (UseLibraryChanges)
+                {
+                    game.PluginId = EditingGame.PluginId;
                 }
 
                 if (UseCompletionStatusChanges)

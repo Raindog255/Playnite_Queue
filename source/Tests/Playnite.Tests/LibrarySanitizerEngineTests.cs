@@ -690,7 +690,11 @@ namespace Playnite.Tests
         public void SplitCollectionAction_Apply_CreatesChildrenAndHidesSource()
         {
             var db = new InMemoryGameDatabase();
+            var pluginId = Guid.NewGuid();
+            var sourceId = Guid.NewGuid();
             var g = Game("Mass Effect Trilogy");
+            g.PluginId = pluginId;
+            g.SourceId = sourceId;
             g.GenreIds = new List<Guid> { Guid.NewGuid() };
             db.Games.Add(g);
 
@@ -715,6 +719,8 @@ namespace Playnite.Tests
             // later edit on one child doesn't ripple).
             Assert.IsTrue(children.All(c => c.GenreIds != null && c.GenreIds.Count == 1));
             Assert.AreNotSame(g.GenreIds, children[0].GenreIds);
+            Assert.IsTrue(children.All(c => c.PluginId == pluginId));
+            Assert.IsTrue(children.All(c => c.SourceId == sourceId));
         }
 
         [Test]
