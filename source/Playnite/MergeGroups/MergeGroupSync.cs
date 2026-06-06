@@ -1,8 +1,11 @@
+using Playnite;
 using Playnite.Database;
 using Playnite.SDK.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace Playnite.MergeGroups
 {
@@ -11,7 +14,7 @@ namespace Playnite.MergeGroups
     /// </summary>
     public static class MergeGroupSync
     {
-        public static void ApplyReducedValues(IList<Game> members, MergeGroupReducedValues values)
+        public static void ApplyReducedValues(IList<Game> members, MergeGroupReducedValues values, IGameDatabaseMain database)
         {
             if (members == null || members.Count == 0 || values == null)
             {
@@ -20,11 +23,11 @@ namespace Playnite.MergeGroups
 
             foreach (var game in members)
             {
-                ApplyReducedValuesToGame(game, values);
+                ApplyReducedValuesToGame(game, values, database);
             }
         }
 
-        public static void ApplyReducedValuesToGame(Game game, MergeGroupReducedValues values)
+        public static void ApplyReducedValuesToGame(Game game, MergeGroupReducedValues values, IGameDatabaseMain database)
         {
             if (game == null || values == null)
             {
@@ -54,9 +57,9 @@ namespace Playnite.MergeGroups
             game.DeveloperIds = CloneList(values.DeveloperIds);
             game.PublisherIds = CloneList(values.PublisherIds);
             game.OnHold = values.OnHold;
-            game.Icon = values.Icon;
-            game.CoverImage = values.CoverImage;
-            game.BackgroundImage = values.BackgroundImage;
+            game.Icon = SyncIconToGame(game, values.Icon, database);
+            game.CoverImage = SyncCoverToGame(game, values.CoverImage, database);
+            game.BackgroundImage = SyncBackgroundToGame(game, values.BackgroundImage, database);
         }
 
         public static void PropagateSyncFieldsFromEditedGame(
@@ -78,7 +81,7 @@ namespace Playnite.MergeGroups
 
             foreach (var target in others)
             {
-                CopyChangedSyncFields(beforeEdit, edited, target);
+                CopyChangedSyncFields(beforeEdit, edited, target, database);
             }
 
             database?.Games.Update(others);
@@ -103,7 +106,7 @@ namespace Playnite.MergeGroups
             database?.Games.Update(members);
         }
 
-        internal static void CopyChangedSyncFields(Game before, Game after, Game target)
+        internal static void CopyChangedSyncFields(Game before, Game after, Game target, IGameDatabaseMain database)
         {
             if (!string.Equals(before.Name, after.Name, StringComparison.Ordinal))
             {
@@ -182,18 +185,99 @@ namespace Playnite.MergeGroups
 
             if (!string.Equals(before.Icon, after.Icon, StringComparison.Ordinal))
             {
-                target.Icon = after.Icon;
+                target.Icon = SyncIconToGame(target, after.Icon, database);
             }
 
             if (!string.Equals(before.CoverImage, after.CoverImage, StringComparison.Ordinal))
             {
-                target.CoverImage = after.CoverImage;
+                target.CoverImage = SyncCoverToGame(target, after.CoverImage, database);
             }
 
             if (!string.Equals(before.BackgroundImage, after.BackgroundImage, StringComparison.Ordinal))
             {
-                target.BackgroundImage = after.BackgroundImage;
+                target.BackgroundImage = SyncBackgroundToGame(target, after.BackgroundImage, database);
             }
+        }
+
+        internal static string SyncIconToGame(Game target, string sourceDbPath, IGameDatabaseMain database) =>
+            CopyImageToGame(target, sourceDbPath, database);
+
+        internal static string SyncCoverToGame(Game target, string sourceDbPath, IGameDatabaseMain database) =>
+            CopyImageToGame(target, sourceDbPath, database);
+
+        internal static string SyncBackgroundToGame(Game target, string sourceDbPath, IGameDatabaseMain database)
+        {
+            if (string.IsNullOrEmpty(sourceDbPath))
+            {
+                return null;
+            }
+
+            if (sourceDbPath.IsHttpUrl())
+            {
+                return sourceDbPath;
+            }
+
+            return CopyImageToGame(target, sourceDbPath, database);
+        }
+
+        private static string CopyImageToGame(Game target, string sourceDbPath, IGameDatabaseMain database)
+        {
+            if (string.IsNullOrEmpty(sourceDbPath))
+            {
+                return null;
+            }
+
+            if (IsPathForGame(sourceDbPath, target.Id))
+            {
+                return sourceDbPath;
+            }
+
+            if (database == null)
+            {
+                return sourceDbPath;
+            }
+
+            var fullPath = ResolveFullFilePath(sourceDbPath, database);
+            if (fullPath == null)
+            {
+                return sourceDbPath;
+            }
+
+            return database.AddFile(fullPath, target.Id, true, CancellationToken.None);
+        }
+
+        private static string ResolveFullFilePath(string sourceDbPath, IGameDatabaseMain database)
+        {
+            if (sourceDbPath.IsHttpUrl())
+            {
+                return sourceDbPath;
+            }
+
+            var fullPath = database.GetFullFilePath(sourceDbPath);
+            if (File.Exists(fullPath))
+            {
+                return fullPath;
+            }
+
+            if (File.Exists(sourceDbPath))
+            {
+                return sourceDbPath;
+            }
+
+            return null;
+        }
+
+        private static bool IsPathForGame(string dbPath, Guid gameId)
+        {
+            if (string.IsNullOrEmpty(dbPath))
+            {
+                return false;
+            }
+
+            var prefix = gameId.ToString();
+            return dbPath.StartsWith(prefix + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+                || dbPath.StartsWith(prefix + Path.AltDirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+                || dbPath.StartsWith(prefix + "/", StringComparison.OrdinalIgnoreCase);
         }
 
         private static List<Guid> CloneList(List<Guid> source) =>

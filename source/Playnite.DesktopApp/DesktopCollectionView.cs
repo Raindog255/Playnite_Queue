@@ -532,6 +532,8 @@ namespace Playnite.DesktopApp
 
         private void Database_GameUpdated(object sender, ItemUpdatedEventArgs<Game> args)
         {
+            ProcessMergeGroupMembershipChanges(args);
+
             var refreshList = new List<Game>();
             foreach (var update in args.UpdatedItems)
             {
@@ -588,42 +590,7 @@ namespace Playnite.DesktopApp
             var addList = new List<GamesCollectionViewEntry>();
             foreach (var game in args.AddedItems)
             {
-                switch (ViewType)
-                {
-                    case GamesViewType.Standard:
-                        if ((Database as GameDatabase)?.MergeGroups.ShouldShowAsLibraryTile(game) != false)
-                        {
-                            addList.Add(CreateViewEntry(game));
-                        }
-                        break;
-
-                    case GamesViewType.ListGrouped:
-                        var entries = new List<GamesCollectionViewEntry>();
-                        var ids = GetGroupingIds(viewSettings.GroupingOrder, game);
-                        if (ids.HasItems())
-                        {
-                            foreach (var id in ids)
-                            {
-                                var newItem = GamesCollectionViewEntry.GetAdvancedGroupedEntry(game, GetLibraryPlugin(game), groupTypes[viewSettings.GroupingOrder], id, Database, settings);
-                                if (newItem != null)
-                                {
-                                    entries.Add(newItem);
-                                }
-                            }
-
-                            if (entries.Count == 0)
-                            {
-                                entries.Add(CreateViewEntry(game));
-                            }
-                        }
-                        else
-                        {
-                            entries.Add(CreateViewEntry(game));
-                        }
-
-                        addList.AddRange(entries);
-                        break;
-                }
+                addList.AddRange(CreateViewEntriesForGame(game));
             }
 
             if (addList.Count > 0)
@@ -644,6 +611,135 @@ namespace Playnite.DesktopApp
             }
 
             return Database.Games.Where(g => mergeIndex.ShouldShowAsLibraryTile(g));
+        }
+
+        private void ProcessMergeGroupMembershipChanges(ItemUpdatedEventArgs<Game> args)
+        {
+            var mergeIndex = (Database as GameDatabase)?.MergeGroups;
+            if (mergeIndex == null)
+            {
+                return;
+            }
+
+            var representativesToRefresh = new HashSet<Guid>();
+            foreach (var update in args.UpdatedItems)
+            {
+                if (update.OldData.MergeGroupId == update.NewData.MergeGroupId)
+                {
+                    continue;
+                }
+
+                if (update.NewData.MergeGroupId != null && !mergeIndex.IsRepresentative(update.NewData))
+                {
+                    RemoveViewEntry(update.NewData.Id);
+                }
+
+                if (update.NewData.MergeGroupId != null)
+                {
+                    var representative = mergeIndex.GetRepresentative(update.NewData.MergeGroupId.Value);
+                    if (representative != null)
+                    {
+                        representativesToRefresh.Add(representative.Id);
+                    }
+                }
+                else
+                {
+                    representativesToRefresh.Add(update.NewData.Id);
+                }
+            }
+
+            foreach (var gameId in representativesToRefresh)
+            {
+                RefreshViewEntry(gameId);
+            }
+        }
+
+        private void RemoveViewEntry(Guid gameId)
+        {
+            var existingItem = Items.FirstOrDefault(a => a.Game.Id == gameId);
+            if (existingItem == null)
+            {
+                return;
+            }
+
+            existingItem.Dispose();
+            Items.Remove(existingItem);
+        }
+
+        private void RefreshViewEntry(Guid gameId)
+        {
+            RemoveViewEntry(gameId);
+            var game = Database.Games.Get(gameId);
+            if (game == null)
+            {
+                return;
+            }
+
+            var addList = CreateViewEntriesForGame(game);
+            if (addList.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var item in addList)
+            {
+                Items.Add(item);
+            }
+        }
+
+        private List<GamesCollectionViewEntry> CreateViewEntriesForGame(Game game)
+        {
+            var entries = new List<GamesCollectionViewEntry>();
+            if (game == null)
+            {
+                return entries;
+            }
+
+            var mergeIndex = (Database as GameDatabase)?.MergeGroups;
+            if (mergeIndex != null && !mergeIndex.ShouldShowAsLibraryTile(game))
+            {
+                return entries;
+            }
+
+            switch (ViewType)
+            {
+                case GamesViewType.Standard:
+                    entries.Add(CreateViewEntry(game));
+                    break;
+
+                case GamesViewType.ListGrouped:
+                    var ids = GetGroupingIds(viewSettings.GroupingOrder, game);
+                    if (ids.HasItems())
+                    {
+                        foreach (var id in ids)
+                        {
+                            var newItem = GamesCollectionViewEntry.GetAdvancedGroupedEntry(
+                                game,
+                                GetLibraryPlugin(game),
+                                groupTypes[viewSettings.GroupingOrder],
+                                id,
+                                Database,
+                                settings);
+                            if (newItem != null)
+                            {
+                                entries.Add(newItem);
+                            }
+                        }
+
+                        if (entries.Count == 0)
+                        {
+                            entries.Add(CreateViewEntry(game));
+                        }
+                    }
+                    else
+                    {
+                        entries.Add(CreateViewEntry(game));
+                    }
+
+                    break;
+            }
+
+            return entries;
         }
 
         private GamesCollectionViewEntry CreateViewEntry(Game game)

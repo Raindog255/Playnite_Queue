@@ -70,7 +70,7 @@ namespace Playnite.LibrarySanitizer
                 foreach (var member in Members)
                 {
                     member.MergeGroupId = groupId;
-                    MergeGroupSync.ApplyReducedValuesToGame(member, reduced);
+                    MergeGroupSync.ApplyReducedValuesToGame(member, reduced, database);
                 }
 
                 database.Games.Update(Members);
