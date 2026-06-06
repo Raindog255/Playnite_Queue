@@ -90,6 +90,10 @@ namespace Playnite.Tests
 
             dbList.First(i => i.Item.Name == "Alpha").Selected = true;
             ordered = dbList.CollectionView.Cast<SelectableItem<DatabaseObject>>().Select(i => i.Item.Name).ToList();
+            CollectionAssert.AreEqual(new[] { "Zulu", "Alpha", "Mike" }, ordered);
+
+            dbList.RefreshSortOrder();
+            ordered = dbList.CollectionView.Cast<SelectableItem<DatabaseObject>>().Select(i => i.Item.Name).ToList();
             CollectionAssert.AreEqual(new[] { "Alpha", "Zulu", "Mike" }, ordered);
         }
     }

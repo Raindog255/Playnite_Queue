@@ -179,6 +179,7 @@ namespace Playnite.DesktopApp.Controls
             {
                 popup.Opened += (_, __) =>
                 {
+                    ItemsList?.RefreshSortOrder();
                     if (ShowSearchBox && TextSearchBox != null)
                     {
                         TextSearchBox.IsFocused = true;

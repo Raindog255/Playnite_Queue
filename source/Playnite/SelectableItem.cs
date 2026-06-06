@@ -583,11 +583,11 @@ namespace System
             CollectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(Items);
             CollectionView.Filter = CollectionViewFilter;
             CollectionView.CustomSort = new SelectableItemComparer(includeNoneItem);
+            RefreshSortOrder();
         }
 
-        internal override void OnSelectionChanged()
+        public void RefreshSortOrder()
         {
-            base.OnSelectionChanged();
             CollectionView?.Refresh();
         }
 
