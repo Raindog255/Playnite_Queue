@@ -11,6 +11,8 @@ using Playnite.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace Playnite.DesktopApp.ViewModels
 {
@@ -36,15 +38,21 @@ namespace Playnite.DesktopApp.ViewModels
 
         public RelayCommand<MergeGroupMemberItem> EditMergeMemberCommand { get; }
 
-        public GameEditViewModel(
+        private GameEditViewModel(
             IList<Game> mergeMembers,
             GameDatabase database,
             IWindowFactory window,
             IDialogsFactory dialogs,
             IResourceProvider resources,
             ExtensionFactory extensions,
-            PlayniteSettings appSettings)
+            PlayniteSettings appSettings,
+            bool mergeGroupEdit)
         {
+            if (!mergeGroupEdit)
+            {
+                throw new InvalidOperationException();
+            }
+
             var members = mergeMembers?.Where(g => g != null).Select(g => g.GetClone()).ToList() ?? new List<Game>();
             if (members.Count < 2)
             {
@@ -70,6 +78,26 @@ namespace Playnite.DesktopApp.ViewModels
                 .ToList();
 
             EditMergeMemberCommand = new RelayCommand<MergeGroupMemberItem>(EditMergeMember, m => m?.Game != null);
+        }
+
+        public static GameEditViewModel CreateMergeGroupEditViewModel(
+            IList<Game> mergeMembers,
+            GameDatabase database,
+            IWindowFactory window,
+            IDialogsFactory dialogs,
+            IResourceProvider resources,
+            ExtensionFactory extensions,
+            PlayniteSettings appSettings)
+        {
+            return new GameEditViewModel(
+                mergeMembers,
+                database,
+                window,
+                dialogs,
+                resources,
+                extensions,
+                appSettings,
+                mergeGroupEdit: true);
         }
 
         internal void RefreshSelectableListsFromEditingGame()
@@ -110,15 +138,27 @@ namespace Playnite.DesktopApp.ViewModels
             }
 
             var live = database?.Games?.Get(item.Game.Id) ?? item.Game;
-            var editor = new GameEditViewModel(
-                live,
-                database,
-                new GameEditWindowFactory(),
-                dialogs,
-                resources,
-                extensions,
-                appSettings);
-            editor.OpenView();
+            var dispatcher = Application.Current?.Dispatcher;
+            if (dispatcher == null)
+            {
+                return;
+            }
+
+            dispatcher.BeginInvoke(new Action(() =>
+            {
+                var editor = new GameEditViewModel(
+                    live,
+                    database,
+                    new GameEditWindowFactory(),
+                    dialogs,
+                    resources,
+                    extensions,
+                    appSettings);
+                editor.OpenView();
+            }), DispatcherPriority.ApplicationIdle);
+
+            ignoreClosingEvent = true;
+            CloseView(false, false);
         }
 
         private void FinalizeMergeGroupSave()

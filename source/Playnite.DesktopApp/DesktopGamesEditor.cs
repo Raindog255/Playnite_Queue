@@ -98,7 +98,7 @@ namespace Playnite.DesktopApp
                 return null;
             }
 
-            var model = new GameEditViewModel(
+            var model = GameEditViewModel.CreateMergeGroupEditViewModel(
                 liveMembers,
                 Database,
                 new GameEditWindowFactory(),
