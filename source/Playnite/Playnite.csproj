@@ -504,7 +504,14 @@
     <Compile Include="LibrarySanitizer\MissingPropertyAction.cs" />
     <Compile Include="LibrarySanitizer\RemoveUnusedMetadataAction.cs" />
     <Compile Include="LibrarySanitizer\SplitCollectionAction.cs" />
+    <Compile Include="LibrarySanitizer\MergeAction.cs" />
     <Compile Include="LibrarySanitizer\LibrarySanitizerEngine.cs" />
+    <Compile Include="MergeGroups\MergeGroupFieldBucket.cs" />
+    <Compile Include="MergeGroups\MergeGroupReducedValues.cs" />
+    <Compile Include="MergeGroups\MergeGroupReducer.cs" />
+    <Compile Include="MergeGroups\MergeGroupDisplay.cs" />
+    <Compile Include="MergeGroups\MergeGroupIndex.cs" />
+    <Compile Include="MergeGroups\MergeGroupSync.cs" />
     <Compile Include="Settings\DetailsVisibilitySettings.cs" />
     <Compile Include="Settings\FullscreenSettings.cs" />
     <Compile Include="Settings\OldSettings\Plugins.cs" />

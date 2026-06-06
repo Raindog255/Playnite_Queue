@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
 using Playnite.Emulators;
+using Playnite.MergeGroups;
 using Playnite.SDK;
 using Playnite.SDK.Models;
 using Playnite.Common;
@@ -185,6 +186,8 @@ namespace Playnite.Database
         public IItemCollection<FilterPreset> FilterPresets { get; private set; }
         public IItemCollection<ImportExclusionItem> ImportExclusions { get; private set; }
         public IItemCollection<CompletionStatus> CompletionStatuses { get; private set; }
+
+        public MergeGroupIndex MergeGroups { get; } = new MergeGroupIndex();
 
         public List<Guid> UsedPlatforms { get; } = new List<Guid>();
         public List<Guid> UsedGenres { get; } = new List<Guid>();
@@ -547,6 +550,7 @@ namespace Playnite.Database
 
             LoadCollections();
             LoadUsedItems();
+            RebuildMergeGroupIndex();
 
             // New DB setup
             if (!dbExists)
@@ -672,8 +676,14 @@ namespace Playnite.Database
             }
         }
 
+        private void RebuildMergeGroupIndex()
+        {
+            MergeGroups.Rebuild(Games);
+        }
+
         private void Games_ItemCollectionChanged(object sender, ItemCollectionChangedEventArgs<Game> e)
         {
+            RebuildMergeGroupIndex();
             if (e.AddedItems.HasItems())
             {
                 foreach (var game in e.AddedItems)
@@ -696,6 +706,11 @@ namespace Playnite.Database
 
         private void Games_ItemUpdated(object sender, ItemUpdatedEventArgs<Game> e)
         {
+            if (e.UpdatedItems.Any(upd => upd.NewData.MergeGroupId != upd.OldData.MergeGroupId))
+            {
+                RebuildMergeGroupIndex();
+            }
+
             foreach (var upd in e.UpdatedItems)
             {
                 UpdateFieldsInUse(upd.NewData.PlatformIds, UsedPlatforms, PlatformsInUseUpdated, Platforms);

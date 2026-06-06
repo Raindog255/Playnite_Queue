@@ -333,6 +333,47 @@
                                                 </Border>
                                             </DataTemplate>
 
+                                            <DataTemplate DataType="{x:Type san:MergeAction}">
+                                                <Border Style="{StaticResource SanitizerCardBorder}">
+                                                    <StackPanel>
+                                                        <DockPanel Margin="0,0,0,8">
+                                                            <TextBlock DockPanel.Dock="Right"
+                                                                       Text="{DynamicResource LOCSanitizerActionMerge}"
+                                                                       FontWeight="SemiBold"
+                                                                       Foreground="{DynamicResource GlyphBrush}" />
+                                                            <TextBlock Text="{Binding DisplayTitle}"
+                                                                       FontSize="14"
+                                                                       FontWeight="SemiBold"
+                                                                       TextTrimming="CharacterEllipsis" />
+                                                        </DockPanel>
+
+                                                        <ItemsControl ItemsSource="{Binding Members}" Margin="0,0,0,8">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Margin="0,0,0,2"
+                                                                               Text="{Binding Name}"
+                                                                               Foreground="{DynamicResource TextBrushDarker}" />
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                            <Button Content="{DynamicResource LOCSanitizerEdit}"
+                                                                    Margin="0,0,8,0"
+                                                                    Command="{Binding DataContext.EditGameCommand, RelativeSource={RelativeSource AncestorType={x:Type LibrarySanitizer}}}"
+                                                                    CommandParameter="{Binding}" />
+                                                            <Button Content="{DynamicResource LOCSanitizerDismiss}"
+                                                                    Margin="0,0,8,0"
+                                                                    Command="{Binding DataContext.DismissCommand, RelativeSource={RelativeSource AncestorType={x:Type LibrarySanitizer}}}"
+                                                                    CommandParameter="{Binding}" />
+                                                            <Button Content="{DynamicResource LOCSanitizerApply}"
+                                                                    Command="{Binding DataContext.ApplyCommand, RelativeSource={RelativeSource AncestorType={x:Type LibrarySanitizer}}}"
+                                                                    CommandParameter="{Binding}" />
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+
                                         </ItemsControl.Resources>
                                     </ItemsControl>
                                 </StackPanel>

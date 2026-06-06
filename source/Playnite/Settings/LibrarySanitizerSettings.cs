@@ -43,6 +43,13 @@ namespace Playnite
             set { removeUnusedEnabled = value; OnPropertyChanged(); }
         }
 
+        private bool mergeEnabled = true;
+        public bool MergeEnabled
+        {
+            get => mergeEnabled;
+            set { mergeEnabled = value; OnPropertyChanged(); }
+        }
+
         // ---------------- Remove unused scope ----------------
 
         private bool removeUnusedSeries = true;

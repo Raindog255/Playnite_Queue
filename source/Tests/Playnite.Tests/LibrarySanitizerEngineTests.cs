@@ -855,5 +855,22 @@ namespace Playnite.Tests
 
             Assert.AreEqual(0, db.Companies.Count);
         }
+
+        [Test]
+        public void Build_EmitsMergeActionForSanitizedNameMatches()
+        {
+            var g1 = new Game { Name = "Final Fantasy 7" };
+            var g2 = new Game { Name = "Final Fantasy VII" };
+            var actions = LibrarySanitizerEngine.BuildActions(
+                new[] { g1, g2 },
+                null,
+                null,
+                DefaultSettings(),
+                null,
+                null,
+                null,
+                null);
+            Assert.AreEqual(1, actions.Count(a => a is MergeAction));
+        }
     }
 }

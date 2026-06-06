@@ -2,6 +2,7 @@
 using Playnite.Database;
 using Playnite.Extensions.Markup;
 using Playnite.SDK;
+using Playnite.MergeGroups;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
 using System;
@@ -20,6 +21,9 @@ namespace Playnite
     {
         private static readonly ILogger logger = LogManager.GetLogger();
         private readonly PlayniteSettings settings;
+        private readonly IList<Game> mergeMembers;
+
+        public int MergeMemberCount => mergeMembers?.Count ?? 1;
 
         public static BitmapLoadProperties DetailsListIconProperties { get; private set; }
         public static BitmapLoadProperties GridViewCoverProperties { get; private set; }
@@ -42,13 +46,13 @@ namespace Playnite
         public ComparableDbItemList<Platform> Platforms => new ComparableDbItemList<Platform>(Game.Platforms);
         public ReleaseDate? ReleaseDate => Game.ReleaseDate;
         public int? ReleaseYear => Game.ReleaseYear;
-        public DateTime? LastActivity => Game.LastActivity;
+        public DateTime? LastActivity => mergeMembers != null ? MergeGroupDisplay.LastActivityMax(mergeMembers) : Game.LastActivity;
         public ObservableCollection<Link> Links => Game.Links;
         public string Icon => Game.Icon;
         public string CoverImage => Game.CoverImage;
         public string BackgroundImage => Game.BackgroundImage;
         public bool Hidden => Game.Hidden;
-        public bool Favorite => Game.Favorite;
+        public bool Favorite => mergeMembers != null ? MergeGroupDisplay.FavoriteAny(mergeMembers) : Game.Favorite;
         public string InstallDirectory => Game.InstallDirectory;
         public ObservableCollection<GameAction> GameActions => Game.GameActions;
         public string DisplayName => Game.Name;
@@ -60,10 +64,10 @@ namespace Playnite
         public bool IsLaunching => Game.IsLaunching;
         public bool IsRunning => Game.IsRunning;
         public bool IsCustomGame => Game.IsCustomGame;
-        public ulong Playtime => Game.Playtime;
+        public ulong Playtime => mergeMembers != null ? MergeGroupDisplay.PlaytimeSum(mergeMembers) : Game.Playtime;
         public DateTime? Added => Game.Added;
         public DateTime? Modified => Game.Modified;
-        public ulong PlayCount => Game.PlayCount;
+        public ulong PlayCount => mergeMembers != null ? MergeGroupDisplay.PlayCountSum(mergeMembers) : Game.PlayCount;
         public ulong? InstallSize => Game.InstallSize;
         public string Version => Game.Version;
         public int? UserScore => Game.UserScore;
@@ -82,21 +86,21 @@ namespace Playnite
         public PlaytimeCategory PlaytimeCategory => Game.PlaytimeCategory;
         public InstallationStatus InstallationState => Game.InstallationStatus;
         public char NameGroup => Game.GetNameGroup();
-        public DateTime? RecentActivity => Game.RecentActivity;
+        public DateTime? RecentActivity => mergeMembers != null ? MergeGroupDisplay.RecentActivityMax(mergeMembers) : Game.RecentActivity;
         public string InstallDriveGroup => Game.GetInstallDriveGroup();
         public InstallSizeGroup InstallSizeGroup => Game.GetInstallSizeGroup();
         public bool OverrideInstallState => Game.OverrideInstallState;
         public bool OnHold => Game.OnHold;
-        public bool Free => Game.Free;
-        public bool Mobile => Game.Mobile;
+        public bool Free => mergeMembers != null ? MergeGroupDisplay.FreeAll(mergeMembers) : Game.Free;
+        public bool Mobile => mergeMembers != null ? MergeGroupDisplay.MobileAny(mergeMembers) : Game.Mobile;
         public DateTime? CompletedDate => Game.CompletedDate;
-        public DateTime? AcquiredDate => Game.AcquiredDate;
+        public DateTime? AcquiredDate => mergeMembers != null ? MergeGroupDisplay.AcquiredDate(mergeMembers) : Game.AcquiredDate;
 
         public List<Guid> CategoryIds => Game.CategoryIds;
         public List<Guid> GenreIds => Game.GenreIds;
         public List<Guid> DeveloperIds => Game.DeveloperIds;
         public List<Guid> PublisherIds => Game.PublisherIds;
-        public List<Guid> TagIds => Game.TagIds;
+        public List<Guid> TagIds => mergeMembers != null ? MergeGroupDisplay.TagIdsUnion(mergeMembers) : Game.TagIds;
         public List<Guid> SeriesIds => Game.SeriesIds;
         public List<Guid> AgeRatingIds => Game.AgeRatingIds;
         public List<Guid> RegionIds => Game.RegionIds;
@@ -212,9 +216,10 @@ namespace Playnite
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public GamesCollectionViewEntry(Game game, LibraryPlugin plugin, PlayniteSettings settings, bool readOnly = false)
+        public GamesCollectionViewEntry(Game game, LibraryPlugin plugin, PlayniteSettings settings, IList<Game> mergeMembers = null, bool readOnly = false)
         {
             this.settings = settings;
+            this.mergeMembers = mergeMembers?.Count > 1 ? mergeMembers : null;
             LibraryPlugin = plugin;
             Library = string.IsNullOrEmpty(plugin?.Name) ? "Playnite" : plugin.Name;
             Game = game;

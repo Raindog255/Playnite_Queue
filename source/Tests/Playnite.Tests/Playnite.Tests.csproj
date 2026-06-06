@@ -202,6 +202,7 @@
     <Compile Include="QueueImportStagingTests.cs" />
     <Compile Include="SanitizerRulesTests.cs" />
     <Compile Include="LibrarySanitizerEngineTests.cs" />
+    <Compile Include="MergeGroupReducerTests.cs" />
     <Compile Include="StringExtensionsTests.cs" />
     <Compile Include="System\ComputerTests.cs" />
     <Compile Include="System\ProcessExtensionsTests.cs" />

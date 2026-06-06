@@ -315,7 +315,8 @@ namespace Playnite.DesktopApp.ViewModels
                     boundSettings,
                     dismissed,
                     database.Genres,
-                    database.Tags);
+                    database.Tags,
+                    database.CompletionStatuses);
                 ApplyActions(actions);
             }
             catch (Exception ex)
@@ -394,6 +395,12 @@ namespace Playnite.DesktopApp.ViewModels
 
         private void EditGame(SanitizerAction action)
         {
+            if (action is MergeAction merge)
+            {
+                ((DesktopGamesEditor)mainModel.GamesEditor).EditMergeGroup(merge.Members);
+                return;
+            }
+
             var game = action?.GetTargetGame();
             if (game == null) return;
             mainModel.EditGame(game);

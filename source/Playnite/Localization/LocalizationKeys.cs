@@ -4781,6 +4781,22 @@ namespace Playnite
         /// </summary>
         public const string SanitizerSourceRemoveUnused = "LOCSanitizerSourceRemoveUnused";
         /// <summary>
+        /// Merge duplicate titles
+        /// </summary>
+        public const string SanitizerSourceMerge = "LOCSanitizerSourceMerge";
+        /// <summary>
+        /// Merge
+        /// </summary>
+        public const string SanitizerActionMerge = "LOCSanitizerActionMerge";
+        /// <summary>
+        /// Merged copies
+        /// </summary>
+        public const string MergeGroupEditTitle = "LOCMergeGroupEditTitle";
+        /// <summary>
+        /// Merge group sync notice
+        /// </summary>
+        public const string MergeGroupSyncNotice = "LOCMergeGroupSyncNotice";
+        /// <summary>
         /// Remove unused scope
         /// </summary>
         public const string SanitizerRemoveUnusedScopeTitle = "LOCSanitizerRemoveUnusedScopeTitle";

@@ -79,7 +79,30 @@
                                     Tag="{Binding ShowGeneralChangeNotif}" />
                 </TabItem.Header>
                 <ScrollViewer>
-                    <Grid Grid.Column="0" Grid.Row="0" Margin="10">
+                    <StackPanel Margin="10">
+                        <StackPanel Visibility="{Binding IsMergeGroupEdit, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Margin="0,0,0,12">
+                            <TextBlock Text="{DynamicResource LOCMergeGroupSyncNotice}"
+                                       TextWrapping="Wrap"
+                                       Foreground="{DynamicResource WarningBrush}" />
+                            <TextBlock Text="{DynamicResource LOCMergeGroupEditTitle}"
+                                       FontWeight="SemiBold"
+                                       Margin="0,10,0,6" />
+                            <ItemsControl ItemsSource="{Binding MergeGroupMemberItems}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel Margin="0,0,0,4">
+                                            <Button DockPanel.Dock="Right"
+                                                    Content="{DynamicResource LOCSanitizerEdit}"
+                                                    Command="{Binding DataContext.EditMergeMemberCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}" />
+                                            <TextBlock Text="{Binding Label}" VerticalAlignment="Center" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    <Grid Grid.Column="0" Grid.Row="0">
                         <Grid.Resources>
                             <!--This one has to be specifically referenced otherwise it messes up with search box in dropdown selector-->
                             <Style x:Key="TextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}" >
@@ -315,6 +338,7 @@
                                                    ItemsList="{Binding Tags}" />
                         </DockPanel>
                     </Grid>
+                    </StackPanel>
                 </ScrollViewer>
             </TabItem>
 

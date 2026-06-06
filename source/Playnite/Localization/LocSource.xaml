@@ -1336,6 +1336,10 @@ Open new issue on Playnite's GitHub page with a request to fix corruption in you
     <sys:String x:Key="LOCSanitizerSourceMissing">Add missing properties</sys:String>
     <sys:String x:Key="LOCSanitizerSourceSplit">Split collections</sys:String>
     <sys:String x:Key="LOCSanitizerSourceRemoveUnused">Remove unused metadata</sys:String>
+    <sys:String x:Key="LOCSanitizerSourceMerge">Merge duplicate titles</sys:String>
+    <sys:String x:Key="LOCSanitizerActionMerge">Merge</sys:String>
+    <sys:String x:Key="LOCMergeGroupEditTitle">Merged copies</sys:String>
+    <sys:String x:Key="LOCMergeGroupSyncNotice">Checked fields apply to every copy in this merge group. Open a member below to edit install paths, scripts, and other per-store details.</sys:String>
     <sys:String x:Key="LOCSanitizerRemoveUnusedScopeTitle">Remove unused scope</sys:String>
     <sys:String x:Key="LOCSanitizerRemoveUnusedTags">Tags</sys:String>
     <sys:String x:Key="LOCSanitizerSanitizeScopeTitle">Sanitize scope</sys:String>

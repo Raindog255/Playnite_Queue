@@ -477,7 +477,9 @@ namespace Playnite.DesktopApp.ViewModels
 
         private MessageBoxResult CheckUnsavedChanges()
         {
-            var compareObj = IsMultiGameEdit ? originalMultiGameObj : Game;
+            var compareObj = IsMergeGroupEdit ? originalMergeGroupObj
+                : IsMultiGameEdit ? originalMultiGameObj
+                : Game;
             if (!EditingGame.IsEqualJson(compareObj))
             {
                 return dialogs.ShowMessage(LOC.UnsavedChangesAskMessage, "", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning);
@@ -655,7 +657,8 @@ namespace Playnite.DesktopApp.ViewModels
             }
 
             var changeDate = DateTime.Now;
-            var gamesToUpdate = IsMultiGameEdit ? Games : new List<Game> { Game };
+            var gamesToUpdate = IsMergeGroupEdit || IsMultiGameEdit ? Games.ToList() : new List<Game> { Game };
+            var beforeSaveSnapshot = IsSingleGameEdit ? Game.GetCopy() : null;
             var sortableNameConverter = appSettings.GameSortingNameAutofill
                 ? new SortableNameConverter(appSettings.GameSortingNameRemovedArticles, IsMultiGameEdit)
                 : null;
@@ -962,6 +965,17 @@ namespace Playnite.DesktopApp.ViewModels
                 game.Modified = changeDate;
                 database.Games.Update(game);
             }
+
+            if (IsMergeGroupEdit)
+            {
+                FinalizeMergeGroupSave();
+                foreach (var member in Games)
+                {
+                    database.Games.Update(member);
+                }
+            }
+
+            PropagateSingleMemberSyncIfNeeded(beforeSaveSnapshot);
 
             database.Games.EndBufferUpdate();
             ignoreClosingEvent = true;

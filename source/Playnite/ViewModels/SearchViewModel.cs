@@ -233,7 +233,7 @@ namespace Playnite.ViewModels
         public GameSearchItemWrapper(GameSearchItem item, LibraryPlugin plugin, PlayniteSettings settings)
             : base(item.Game, item.PrimaryAction)
         {
-            GameView = new GamesCollectionViewEntry(item.Game, plugin, settings, true);
+            GameView = new GamesCollectionViewEntry(item.Game, plugin, settings, readOnly: true);
             SecondaryAction = item.SecondaryAction;
             MenuAction = item.MenuAction;
 

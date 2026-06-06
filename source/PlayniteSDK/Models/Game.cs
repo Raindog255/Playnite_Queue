@@ -189,7 +189,9 @@ namespace Playnite.SDK.Models
         ///
         CompletedDate = 96,
         ///
-        AcquiredDate = 97
+        AcquiredDate = 97,
+        ///
+        MergeGroupId = 98
     }
 
     /// <summary>
@@ -1749,6 +1751,21 @@ namespace Playnite.SDK.Models
             }
         }
 
+        private Guid? mergeGroupId;
+        /// <summary>
+        /// When set, this game is a member of a soft-merge group displayed as one library tile.
+        /// Members share synced metadata; per-store install state remains on each record.
+        /// </summary>
+        public Guid? MergeGroupId
+        {
+            get => mergeGroupId;
+            set
+            {
+                mergeGroupId = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Gets or sets game database reference.
         /// </summary>
@@ -1848,6 +1865,7 @@ namespace Playnite.SDK.Models
                 Mobile = Mobile,
                 CompletedDate = CompletedDate,
                 AcquiredDate = AcquiredDate,
+                MergeGroupId = MergeGroupId,
             };
         }
 
@@ -2146,6 +2164,11 @@ namespace Playnite.SDK.Models
                 if (AcquiredDate != tro.AcquiredDate)
                 {
                     tro.AcquiredDate = AcquiredDate;
+                }
+
+                if (MergeGroupId != tro.MergeGroupId)
+                {
+                    tro.MergeGroupId = MergeGroupId;
                 }
             }
             else
@@ -2510,6 +2533,11 @@ namespace Playnite.SDK.Models
             if (AcquiredDate != otherGame.AcquiredDate)
             {
                 changes.Add(GameField.AcquiredDate);
+            }
+
+            if (MergeGroupId != otherGame.MergeGroupId)
+            {
+                changes.Add(GameField.MergeGroupId);
             }
 
             return changes;

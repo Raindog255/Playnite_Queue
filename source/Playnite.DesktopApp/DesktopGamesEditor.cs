@@ -72,5 +72,32 @@ namespace Playnite.DesktopApp
                             AppSettings);
             return model.OpenView();
         }
+
+        public bool? EditMergeGroup(IList<Game> members)
+        {
+            if (members == null || members.Count < 2)
+            {
+                return null;
+            }
+
+            var liveMembers = members
+                .Select(g => Database.Games.Get(g.Id))
+                .Where(g => g != null)
+                .ToList();
+            if (liveMembers.Count < 2)
+            {
+                return null;
+            }
+
+            var model = new GameEditViewModel(
+                liveMembers,
+                Database,
+                new GameEditWindowFactory(),
+                Dialogs,
+                new ResourceProvider(),
+                Extensions,
+                AppSettings);
+            return model.OpenView();
+        }
     }
 }

@@ -310,11 +310,11 @@ namespace Playnite.DesktopApp
             switch (viewType)
             {
                 case GamesViewType.Standard:
-                    Items.AddRange(Database.Games.Select(x => new GamesCollectionViewEntry(x, GetLibraryPlugin(x), settings)));
+                    Items.AddRange(GetGamesForLibraryView().Select(x => CreateViewEntry(x)));
                     break;
 
                 case GamesViewType.ListGrouped:
-                    Items.AddRange(Database.Games.SelectMany(x =>
+                    Items.AddRange(GetGamesForLibraryView().SelectMany(x =>
                     {
                         var entries = new List<GamesCollectionViewEntry>();
                         var ids = GetGroupingIds(viewSettings.GroupingOrder, x);
@@ -331,12 +331,12 @@ namespace Playnite.DesktopApp
 
                             if (entries.Count == 0)
                             {
-                                entries.Add(new GamesCollectionViewEntry(x, GetLibraryPlugin(x), settings));
+                                entries.Add(CreateViewEntry(x));
                             }
                         }
                         else
                         {
-                            entries.Add(new GamesCollectionViewEntry(x, GetLibraryPlugin(x), settings));
+                            entries.Add(CreateViewEntry(x));
                         }
 
                         return entries;
@@ -591,7 +591,10 @@ namespace Playnite.DesktopApp
                 switch (ViewType)
                 {
                     case GamesViewType.Standard:
-                        addList.Add(new GamesCollectionViewEntry(game, GetLibraryPlugin(game), settings));
+                        if ((Database as GameDatabase)?.MergeGroups.ShouldShowAsLibraryTile(game) != false)
+                        {
+                            addList.Add(CreateViewEntry(game));
+                        }
                         break;
 
                     case GamesViewType.ListGrouped:
@@ -610,12 +613,12 @@ namespace Playnite.DesktopApp
 
                             if (entries.Count == 0)
                             {
-                                entries.Add(new GamesCollectionViewEntry(game, GetLibraryPlugin(game), settings));
+                                entries.Add(CreateViewEntry(game));
                             }
                         }
                         else
                         {
-                            entries.Add(new GamesCollectionViewEntry(game, GetLibraryPlugin(game), settings));
+                            entries.Add(CreateViewEntry(game));
                         }
 
                         addList.AddRange(entries);
@@ -630,6 +633,28 @@ namespace Playnite.DesktopApp
                     Items.Add(item);
                 }
             }
+        }
+
+        private IEnumerable<Game> GetGamesForLibraryView()
+        {
+            var mergeIndex = (Database as GameDatabase)?.MergeGroups;
+            if (mergeIndex == null)
+            {
+                return Database.Games;
+            }
+
+            return Database.Games.Where(g => mergeIndex.ShouldShowAsLibraryTile(g));
+        }
+
+        private GamesCollectionViewEntry CreateViewEntry(Game game)
+        {
+            IList<Game> members = null;
+            if (game?.MergeGroupId != null && Database is GameDatabase db)
+            {
+                members = db.MergeGroups.GetMembers(game.MergeGroupId.Value);
+            }
+
+            return new GamesCollectionViewEntry(game, GetLibraryPlugin(game), settings, members);
         }
     }
 }

@@ -1,3 +1,4 @@
+using Playnite.MergeGroups;
 using Playnite.SDK.Models;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,8 @@ namespace Playnite.LibrarySanitizer
             LibrarySanitizerSettings settings,
             ISet<string> dismissed = null,
             IEnumerable<Genre> genres = null,
-            IEnumerable<Tag> tags = null)
+            IEnumerable<Tag> tags = null,
+            IEnumerable<CompletionStatus> completionStatuses = null)
         {
             var actions = new List<SanitizerAction>();
             if (settings == null)
@@ -108,6 +110,11 @@ namespace Playnite.LibrarySanitizer
             if (settings.RemoveUnusedEnabled)
             {
                 AddRemoveUnusedActions(actions, games, series, companies, genres, tags, settings);
+            }
+
+            if (settings.MergeEnabled && games != null)
+            {
+                AddMergeActions(actions, games, settings, completionStatuses);
             }
 
             if (dismissed != null && dismissed.Count > 0)
@@ -274,6 +281,32 @@ namespace Playnite.LibrarySanitizer
             }
 
             return used;
+        }
+
+        internal static void AddMergeActions(
+            IList<SanitizerAction> actions,
+            IEnumerable<Game> games,
+            LibrarySanitizerSettings settings,
+            IEnumerable<CompletionStatus> completionStatuses)
+        {
+            var candidates = games
+                .Where(g => g != null && !g.Hidden && g.MergeGroupId == null && !string.IsNullOrEmpty(g.Name))
+                .ToList();
+            if (candidates.Count < 2)
+            {
+                return;
+            }
+
+            var groups = candidates
+                .GroupBy(g => MergeGroupReducer.GetMergeMatchKey(g, settings))
+                .Where(g => !string.IsNullOrEmpty(g.Key) && g.Count() >= 2);
+
+            foreach (var group in groups)
+            {
+                var members = group.ToList();
+                var reduced = MergeGroupReducer.Reduce(members, settings, completionStatuses);
+                actions.Add(new MergeAction(members, reduced.Name, reduced.SortingName, settings));
+            }
         }
     }
 }

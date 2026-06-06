@@ -364,6 +364,11 @@ namespace Playnite.DesktopApp.ViewModels
                 }
 
                 var ordered = QueueOrdering.BuildQueue(database.Games, boundSettings);
+                if (database is GameDatabase gameDatabase)
+                {
+                    ordered = gameDatabase.MergeGroups.CollapseForDisplay(ordered).ToList();
+                }
+
                 ApplyOrdered(ordered);
             }
             catch (Exception ex)
@@ -382,7 +387,13 @@ namespace Playnite.DesktopApp.ViewModels
             {
                 if (!entryCache.TryGetValue(game.Id, out var entry))
                 {
-                    entry = new GamesCollectionViewEntry(game, GetLibraryPlugin(game), appSettings);
+                    IList<Game> members = null;
+                    if (database is GameDatabase db && game.MergeGroupId != null)
+                    {
+                        members = db.MergeGroups.GetMembers(game.MergeGroupId.Value);
+                    }
+
+                    entry = new GamesCollectionViewEntry(game, GetLibraryPlugin(game), appSettings, members);
                     entryCache[game.Id] = entry;
                 }
 

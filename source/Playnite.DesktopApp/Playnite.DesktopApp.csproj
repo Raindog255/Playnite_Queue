@@ -329,7 +329,9 @@
     <Compile Include="ViewModels\GameEditViewModel.cs" />
     <Compile Include="ViewModels\GameEditViewModelCommands.cs" />
     <Compile Include="ViewModels\GameEditViewModelFieldChecks.cs" />
+    <Compile Include="ViewModels\GameEditViewModelMergeGroup.cs" />
     <Compile Include="ViewModels\GameEditViewModelMetadata.cs" />
+    <Compile Include="MergeGroups\MergeGroupEditSeeder.cs" />
     <Compile Include="ViewModels\GoogleImageDownloadViewModel.cs" />
     <Compile Include="ViewModels\InstalledGamesViewModel.cs" />
     <Compile Include="ViewModels\DesktopAppViewModel.cs" />

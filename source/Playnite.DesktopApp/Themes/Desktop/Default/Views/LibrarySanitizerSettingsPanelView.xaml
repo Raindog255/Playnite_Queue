@@ -37,7 +37,10 @@
                                                   IsChecked="{Binding Settings.SplitCollectionEnabled, RelativeSource={RelativeSource TemplatedParent}}"
                                                   Margin="0,0,0,4" />
                                         <CheckBox Content="{DynamicResource LOCSanitizerSourceRemoveUnused}"
-                                                  IsChecked="{Binding Settings.RemoveUnusedEnabled, RelativeSource={RelativeSource TemplatedParent}}" />
+                                                  IsChecked="{Binding Settings.RemoveUnusedEnabled, RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Margin="0,0,0,4" />
+                                        <CheckBox Content="{DynamicResource LOCSanitizerSourceMerge}"
+                                                  IsChecked="{Binding Settings.MergeEnabled, RelativeSource={RelativeSource TemplatedParent}}" />
                                     </StackPanel>
                                 </GroupBox>
 
