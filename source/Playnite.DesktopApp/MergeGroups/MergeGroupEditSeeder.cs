@@ -54,6 +54,9 @@ namespace Playnite.DesktopApp
             editing.CoverImage = reduced.CoverImage;
             editing.BackgroundImage = reduced.BackgroundImage;
             editing.TagIds = MergeGroups.MergeGroupDisplay.TagIdsUnion(members)?.ToList();
+            editing.Free = MergeGroupDisplay.FreeAll(members);
+            editing.Mobile = MergeGroupDisplay.MobileAny(members);
+            editing.Favorite = MergeGroupDisplay.FavoriteAny(members);
 
             viewModel.UseNameChanges = true;
             viewModel.UseSortingNameChanges = true;

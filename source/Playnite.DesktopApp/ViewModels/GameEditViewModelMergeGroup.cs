@@ -113,7 +113,7 @@ namespace Playnite.DesktopApp.ViewModels
             var editor = new GameEditViewModel(
                 live,
                 database,
-                window,
+                new GameEditWindowFactory(),
                 dialogs,
                 resources,
                 extensions,
