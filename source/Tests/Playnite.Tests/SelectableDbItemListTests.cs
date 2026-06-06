@@ -73,5 +73,24 @@ namespace Playnite.Tests
             Assert.AreEqual(2, properies);
             Assert.AreEqual(2, selections);
         }
+
+        [Test]
+        public void CollectionView_OrdersSelectedItemsFirst()
+        {
+            var items = new List<DatabaseObject>()
+            {
+                new DatabaseObject() { Name = "Zulu" },
+                new DatabaseObject() { Name = "Alpha" },
+                new DatabaseObject() { Name = "Mike" }
+            };
+
+            var dbList = new SelectableDbItemList(items, new[] { items[0].Id });
+            var ordered = dbList.CollectionView.Cast<SelectableItem<DatabaseObject>>().Select(i => i.Item.Name).ToList();
+            CollectionAssert.AreEqual(new[] { "Zulu", "Alpha", "Mike" }, ordered);
+
+            dbList.First(i => i.Item.Name == "Alpha").Selected = true;
+            ordered = dbList.CollectionView.Cast<SelectableItem<DatabaseObject>>().Select(i => i.Item.Name).ToList();
+            CollectionAssert.AreEqual(new[] { "Alpha", "Zulu", "Mike" }, ordered);
+        }
     }
 }

@@ -582,7 +582,65 @@ namespace System
 
             CollectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(Items);
             CollectionView.Filter = CollectionViewFilter;
-            CollectionView.SortDescriptions.Add(new SortDescription("Item.Name", ListSortDirection.Ascending));
+            CollectionView.CustomSort = new SelectableItemComparer(includeNoneItem);
+        }
+
+        internal override void OnSelectionChanged()
+        {
+            base.OnSelectionChanged();
+            CollectionView?.Refresh();
+        }
+
+        private sealed class SelectableItemComparer : IComparer
+        {
+            private readonly bool pinNoneFirst;
+
+            public SelectableItemComparer(bool pinNoneFirst)
+            {
+                this.pinNoneFirst = pinNoneFirst;
+            }
+
+            public int Compare(object x, object y)
+            {
+                var left = (SelectableItem<DatabaseObject>)x;
+                var right = (SelectableItem<DatabaseObject>)y;
+
+                if (pinNoneFirst)
+                {
+                    if (left.Item.Id == Guid.Empty && right.Item.Id != Guid.Empty)
+                    {
+                        return -1;
+                    }
+
+                    if (right.Item.Id == Guid.Empty && left.Item.Id != Guid.Empty)
+                    {
+                        return 1;
+                    }
+                }
+
+                var rankCompare = GetSelectionRank(left.Selected).CompareTo(GetSelectionRank(right.Selected));
+                if (rankCompare != 0)
+                {
+                    return rankCompare;
+                }
+
+                return string.Compare(left.Item?.Name, right.Item?.Name, StringComparison.OrdinalIgnoreCase);
+            }
+
+            private static int GetSelectionRank(bool? selected)
+            {
+                if (selected == true)
+                {
+                    return 0;
+                }
+
+                if (selected == null)
+                {
+                    return 1;
+                }
+
+                return 2;
+            }
         }
 
         public void Add(DatabaseObject item, bool selected = false)
