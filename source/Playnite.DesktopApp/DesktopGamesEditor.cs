@@ -49,6 +49,15 @@ namespace Playnite.DesktopApp
 
         public bool? EditGame(Game game)
         {
+            if (game?.MergeGroupId != null)
+            {
+                var members = Database.MergeGroups.GetMembersForGame(game);
+                if (members.Count >= 2)
+                {
+                    return EditMergeGroup(members);
+                }
+            }
+
             var model = new GameEditViewModel(
                             game,
                             Database,
