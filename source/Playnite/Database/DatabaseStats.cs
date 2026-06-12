@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Playnite.SDK.Models;
 using Playnite.Database;
 using Playnite.SDK;
+using Playnite.Common;
 
 namespace Playnite.Database
 {
@@ -19,6 +20,7 @@ namespace Playnite.Database
         public int UnInstalled { get; private set; } = 0;
         public int Hidden { get; private set; } = 0;
         public int Favorite { get; private set; } = 0;
+        public int MissingCoverImage { get; private set; } = 0;
 
         public int Total
         {
@@ -62,6 +64,7 @@ namespace Playnite.Database
             UnInstalled = 0;
             Hidden = 0;
             Favorite = 0;
+            MissingCoverImage = 0;
 
             foreach (var game in database.Games)
             {
@@ -83,6 +86,11 @@ namespace Playnite.Database
                 {
                     Favorite++;
                 }
+
+                if (game.CoverImage.IsNullOrEmpty())
+                {
+                    MissingCoverImage++;
+                }
             }
 
             NotifiyAllChanged();
@@ -94,6 +102,7 @@ namespace Playnite.Database
             OnPropertyChanged(nameof(UnInstalled));
             OnPropertyChanged(nameof(Hidden));
             OnPropertyChanged(nameof(Favorite));
+            OnPropertyChanged(nameof(MissingCoverImage));
             OnPropertyChanged(nameof(Total));
         }
 
@@ -131,6 +140,16 @@ namespace Playnite.Database
                     Favorite = Favorite + (1 * (update.NewData.Favorite ? 1 : -1));
                 }
 
+                if (update.OldData.CoverImage != update.NewData.CoverImage)
+                {
+                    var oldMissing = update.OldData.CoverImage.IsNullOrEmpty();
+                    var newMissing = update.NewData.CoverImage.IsNullOrEmpty();
+                    if (oldMissing != newMissing)
+                    {
+                        MissingCoverImage = MissingCoverImage + (newMissing ? 1 : -1);
+                    }
+                }
+
                 if (update.OldData.IsInstalled != update.NewData.IsInstalled)
                 {
                     Installed = Installed + (1 * (update.NewData.IsInstalled ? 1 : -1));
@@ -142,6 +161,7 @@ namespace Playnite.Database
             OnPropertyChanged(nameof(UnInstalled));
             OnPropertyChanged(nameof(Hidden));
             OnPropertyChanged(nameof(Favorite));
+            OnPropertyChanged(nameof(MissingCoverImage));
         }
 
         private void IncrementalUpdate(Game game, int modifier)
@@ -154,6 +174,11 @@ namespace Playnite.Database
             if (game.Favorite)
             {
                 Favorite = Favorite + (1 * modifier);
+            }
+
+            if (game.CoverImage.IsNullOrEmpty())
+            {
+                MissingCoverImage = MissingCoverImage + (1 * modifier);
             }
 
             if (game.IsInstalled)

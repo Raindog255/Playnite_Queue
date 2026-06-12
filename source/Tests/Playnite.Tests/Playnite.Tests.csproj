@@ -156,6 +156,7 @@
     <Compile Include="Emulators\EmulatorDefinitionTests.cs" />
     <Compile Include="Extensions\EnumsTests.cs" />
     <Compile Include="FileSystemTests.cs" />
+    <Compile Include="GameDatabaseFilterTests.cs" />
     <Compile Include="GamesStatsTests.cs" />
     <Compile Include="ExtensionFactoryTests.cs" />
     <Compile Include="DictionaryTests.cs" />

@@ -3,6 +3,7 @@ using Playnite.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Playnite.Common;
 
 namespace Playnite.Database
 {
@@ -63,6 +64,9 @@ namespace Playnite.Database
                 return false;
 
             if (!MatchFavorite(game))
+                return false;
+
+            if (!MatchMissingCoverImage(game))
                 return false;
 
             if (!MatchHidden(game))
@@ -161,6 +165,9 @@ namespace Playnite.Database
         }
 
         private bool MatchFavorite(Game game) => !filterSettings.Favorite || (filterSettings.Favorite && game.Favorite);
+
+        private bool MatchMissingCoverImage(Game game) =>
+            !filterSettings.MissingCoverImage || game.CoverImage.IsNullOrEmpty();
 
         private bool MatchHidden(Game game) => filterSettings.Hidden == game.Hidden;
 

@@ -329,6 +329,7 @@ namespace Playnite
                     IsUnInstalled ||
                     Hidden ||
                     Favorite ||
+                    MissingCoverImage ||
                     !string.IsNullOrEmpty(Name) ||
                     !string.IsNullOrEmpty(Version) ||
                     Series?.IsSet == true ||
@@ -701,6 +702,25 @@ namespace Playnite
             }
         }
 
+        private bool missingCoverImage;
+        public bool MissingCoverImage
+        {
+            get
+            {
+                return missingCoverImage;
+            }
+
+            set
+            {
+                if (missingCoverImage != value)
+                {
+                    missingCoverImage = value;
+                    OnPropertyChanged();
+                    OnFilterChanged(nameof(MissingCoverImage));
+                }
+            }
+        }
+
         private IdItemFilterItemProperties library;
         public IdItemFilterItemProperties Library
         {
@@ -1042,6 +1062,12 @@ namespace Playnite
                 filterChanges.Add(nameof(Favorite));
             }
 
+            if (MissingCoverImage != false)
+            {
+                MissingCoverImage = false;
+                filterChanges.Add(nameof(MissingCoverImage));
+            }
+
             if (Series?.IsSet == true)
             {
                 Series = null;
@@ -1154,6 +1180,7 @@ namespace Playnite
                 IsUnInstalled = IsUnInstalled,
                 Hidden = Hidden,
                 Favorite = Favorite,
+                MissingCoverImage = MissingCoverImage,
                 Name = Name,
                 Version = Version,
                 ReleaseYear = ReleaseYear?.ToSdkModel(),
@@ -1190,6 +1217,7 @@ namespace Playnite
                 IsUnInstalled = settings.IsUnInstalled,
                 Hidden = settings.Hidden,
                 Favorite = settings.Favorite,
+                MissingCoverImage = settings.MissingCoverImage,
                 Name = settings.Name,
                 Version = settings.Version,
                 ReleaseYear = StringFilterItemProperties.FromSdkModel(settings.ReleaseYear),
@@ -1304,6 +1332,12 @@ namespace Playnite
             {
                 Favorite = settings.Favorite;
                 filterChanges.Add(nameof(Favorite));
+            }
+
+            if (MissingCoverImage != settings.MissingCoverImage)
+            {
+                MissingCoverImage = settings.MissingCoverImage;
+                filterChanges.Add(nameof(MissingCoverImage));
             }
 
             if (Series?.Equals(settings.Series) != true)

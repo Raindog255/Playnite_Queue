@@ -129,6 +129,7 @@ namespace Playnite.DesktopApp.Controls.Views
             SetToggleFilter(nameof(FilterSettings.IsUnInstalled), nameof(DatabaseStats.UnInstalled), LOC.GameIsUnInstalledTitle);
             SetToggleFilter(nameof(FilterSettings.Hidden), nameof(DatabaseStats.Hidden), LOC.GameHiddenTitle);
             SetToggleFilter(nameof(FilterSettings.Favorite), nameof(DatabaseStats.Favorite), LOC.GameFavoriteTitle);
+            SetToggleFilter(nameof(FilterSettings.MissingCoverImage), nameof(DatabaseStats.MissingCoverImage), LOC.GameMissingCoverTitle);
             SetToggleFilterWithTooltip(nameof(FilterSettings.UseAndFilteringStyle), LOC.UseFilterStyleAndTitle, LOC.UseFilterStyleAndTooltip);
 
             SetLabelTag(nameof(FilterSettings.Platform), LOC.PlatformTitle);

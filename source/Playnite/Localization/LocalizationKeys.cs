@@ -2006,6 +2006,10 @@ namespace Playnite
         /// </summary>
         public const string GameFavoriteTitle = "LOCGameFavoriteTitle";
         /// <summary>
+        /// Missing cover art
+        /// </summary>
+        public const string GameMissingCoverTitle = "LOCGameMissingCoverTitle";
+        /// <summary>
         /// Enable HDR Support
         /// </summary>
         public const string GameHdrTitle = "LOCGameHdrTitle";
